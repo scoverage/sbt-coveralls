@@ -2,7 +2,7 @@
 
 SBT plugin that uploaded scala code coverage to https://coveralls.io
 
-WARNING - This plugin is new
+WARNING - This plugin is brand new - created 11 March 2013
 
 # Requirements
 
@@ -12,20 +12,24 @@ WARNING - This plugin is new
 
 1) Adding the following to your `project/build.sbt` file
 
-    resolvers += Classpaths.typesafeResolver
+```scala
+resolvers += Classpaths.typesafeResolver
 
-    resolvers ++= Seq(
-        "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
-        "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
-    )
+resolvers ++= Seq(
+    "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
+    "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
+)
 
-    addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
+addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 
-    addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.1-SNAPSHOT")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.1-SNAPSHOT")
+```
 
 2) Add the following to your `build.sbt`
 
-    seq(ScctPlugin.instrumentSettings : _*)
+```scala
+seq(ScctPlugin.instrumentSettings : _*)
+```
 
 3) Register on `https://coveralls.io/` and get a repo token
 
