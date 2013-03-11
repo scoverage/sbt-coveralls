@@ -6,7 +6,7 @@ For an example project that uses this plugin [click here](https://github.com/the
 
 For example output [click here](https://coveralls.io/builds/6727)
 
-**WARNING - This plugin is brand new - created 11 March 2013 - Likely to fall over**
+**WARNING - This plugin is brand new - created 11 March 2013 - Feel free to use, but don't expect it to be perfect yet**
 
 # Installation
 
