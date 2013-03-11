@@ -2,6 +2,8 @@
 
 SBT plugin that uploaded scala code coverage to https://coveralls.io
 
+For example output [click here](https://coveralls.io/builds/6727)
+
 WARNING - This plugin is brand new - created 11 March 2013
 
 # Requirements
@@ -41,6 +43,8 @@ In the SBT console run the command `coveralls test`. This should run your test s
 
     Uploading to coveralls.io succeeded: Job #17.1
     https://coveralls.io/jobs/12207
+
+For example output [click here](https://coveralls.io/builds/6727)
 
 # License
 
