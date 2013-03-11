@@ -12,6 +12,8 @@ import org.codehaus.jackson.io.JsonStringEncoder
 trait CoverallPayloadWriter {
 
   def file:String
+  def repoToken:String
+
   val gen = generator(file)
   val stringEncoder = new JsonStringEncoder()
 
@@ -22,7 +24,7 @@ trait CoverallPayloadWriter {
 
   def start() {
     gen.writeStartObject
-    gen.writeStringField("repo_token", "4CvFveU5FxpkgSTYaHBZUTpNjmQlHjW9P")
+    gen.writeStringField("repo_token", repoToken)
 
     gen.writeRaw(
       """

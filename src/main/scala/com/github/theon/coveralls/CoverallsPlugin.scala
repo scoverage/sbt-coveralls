@@ -1,7 +1,8 @@
 package com.github.theon.coveralls
 
 import sbt.Keys._
-import sbt.{Command, Plugin}
+import sbt.{Path, SettingKey, Command, Plugin}
+import io.Source
 
 /**
  * Date: 10/03/2013
@@ -15,37 +16,40 @@ object CoverallsPlugin extends Plugin {
   val coverallsFile = "target/scala-2.10/coverage-report/coveralls.json"
 
   def coverallCommand = Command.args("coveralls", "test") { (state, args) =>
-    val arg = args.head
+    //Run the scct plugin to generate code coverage
+    Command.process("scct:test", state)
 
-    if (arg == "test") {
-      //Run the scct plugin to generate code coverage
-      Command.process("scct:test", state)
+    val baseDir = state.configuration.baseDirectory.getAbsolutePath
 
-      val baseDir = state.configuration.baseDirectory.getAbsolutePath
-
-      val reader = new CoberturaReader {
-        def file = baseDir + "/" + coberturaFile
-      }
-
-      val writer = new CoverallPayloadWriter {
-        def file = baseDir + "/" + coverallsFile
-      }
-
-      val coverallsClient = new CoverallsClient {}
-      val sourceFiles = reader.sourceFilenames()
-      writer.start()
-
-      sourceFiles.foreach(sourceFile => {
-        val sourceReport = reader.reportForSource(baseDir, sourceFile)
-        writer.addSouceFile(sourceReport)
-      })
-
-      writer.end()
-
-      val res = coverallsClient.postFile(coverallsFile)
-      println(res)
+    val reader = new CoberturaReader {
+      def file = baseDir + "/" + coberturaFile
     }
 
-    state
+    val userRepoToken = Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString
+    val writer = new CoverallPayloadWriter {
+      def repoToken = userRepoToken
+      def file = baseDir + "/" + coverallsFile
+    }
+
+    val coverallsClient = new CoverallsClient {}
+    val sourceFiles = reader.sourceFilenames()
+    writer.start()
+
+    sourceFiles.foreach(sourceFile => {
+      val sourceReport = reader.reportForSource(baseDir, sourceFile)
+      writer.addSouceFile(sourceReport)
+    })
+
+    writer.end()
+
+    val res = coverallsClient.postFile(coverallsFile)
+    if(res.error) {
+      println("Uploading to coveralls.io failed: " + res.message)
+      state.fail
+    } else {
+      println("Uploading to coveralls.io succeeded: " + res.message)
+      println(res.url)
+      state
+    }
   }
 }
