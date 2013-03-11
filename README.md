@@ -1,6 +1,6 @@
 # xsbt-coverall-plugin
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io). This plugin uses the awesome [scct](http://mtkopone.github.com/scct/) to generate the code coverage statistics.
+SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io). This plugin uses the awesome [scct](http://mtkopone.github.com/scct/) to generate the code coverage metrics.
 
 For example output [click here](https://coveralls.io/builds/6727)
 
