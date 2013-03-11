@@ -2,6 +2,8 @@
 
 SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io). This plugin uses the awesome [scct](http://mtkopone.github.com/scct/) to generate the code coverage metrics.
 
+For an example project that uses this plugin [click here](https://github.com/theon/scala-uri)
+
 For example output [click here](https://coveralls.io/builds/6727)
 
 **WARNING - This plugin is brand new - created 11 March 2013 - Likely to fall over**
