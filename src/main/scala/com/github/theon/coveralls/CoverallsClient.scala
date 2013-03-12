@@ -3,7 +3,8 @@ package com.github.theon.coveralls
 import io.Source
 import org.codehaus.jackson.map.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{MultiPart, Http}
+import scalaj.http.{HttpOptions, MultiPart, Http}
+import scalaj.http.HttpOptions._
 
 /**
  * Date: 10/03/2013
@@ -29,6 +30,7 @@ trait CoverallsClient {
     source.close()
 
     val res = Http.multipart(url, MultiPart("json_file","json_file.json", "application/json", bytes))
+      .option(connTimeout(5000), readTimeout(5000))
     mapper.readValue(res.asString, classOf[CoverallsResponse])
   }
 }

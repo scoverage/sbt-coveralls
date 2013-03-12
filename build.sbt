@@ -19,7 +19,8 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 libraryDependencies ++= Seq (
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.3",
   "com.fasterxml" % "jackson-module-scala" % "1.9.3",
-  "org.scalaj" %% "scalaj-http" % "0.3.6"
+  "org.scalaj" %% "scalaj-http" % "0.3.6",
+  "org.eclipse.jgit" % "org.eclipse.jgit" % "2.2.0.201212191850-r"
 )
 
 publishTo <<= version { (v: String) =>
