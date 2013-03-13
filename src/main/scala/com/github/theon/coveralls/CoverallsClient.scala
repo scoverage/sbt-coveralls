@@ -30,7 +30,7 @@ trait CoverallsClient {
     source.close()
 
     val res = Http.multipart(url, MultiPart("json_file","json_file.json", "application/json", bytes))
-      .option(connTimeout(5000), readTimeout(5000))
+      .option(connTimeout(5000)).option(readTimeout(5000))
     mapper.readValue(res.asString, classOf[CoverallsResponse])
   }
 }
