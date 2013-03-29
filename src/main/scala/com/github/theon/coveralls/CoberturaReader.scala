@@ -17,7 +17,7 @@ trait CoberturaReader {
   }
 
   /**
-   * @return Map[String,]
+   * @return Map[Int,Int]
    */
   protected def lineCoverage(sourceFile:String) = {
     val classElems = (elem \\ "class")

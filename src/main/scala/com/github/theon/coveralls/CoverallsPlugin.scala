@@ -25,7 +25,6 @@ object CoverallsPlugin extends Plugin {
       def file = baseDir + "/" + coberturaFile
     }
 
-    val userRepoToken = Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString
     val writer = new CoverallPayloadWriter {
       def repoToken = userRepoToken
       def file = baseDir + "/" + coverallsFile
@@ -50,6 +49,15 @@ object CoverallsPlugin extends Plugin {
       println("Uploading to coveralls.io succeeded: " + res.message)
       println(res.url)
       state
+    }
+  }
+
+  def userRepoToken = {
+    val sysEnvToken = sys.env("COVERALLS_REPO_TOKEN")
+    if(sysEnvToken.nonEmpty) {
+      sysEnvToken
+    } else {
+      Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString
     }
   }
 }

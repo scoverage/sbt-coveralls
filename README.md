@@ -44,6 +44,22 @@ In the SBT console run the command `coveralls test`. This should run your test s
 
 For example output [click here](https://coveralls.io/builds/6727)
 
+#Travis CI Integration
+
+1) If you haven't already installed the travis gem, run:
+
+    sudo gem install travis
+
+2) Change into your project directory and run:
+
+    travis encrypt COVERALLS_REPO_TOKEN=<your-coveralls-repo-token>  --add env.global
+
+3) Add the following to you travis.yml
+
+    script: "sbt coveralls test"
+
+Job done!
+
 #TODO
 
 For a list of features that going to be implemented see the [issue tracker](https://github.com/theon/xsbt-coveralls-plugin/issues?labels=enhancement&page=1&state=open)
