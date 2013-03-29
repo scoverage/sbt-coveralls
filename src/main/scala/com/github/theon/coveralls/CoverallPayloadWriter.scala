@@ -12,6 +12,7 @@ trait CoverallPayloadWriter {
 
   def file:String
   def repoToken:String
+  def travisJobId:Option[String]
 
   val gen = generator(file)
   val stringEncoder = new JsonStringEncoder()
@@ -24,6 +25,11 @@ trait CoverallPayloadWriter {
   def start(implicit state: State) {
     gen.writeStartObject
     gen.writeStringField("repo_token", repoToken)
+
+    if(travisJobId.isDefined){
+      gen.writeStringField("service_name", "travis-ci")
+      gen.writeStringField("service_job_id", travisJobId.get)
+    }
 
     addGitInfo
 

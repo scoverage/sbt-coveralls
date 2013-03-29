@@ -28,6 +28,7 @@ object CoverallsPlugin extends Plugin {
     val writer = new CoverallPayloadWriter {
       def repoToken = userRepoToken
       def file = baseDir + "/" + coverallsFile
+      def travisJobId = travisJobIdent
     }
 
     val coverallsClient = new CoverallsClient {}
@@ -51,6 +52,8 @@ object CoverallsPlugin extends Plugin {
       state
     }
   }
+
+  def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
 
   def userRepoToken =
     sys.env.getOrElse("COVERALLS_REPO_TOKEN", {

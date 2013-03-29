@@ -45,11 +45,11 @@ seq(ScctPlugin.instrumentSettings : _*)
 
     travis encrypt COVERALLS_REPO_TOKEN=<your-coveralls-repo-token>  --add env.global
 
-3) Add the following to you travis.yml
+3) Add the following to you `travis.yml`
 
     script: "sbt coveralls test"
 
-4) Job done! Commit to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
+4) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
 # Manual Usage
 
