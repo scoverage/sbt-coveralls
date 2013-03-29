@@ -32,7 +32,7 @@ object CoverallsPlugin extends Plugin {
 
     val coverallsClient = new CoverallsClient {}
     val sourceFiles = reader.sourceFilenames()
-    writer.start()
+    writer.start(state)
 
     sourceFiles.foreach(sourceFile => {
       val sourceReport = reader.reportForSource(baseDir, sourceFile)
@@ -43,21 +43,17 @@ object CoverallsPlugin extends Plugin {
 
     val res = coverallsClient.postFile(coverallsFile)
     if(res.error) {
-      println("Uploading to coveralls.io failed: " + res.message)
+      state.log.error("Uploading to coveralls.io failed: " + res.message)
       state.fail
     } else {
-      println("Uploading to coveralls.io succeeded: " + res.message)
-      println(res.url)
+      state.log.info("Uploading to coveralls.io succeeded: " + res.message)
+      state.log.info(res.url)
       state
     }
   }
 
-  def userRepoToken = {
-    val sysEnvToken = sys.env("COVERALLS_REPO_TOKEN")
-    if(sysEnvToken.nonEmpty) {
-      sysEnvToken
-    } else {
+  def userRepoToken =
+    sys.env.getOrElse("COVERALLS_REPO_TOKEN", {
       Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString
-    }
-  }
+    })
 }

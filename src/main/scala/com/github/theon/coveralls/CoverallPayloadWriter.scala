@@ -4,11 +4,10 @@ import java.io.File
 import io.Source
 import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 import org.codehaus.jackson.io.JsonStringEncoder
+import GitClient._
+import sbt.State
+import annotation.tailrec
 
-/**
- * Date: 10/03/2013
- * Time: 18:45
- */
 trait CoverallPayloadWriter {
 
   def file:String
@@ -22,34 +21,54 @@ trait CoverallPayloadWriter {
     factory.createJsonGenerator(new File(file), JsonEncoding.UTF8);
   }
 
-  def start() {
+  def start(implicit state: State) {
     gen.writeStartObject
     gen.writeStringField("repo_token", repoToken)
 
-    gen.writeRaw(
-      """
-        ,
-        "git": {
-          "head": {
-            "id": "",
-            "author_name": "Ian Forsey",
-            "author_email": "...",
-            "committer_name": "Ian Forsey",
-            "committer_email": "",
-            "message": ""
-          },
-          "branch": "master",
-          "remotes": [
-            {
-              "name": "origin",
-              "url": "git@github.com:theon/scala-uri.git"
-            }
-          ]
-        }
-      """)
+    addGitInfo
 
     gen.writeFieldName("source_files")
     gen.writeStartArray
+  }
+
+  private def addGitInfo(implicit state: State) {
+    gen.writeFieldName("git")
+    gen.writeStartObject
+
+    gen.writeFieldName("head")
+    gen.writeStartObject
+
+    gen.writeStringField("id", lastCommit("%h"))
+    gen.writeStringField("author_name", lastCommit("%an"))
+    gen.writeStringField("author_email", lastCommit("%ae"))
+    gen.writeStringField("committer_name", lastCommit("%cn"))
+    gen.writeStringField("committer_email", lastCommit("%ce"))
+    gen.writeStringField("message", lastCommit("%s"))
+
+    gen.writeEndObject
+
+    gen.writeStringField("branch", currentBranch)
+
+    gen.writeFieldName("remotes")
+    gen.writeStartArray
+
+    addGitRemotes(remotes)
+
+    gen.writeEndArray
+
+    gen.writeEndObject
+  }
+
+  @tailrec
+  private def addGitRemotes(remotes:Seq[String])(implicit state: State) {
+    if(remotes.isEmpty) return
+
+    gen.writeStartObject
+    gen.writeStringField("name", remotes.head)
+    gen.writeStringField("url", remoteUrl(remotes.head))
+    gen.writeEndObject
+
+    addGitRemotes(remotes.tail)
   }
 
   def addSouceFile(report:SourceFileReport) {

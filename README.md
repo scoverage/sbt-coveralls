@@ -1,12 +1,10 @@
 # xsbt-coverall-plugin
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io). This plugin uses [scct](http://mtkopone.github.com/scct/) to generate the code coverage metrics.
+SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scct](http://mtkopone.github.com/scct/) to generate the code coverage metrics.
 
 For an example project that uses this plugin [click here](https://github.com/theon/scala-uri)
 
 For example output [click here](https://coveralls.io/builds/6727)
-
-**WARNING - This plugin is brand new - created 11 March 2013 - Feel free to use, but don't expect it to be perfect yet**
 
 # Installation
 
@@ -33,18 +31,11 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 3) Register on `https://coveralls.io/` and get a repo token
 
-4) Write your token into the file `~/.sbt/coveralls.repo.token`
+4) Follow the instructions for either [Travis CI](#travis-ci-integration) or [Manual Usage](#manual-usage)
 
-# Usage
+# Travis CI Integration
 
-In the SBT console run the command `coveralls test`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
-
-    Uploading to coveralls.io succeeded: Job #17.1
-    https://coveralls.io/jobs/12207
-
-For example output [click here](https://coveralls.io/builds/6727)
-
-#Travis CI Integration
+`xsbt-coverall-plugin` can be run by [Travis CI](http://about.travis-ci.org/) by following these instructions:
 
 1) If you haven't already installed the travis gem, run:
 
@@ -58,9 +49,22 @@ For example output [click here](https://coveralls.io/builds/6727)
 
     script: "sbt coveralls test"
 
-Job done!
+4) Job done! Commit to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
-#TODO
+# Manual Usage
+
+1) Either write your token into the file `~/.sbt/coveralls.repo.token` or into the environment variable `COVERALLS_REPO_TOKEN`
+
+    export COVERALLS_REPO_TOKEN=<your-coveralls-repo-token>
+
+2) In the SBT console run the command `coveralls test`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
+
+    Uploading to coveralls.io succeeded: Job #17.1
+    https://coveralls.io/jobs/12207
+
+For example output [click here](https://coveralls.io/builds/6727)
+
+# TODO
 
 For a list of features that going to be implemented see the [issue tracker](https://github.com/theon/xsbt-coveralls-plugin/issues?labels=enhancement&page=1&state=open)
 
