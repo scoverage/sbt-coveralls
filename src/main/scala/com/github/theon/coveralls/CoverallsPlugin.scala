@@ -3,16 +3,27 @@ package com.github.theon.coveralls
 import sbt.Keys._
 import sbt._
 import io.Source
+import tools.nsc.Global
+import annotation.tailrec
 
 /**
  * Date: 10/03/2013
  * Time: 17:01
  */
 object CoverallsPlugin extends AbstractCoverallsPlugin {
-  def coberturaFile(state:State) = baseDir(state) + "target/scala-2.10/coverage-report/cobertura.xml"
-  def coverallsFile(state:State) = baseDir(state) + "target/scala-2.10/coverage-report/coveralls.json"
+  def coberturaFile(state:State) = findCoberturaFile("target/", state).head
+  def coverallsFile(state:State) = baseDir(state) + "target/coveralls.json"
   def apiHttpClient = new ScalaJHttpClient
   def baseDir(state:State) = state.configuration.baseDirectory.getAbsolutePath + "/"
+
+  //TODO: Get rid of this awful method. I make myself sick.
+  def findCoberturaFile(path:String, state:State):Set[String] = {
+    val f = new File(path)
+    val children = Option[Array[File]](f.listFiles())
+    if(f.name == "cobertura.xml") Set(f.getAbsolutePath)
+    else if(children.isEmpty) Set.empty
+    else children.get.foldLeft(Set[String]())((set, file) => set ++ findCoberturaFile(file.getAbsolutePath, state))
+  }
 }
 trait AbstractCoverallsPlugin extends Plugin {
 
@@ -23,6 +34,8 @@ trait AbstractCoverallsPlugin extends Plugin {
   def baseDir(state:State):String
 
   def apiHttpClient:HttpClient
+
+  def scctConfig = config("scct-test")
 
   def coverallsCommand = (state:State, args:Seq[String]) => {
     //Run the scct plugin to generate code coverage
