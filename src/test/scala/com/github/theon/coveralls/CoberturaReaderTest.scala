@@ -18,13 +18,13 @@ class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with ShouldMat
 
       "List the correct source files" in {
         val sourceFiles = reader.sourceFilenames()
-        sourceFiles should contain ("TestSourceFile.scala")
-        sourceFiles should contain ("TestSourceFile2.scala")
+        sourceFiles should contain ("src/test/resources/TestSourceFile.scala")
+        sourceFiles should contain ("src/test/resources/TestSourceFile2.scala")
       }
 
       "return a valid SourceFileReport instance" in {
-        val fileReport = reader.reportForSource("src/test/resources", "TestSourceFile.scala")
-        fileReport.file should equal("TestSourceFile.scala")
+        val fileReport = reader.reportForSource("", "src/test/resources/TestSourceFile.scala")
+        fileReport.file should equal("src/test/resources/TestSourceFile.scala")
         fileReport.lineCoverage should equal(
           List(None, None, None, Some(1), Some(1), Some(2), None, None, Some(1), Some(1))
         )

@@ -23,7 +23,8 @@ libraryDependencies ++= Seq (
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "1.9.1" % "test"
+  "org.scalatest" %% "scalatest" % "1.9.1" % "test",
+  "org.mockito" % "mockito-core" % "1.9.5"
 )
 
 seq(ScctPlugin.instrumentSettings : _*)

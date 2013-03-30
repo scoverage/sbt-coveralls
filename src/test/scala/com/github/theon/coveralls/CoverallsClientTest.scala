@@ -10,25 +10,10 @@ import scalaj.http.Http.Request
  */
 class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
 
-  def newTestHttpClient = new HttpClient {
-    var dataIn:String = _
-
-    def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = {
-      dataIn = new String(data)
-      """
-        {
-          "message":"test message",
-          "error": false,
-          "url": "https://github.com/theon/xsbt-coveralls-plugin"
-        }
-      """
-    }
-  }
-
   "CoverallsClient" when {
     "making API call" should {
       "return a valid response for success" in {
-        val testHttpClient = newTestHttpClient
+        val testHttpClient = new TestSuccessHttpClient()
         val coverallsClient = new CoverallsClient {
           def httpClient = testHttpClient
         }

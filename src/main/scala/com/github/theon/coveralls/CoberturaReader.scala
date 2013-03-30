@@ -32,7 +32,7 @@ trait CoberturaReader {
   }
 
   def reportForSource(baseDir:String, source:String) = {
-    val lineCount = Source.fromFile(baseDir + "/" + source).getLines().size
+    val lineCount = Source.fromFile(baseDir + source).getLines().size
     val lineHitMap:Map[Int,Int] = lineCoverage(source)
     val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i+1))
 

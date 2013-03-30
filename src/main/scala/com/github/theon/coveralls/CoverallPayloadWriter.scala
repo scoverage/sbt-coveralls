@@ -79,7 +79,7 @@ trait CoverallPayloadWriter {
     addGitRemotes(remotes.tail)
   }
 
-  def addSouceFile(report:SourceFileReport) {
+  def addSourceFile(report:SourceFileReport) {
     gen.writeStartObject
     gen.writeStringField("name", report.file)
 

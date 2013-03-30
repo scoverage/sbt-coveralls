@@ -70,7 +70,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
         val w = new StringWriter()
         val coverallsW = coverallsWriter(w, "testRepoToken", None)
 
-        coverallsW.addSouceFile (
+        coverallsW.addSourceFile (
           SourceFileReport("src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
         )
         coverallsW.flush

@@ -1,51 +1,58 @@
 package com.github.theon.coveralls
 
 import sbt.Keys._
-import sbt.{Path, SettingKey, Command, Plugin}
+import sbt._
 import io.Source
 
 /**
  * Date: 10/03/2013
  * Time: 17:01
  */
-object CoverallsPlugin extends Plugin {
+object CoverallsPlugin extends AbstractCoverallsPlugin {
+  def coberturaFile(state:State) = baseDir(state) + "target/scala-2.10/coverage-report/cobertura.xml"
+  def coverallsFile(state:State) = baseDir(state) + "target/scala-2.10/coverage-report/coveralls.json"
+  def apiHttpClient = new ScalaJHttpClient
+  def baseDir(state:State) = state.configuration.baseDirectory.getAbsolutePath + "/"
+}
+trait AbstractCoverallsPlugin extends Plugin {
 
-  override lazy val settings = Seq(commands += coverallCommand)
+  override lazy val settings = Seq(commands += Command.args("coveralls", "test")(coverallsCommand))
 
-  val coberturaFile = "target/scala-2.10/coverage-report/cobertura.xml"
-  val coverallsFile = "target/scala-2.10/coverage-report/coveralls.json"
+  def coberturaFile(state:State):String
+  def coverallsFile(state:State):String
+  def baseDir(state:State):String
 
-  def coverallCommand = Command.args("coveralls", "test") { (state, args) =>
+  def apiHttpClient:HttpClient
+
+  def coverallsCommand = (state:State, args:Seq[String]) => {
     //Run the scct plugin to generate code coverage
-    Command.process("scct:test", state)
-
-    val baseDir = state.configuration.baseDirectory.getAbsolutePath
+      Command.process("scct:test", state)
 
     val reader = new CoberturaReader {
-      def file = baseDir + "/" + coberturaFile
+      def file = coberturaFile(state)
     }
 
     val writer = new CoverallPayloadWriter {
       def repoToken = userRepoToken
-      def file = baseDir + "/" + coverallsFile
+      def file = coverallsFile(state)
       def travisJobId = travisJobIdent
       val gitClient = new GitClient {}
     }
 
     val coverallsClient = new CoverallsClient {
-      def httpClient = new ScalaJHttpClient
+      def httpClient = apiHttpClient
     }
     val sourceFiles = reader.sourceFilenames()
     writer.start(state.log)
 
     sourceFiles.foreach(sourceFile => {
-      val sourceReport = reader.reportForSource(baseDir, sourceFile)
-      writer.addSouceFile(sourceReport)
+      val sourceReport = reader.reportForSource(baseDir(state), sourceFile)
+      writer.addSourceFile(sourceReport)
     })
 
     writer.end()
 
-    val res = coverallsClient.postFile(coverallsFile)
+    val res = coverallsClient.postFile(coverallsFile(state))
     if(res.error) {
       state.log.error("Uploading to coveralls.io failed: " + res.message)
       state.fail
