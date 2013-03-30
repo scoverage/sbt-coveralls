@@ -5,6 +5,6 @@ resolvers ++= Seq(
   "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
 )
 
-offline := true
-
 addSbtPlugin("reaktor" %% "sbt-scct" % "0.2-SNAPSHOT")
+
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin-meta" % "0.0.1-SNAPSHOT")
