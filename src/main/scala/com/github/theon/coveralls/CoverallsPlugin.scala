@@ -66,7 +66,13 @@ trait AbstractCoverallsPlugin extends Plugin {
   def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
 
   def userRepoToken =
-    sys.env.getOrElse("COVERALLS_REPO_TOKEN", {
-      Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString
-    })
+    sys.env.get("COVERALLS_REPO_TOKEN").orElse(userRepoTokenFromFile)
+
+  def userRepoTokenFromFile = {
+    try {
+      Some(Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString)
+    } catch {
+      case e:Exception => None
+    }
+  }
 }

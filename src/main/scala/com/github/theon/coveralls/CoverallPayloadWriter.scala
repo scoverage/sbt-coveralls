@@ -11,7 +11,7 @@ import annotation.tailrec
 trait CoverallPayloadWriter {
 
   def file:String
-  def repoToken:String
+  def repoToken:Option[String]
   def travisJobId:Option[String]
   val gitClient:GitClient
 
@@ -26,7 +26,10 @@ trait CoverallPayloadWriter {
 
   def start(implicit log: Logger) {
     gen.writeStartObject
-    gen.writeStringField("repo_token", repoToken)
+
+    if(repoToken.isDefined) {
+      gen.writeStringField("repo_token", repoToken.get)
+    }
 
     if(travisJobId.isDefined){
       gen.writeStringField("service_name", "travis-ci")
