@@ -1,5 +1,8 @@
 # xsbt-coverall-plugin
 
+[![Build Status](https://travis-ci.org/theon/xsbt-coveralls-plugin.png?branch=master)](https://travis-ci.org/theon/xsbt-coveralls-plugin)
+[![Coverage Status](https://coveralls.io/repos/theon/xsbt-coveralls-plugin/badge.png?branch=master)](https://coveralls.io/r/theon/xsbt-coveralls-plugin)
+
 SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scct](http://mtkopone.github.com/scct/) to generate the code coverage metrics.
 
 For an example project that uses this plugin [click here](https://github.com/theon/scala-uri)
@@ -14,13 +17,12 @@ For example output [click here](https://coveralls.io/builds/6727)
 resolvers += Classpaths.typesafeResolver
 
 resolvers ++= Seq(
-    "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
-    "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
+    "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo"
 )
 
 addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.1-SNAPSHOT")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.1")
 ```
 
 2) Add the following to your `build.sbt`
@@ -55,6 +57,23 @@ seq(ScctPlugin.instrumentSettings : _*)
     https://coveralls.io/jobs/12207
 
 For example output [click here](https://coveralls.io/builds/6727)
+
+# SNAPSHOT Builds
+
+Add the following to your `project/build.sbt` file
+
+```scala
+resolvers += Classpaths.typesafeResolver
+
+resolvers ++= Seq(
+    "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
+    "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
+)
+
+addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
+
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.2-SNAPSHOT")
+```
 
 # TODO
 
