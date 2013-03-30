@@ -29,11 +29,14 @@ object CoverallsPlugin extends Plugin {
       def repoToken = userRepoToken
       def file = baseDir + "/" + coverallsFile
       def travisJobId = travisJobIdent
+      val gitClient = new GitClient {}
     }
 
-    val coverallsClient = new CoverallsClient {}
+    val coverallsClient = new CoverallsClient {
+      def httpClient = new ScalaJHttpClient
+    }
     val sourceFiles = reader.sourceFilenames()
-    writer.start(state)
+    writer.start(state.log)
 
     sourceFiles.foreach(sourceFile => {
       val sourceReport = reader.reportForSource(baseDir, sourceFile)

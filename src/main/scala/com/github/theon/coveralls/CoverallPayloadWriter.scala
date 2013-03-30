@@ -4,8 +4,8 @@ import java.io.File
 import io.Source
 import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 import org.codehaus.jackson.io.JsonStringEncoder
-import GitClient._
-import sbt.State
+
+import sbt.{Logger, State}
 import annotation.tailrec
 
 trait CoverallPayloadWriter {
@@ -13,16 +13,18 @@ trait CoverallPayloadWriter {
   def file:String
   def repoToken:String
   def travisJobId:Option[String]
+  val gitClient:GitClient
+
+  import gitClient._
 
   val gen = generator(file)
-  val stringEncoder = new JsonStringEncoder()
 
   def generator(file:String) = {
     val factory = new JsonFactory()
-    factory.createJsonGenerator(new File(file), JsonEncoding.UTF8);
+    factory.createJsonGenerator(new File(file), JsonEncoding.UTF8)
   }
 
-  def start(implicit state: State) {
+  def start(implicit log: Logger) {
     gen.writeStartObject
     gen.writeStringField("repo_token", repoToken)
 
@@ -37,14 +39,14 @@ trait CoverallPayloadWriter {
     gen.writeStartArray
   }
 
-  private def addGitInfo(implicit state: State) {
+  private def addGitInfo(implicit log: Logger) {
     gen.writeFieldName("git")
     gen.writeStartObject
 
     gen.writeFieldName("head")
     gen.writeStartObject
 
-    gen.writeStringField("id", lastCommit("%h"))
+    gen.writeStringField("id", lastCommit("%H"))
     gen.writeStringField("author_name", lastCommit("%an"))
     gen.writeStringField("author_email", lastCommit("%ae"))
     gen.writeStringField("committer_name", lastCommit("%cn"))
@@ -66,7 +68,7 @@ trait CoverallPayloadWriter {
   }
 
   @tailrec
-  private def addGitRemotes(remotes:Seq[String])(implicit state: State) {
+  private def addGitRemotes(remotes:Seq[String])(implicit log: Logger) {
     if(remotes.isEmpty) return
 
     gen.writeStartObject
@@ -99,6 +101,10 @@ trait CoverallPayloadWriter {
   def end() {
     gen.writeEndArray
     gen.writeEndObject
-    gen.flush()
+    gen.flush
+  }
+
+  def flush {
+    gen.flush
   }
 }
