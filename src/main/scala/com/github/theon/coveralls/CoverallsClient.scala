@@ -45,6 +45,6 @@ trait HttpClient {
 class ScalaJHttpClient extends HttpClient {
   def multipart(url:String, name:String, filename:String, mime:String, data:Array[Byte]) =
     Http.multipart(url, MultiPart(name, filename, mime, data))
-      .option(connTimeout(5000)).option(readTimeout(5000))
+      .option(connTimeout(60000)).option(readTimeout(60000))
       .asString
 }
