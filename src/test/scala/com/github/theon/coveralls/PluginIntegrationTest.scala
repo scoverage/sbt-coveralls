@@ -15,6 +15,8 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
     def coverallsFile(state:State) = "/tmp/xsbt-coveralls-plugin/coveralls.json"
     def apiHttpClient = new TestSuccessHttpClient()
     def baseDir(state:State) = ""
+    def userRepoToken = Some("test-repo-token")
+    def travisJobIdent = None
   }
 
   object FailureTestCoverallsPlugin extends AbstractCoverallsPlugin {
@@ -22,6 +24,17 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
     def coverallsFile(state:State) = "/tmp/xsbt-coveralls-plugin/coveralls.json"
     def apiHttpClient = new TestFailureHttpClient()
     def baseDir(state:State) = ""
+    def userRepoToken = Some("test-repo-token")
+    def travisJobIdent = None
+  }
+
+  object NoRepoTokenOfTravisJobIdTestCoverallsPlugin extends AbstractCoverallsPlugin {
+    def coberturaFile(state:State) = new File("").getAbsolutePath + "/src/test/resources/test_cobertura.xml"
+    def coverallsFile(state:State) = "/tmp/xsbt-coveralls-plugin/coveralls.json"
+    def apiHttpClient = new TestFailureHttpClient()
+    def baseDir(state:State) = ""
+    def userRepoToken = None
+    def travisJobIdent = None
   }
 
   "Coveralls Plugin" when {
@@ -46,6 +59,17 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
         FailureTestCoverallsPlugin.coverallsCommand.apply(state, Nil)
 
         logger.messages(Level.Error) should contain("Uploading to coveralls.io failed: test error message when there was an error")
+      }
+    }
+
+    "No Repo Token or Travis Job Id" should {
+      "display some useful information to the user" in {
+        val logger = new TestLogger()
+        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
+
+        NoRepoTokenOfTravisJobIdTestCoverallsPlugin.coverallsCommand.apply(state, Nil)
+
+        logger.messages(Level.Error) should contain("Could not find coveralls repo token or determine travis job id")
       }
     }
   }

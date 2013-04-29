@@ -3,7 +3,7 @@ package com.github.theon.coveralls
 import io.Source
 import org.codehaus.jackson.map.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{MultiPart, HttpOptions, Http}
+import scalaj.http.{HttpException, MultiPart, HttpOptions, Http}
 import scalaj.http.HttpOptions._
 import scalaj.http.Http.Request
 
@@ -43,8 +43,11 @@ trait HttpClient {
 }
 
 class ScalaJHttpClient extends HttpClient {
-  def multipart(url:String, name:String, filename:String, mime:String, data:Array[Byte]) =
+  def multipart(url:String, name:String, filename:String, mime:String, data:Array[Byte]) = try {
     Http.multipart(url, MultiPart(name, filename, mime, data))
       .option(connTimeout(60000)).option(readTimeout(60000))
       .asString
+  } catch {
+    case e:HttpException => e.body
+  }
 }
