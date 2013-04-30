@@ -17,9 +17,7 @@ object CoverallsPlugin extends AbstractCoverallsPlugin {
   def baseDir(state:State) = state.configuration.baseDirectory.getAbsolutePath + "/"
 
   def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
-
-  def userRepoToken =
-    sys.env.get("COVERALLS_REPO_TOKEN").orElse(userRepoTokenFromFile)
+  def userRepoToken = sys.env.get("COVERALLS_REPO_TOKEN").orElse(userRepoTokenFromFile)
 
   //TODO: Get rid of this awful method. I make myself sick.
   def findCoberturaFile(path:String, state:State):Set[String] = {
@@ -46,7 +44,7 @@ trait AbstractCoverallsPlugin extends Plugin {
     if(travisJobIdent.isEmpty && userRepoToken.isEmpty) {
       state.log.error("Could not find coveralls repo token or determine travis job id")
       state.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
-      state.log.error(" - Otherwise, make sure the COVERALLS_REPO_TOKEN env variable is set")
+      state.log.error(" - Otherwise, make sure the COVERALLS_REPO_TOKEN env variable is set or that the repo token is written inside " + userRepoTokenFilePath)
       state.fail
     } else {
       //Run the scct plugin to generate code coverage
@@ -79,6 +77,9 @@ trait AbstractCoverallsPlugin extends Plugin {
       val res = coverallsClient.postFile(coverallsFile(state))
       if(res.error) {
         state.log.error("Uploading to coveralls.io failed: " + res.message)
+        if(res.message.contains("Build processing error")) {
+          state.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
+        }
         state.fail
       } else {
         state.log.info("Uploading to coveralls.io succeeded: " + res.message)
@@ -91,9 +92,10 @@ trait AbstractCoverallsPlugin extends Plugin {
   def travisJobIdent:Option[String]
   def userRepoToken:Option[String]
 
+  def userRepoTokenFilePath = Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token"
   def userRepoTokenFromFile = {
     try {
-      Some(Source.fromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token").mkString)
+      Some(Source.fromFile(userRepoTokenFilePath).mkString)
     } catch {
       case e:Exception => None
     }
