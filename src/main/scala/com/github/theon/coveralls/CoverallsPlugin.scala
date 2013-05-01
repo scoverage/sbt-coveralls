@@ -84,6 +84,7 @@ trait AbstractCoverallsPlugin extends Plugin {
       } else {
         state.log.info("Uploading to coveralls.io succeeded: " + res.message)
         state.log.info(res.url)
+        state.log.info("(results may not appear immediately)")
         state
       }
     }
@@ -95,7 +96,7 @@ trait AbstractCoverallsPlugin extends Plugin {
   def userRepoTokenFilePath = Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token"
   def userRepoTokenFromFile = {
     try {
-      Some(Source.fromFile(userRepoTokenFilePath).mkString)
+      Some(Source.fromFile(userRepoTokenFilePath).mkString.trim)
     } catch {
       case e:Exception => None
     }
