@@ -22,7 +22,7 @@ resolvers ++= Seq(
 
 addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.1")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.2")
 ```
 
 2) Add the following to your `build.sbt`
@@ -72,7 +72,7 @@ resolvers ++= Seq(
 
 addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.2-SNAPSHOT")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.3-SNAPSHOT")
 ```
 
 # TODO
