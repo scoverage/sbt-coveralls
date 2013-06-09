@@ -27,7 +27,7 @@ trait CoverallsClient {
    * TODO: Performance improvement - don't read the whole file into memory - stream it from disk
    */
   def postFile(file:String) = {
-    val source = Source.fromFile(file)
+    val source = Source.fromFile(file)(scala.io.Codec.ISO8859)
     val bytes = source.map(_.toByte).toArray
     source.close()
 

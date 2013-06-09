@@ -25,6 +25,19 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
         response.error should equal(false)
         response.url should equal("https://github.com/theon/xsbt-coveralls-plugin")
       }
+      "return a valid response with Korean for success" in {
+        val testHttpClient = new TestSuccessHttpClient()
+        val coverallsClient = new CoverallsClient {
+          def httpClient = testHttpClient
+        }
+
+        val response = coverallsClient.postFile("src/test/resources/TestSourceFileWithKorean.scala")
+
+        testHttpClient.dataIn should equal("/**\n * 한글 테스트\n */\nclass TestSourceFile {\n\n\n\n\n\n}\n")
+        response.message should equal("test message")
+        response.error should equal(false)
+        response.url should equal("https://github.com/theon/xsbt-coveralls-plugin")
+      }
     }
   }
 }
