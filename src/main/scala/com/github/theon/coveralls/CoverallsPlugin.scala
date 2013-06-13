@@ -2,7 +2,7 @@ package com.github.theon.coveralls
 
 import sbt.Keys._
 import sbt._
-import io.Source
+import scala.io.{Codec, Source}
 import tools.nsc.Global
 import annotation.tailrec
 
@@ -40,7 +40,15 @@ trait AbstractCoverallsPlugin extends Plugin {
 
   def scctConfig = config("scct-test")
 
+  val encPrefix = "enc="
+
   def coverallsCommand = (state:State, args:Seq[String]) => {
+
+    val encoding = args.
+        find(_.startsWith(encPrefix)).
+        map(e => Codec(e.replace(encPrefix, ""))).
+        getOrElse(Codec("UTF-8"))
+
     if(travisJobIdent.isEmpty && userRepoToken.isEmpty) {
       state.log.error("Could not find coveralls repo token or determine travis job id")
       state.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
@@ -74,7 +82,7 @@ trait AbstractCoverallsPlugin extends Plugin {
 
       writer.end()
 
-      val res = coverallsClient.postFile(coverallsFile(state))
+      val res = coverallsClient.postFile(coverallsFile(state), encoding)
       if(res.error) {
         state.log.error("Uploading to coveralls.io failed: " + res.message)
         if(res.message.contains("Build processing error")) {

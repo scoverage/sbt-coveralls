@@ -1,6 +1,6 @@
 package com.github.theon.coveralls
 
-import io.Source
+import scala.io.{Codec, Source}
 import org.codehaus.jackson.map.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scalaj.http.{HttpException, MultiPart, HttpOptions, Http}
@@ -26,8 +26,8 @@ trait CoverallsClient {
   /**
    * TODO: Performance improvement - don't read the whole file into memory - stream it from disk
    */
-  def postFile(file:String) = {
-    val source = Source.fromFile(file)(scala.io.Codec.ISO8859)
+  def postFile(file: String, encoding: Codec) = {
+    val source = Source.fromFile(file)(encoding)
     val bytes = source.map(_.toByte).toArray
     source.close()
 

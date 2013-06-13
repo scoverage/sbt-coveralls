@@ -58,6 +58,12 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 For example output [click here](https://coveralls.io/builds/6727)
 
+# Custom Encoding
+
+By default `xsbt-coveralls-plugin` uses `UTF-8` encoding. To use a different encoding run the command
+
+    coveralls test enc=ISO-8859-1
+
 # SNAPSHOT Builds
 
 Add the following to your `project/build.sbt` file
