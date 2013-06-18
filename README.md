@@ -51,7 +51,7 @@ seq(ScctPlugin.instrumentSettings : _*)
 
     export COVERALLS_REPO_TOKEN=<your-coveralls-repo-token>
 
-2) In the SBT console run the command `coveralls test`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
+2) In the SBT console run the command `coveralls`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
 
     Uploading to coveralls.io succeeded: Job #17.1
     https://coveralls.io/jobs/12207
