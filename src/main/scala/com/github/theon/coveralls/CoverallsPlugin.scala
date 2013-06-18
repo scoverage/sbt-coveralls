@@ -5,49 +5,46 @@ import sbt._
 import scala.io.{Codec, Source}
 import tools.nsc.Global
 import annotation.tailrec
+import scala.Some
+import scala.Some
+import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys
 
 /**
  * Date: 10/03/2013
  * Time: 17:01
  */
-object CoverallsPlugin extends AbstractCoverallsPlugin {
-  def coberturaFile(state:State) = findCoberturaFile("target/", state).head
-  def coverallsFile(state:State) = baseDir(state) + "target/coveralls.json"
+object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
+
+  import CoverallsKeys._
+
   def apiHttpClient = new ScalaJHttpClient
-  def baseDir(state:State) = state.configuration.baseDirectory.getAbsolutePath + "/"
 
   def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
   def userRepoToken = sys.env.get("COVERALLS_REPO_TOKEN").orElse(userRepoTokenFromFile)
 
-  //TODO: Get rid of this awful method. I make myself sick.
-  def findCoberturaFile(path:String, state:State):Set[String] = {
-    val f = new File(path)
-    val children = Option[Array[File]](f.listFiles())
-    if(f.name == "cobertura.xml") Set(f.getAbsolutePath)
-    else if(children.isEmpty) Set.empty
-    else children.get.foldLeft(Set[String]())((set, file) => set ++ findCoberturaFile(file.getAbsolutePath, state))
+  object CoverallsKeys {
+    val coverallsTask = TaskKey[Unit]("coveralls", "Generate coveralls reports")
+    val encoding = SettingKey[String]("encoding")
   }
+
+  override lazy val settings = Seq (
+    encoding := "UTF-8",
+    coverallsTask <<= (state, baseDirectory, crossTarget, encoding) map {
+      (state, baseDirectory, crossTarget, encoding) => {
+        val coberturaFile = crossTarget.getAbsolutePath + "/coverage-report/cobertura.xml"
+        val coverallsFile = crossTarget.getAbsolutePath + "/coveralls.json"
+        val projectDirectory = baseDirectory.getAbsoluteFile + "/"
+        coverallsCommand(state, projectDirectory, coberturaFile, coverallsFile, encoding)
+      }
+    }
+  )
 }
-trait AbstractCoverallsPlugin extends Plugin {
 
-  override lazy val settings = Seq(commands += Command.args("coveralls", "test")(coverallsCommand))
-
-  def coberturaFile(state:State):String
-  def coverallsFile(state:State):String
-  def baseDir(state:State):String
+trait AbstractCoverallsPlugin  {
 
   def apiHttpClient:HttpClient
 
-  def scctConfig = config("scct-test")
-
-  val encPrefix = "enc="
-
-  def coverallsCommand = (state:State, args:Seq[String]) => {
-
-    val encoding = args.
-        find(_.startsWith(encPrefix)).
-        map(e => Codec(e.replace(encPrefix, ""))).
-        getOrElse(Codec("UTF-8"))
+  def coverallsCommand(state: State, projectDirectory: String, coberturaFile: String, coverallsFile: String, encoding: String) = {
 
     if(travisJobIdent.isEmpty && userRepoToken.isEmpty) {
       state.log.error("Could not find coveralls repo token or determine travis job id")
@@ -55,16 +52,17 @@ trait AbstractCoverallsPlugin extends Plugin {
       state.log.error(" - Otherwise, make sure the COVERALLS_REPO_TOKEN env variable is set or that the repo token is written inside " + userRepoTokenFilePath)
       state.fail
     } else {
+
       //Run the scct plugin to generate code coverage
       Command.process("scct:test", state)
 
       val reader = new CoberturaReader {
-        def file = coberturaFile(state)
+        def file = coberturaFile
       }
 
       val writer = new CoverallPayloadWriter {
         def repoToken = userRepoToken
-        def file = coverallsFile(state)
+        def file = coverallsFile
         def travisJobId = travisJobIdent
         val gitClient = new GitClient {}
       }
@@ -76,13 +74,13 @@ trait AbstractCoverallsPlugin extends Plugin {
       writer.start(state.log)
 
       sourceFiles.foreach(sourceFile => {
-        val sourceReport = reader.reportForSource(baseDir(state), sourceFile)
+        val sourceReport = reader.reportForSource(projectDirectory, sourceFile)
         writer.addSourceFile(sourceReport)
       })
 
       writer.end()
 
-      val res = coverallsClient.postFile(coverallsFile(state), encoding)
+      val res = coverallsClient.postFile(coverallsFile, Codec(encoding))
       if(res.error) {
         state.log.error("Uploading to coveralls.io failed: " + res.message)
         if(res.message.contains("Build processing error")) {
@@ -93,7 +91,6 @@ trait AbstractCoverallsPlugin extends Plugin {
         state.log.info("Uploading to coveralls.io succeeded: " + res.message)
         state.log.info(res.url)
         state.log.info("(results may not appear immediately)")
-        state
       }
     }
   }

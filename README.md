@@ -41,7 +41,7 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 1) Add the following to you `travis.yml`
 
-    script: "sbt coveralls test"
+    script: "sbt coveralls"
 
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
@@ -60,9 +60,11 @@ For example output [click here](https://coveralls.io/builds/6727)
 
 # Custom Encoding
 
-By default `xsbt-coveralls-plugin` uses `UTF-8` encoding. To use a different encoding run the command
+By default `xsbt-coveralls-plugin` uses `UTF-8` encoding. To use a different encoding, add the following to your `build.sbt`
 
-    coveralls test enc=ISO-8859-1
+    import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+
+    encoding := "ISO-8859-1"
 
 # SNAPSHOT Builds
 
