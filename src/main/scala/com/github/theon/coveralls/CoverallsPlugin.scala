@@ -60,11 +60,11 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
   )
 }
 
-case class CoberturaFile(file: File, projectBase: File)
+case class CoberturaFile(file: File, projectBase: File) {
+  def exists = file.exists
+}
 
 trait AbstractCoverallsPlugin  {
-
-  import CoverallsKeys._
 
   def apiHttpClient:HttpClient
 
@@ -74,15 +74,15 @@ trait AbstractCoverallsPlugin  {
       val crossTargetOpt = (crossTarget in LocalProject(p)).get(structure.data)
       val baseDir = (baseDirectory in LocalProject(p)).get(structure.data)
 
-      crossTargetOpt.flatMap { crossTarg =>
+      crossTargetOpt.map { crossTarg =>
         val coberFile = new File(crossTarg + File.separator + "coverage-report" + File.separator + "cobertura.xml")
-        if (coberFile.exists) Some(CoberturaFile(coberFile, baseDir.get)) else None
+        CoberturaFile(coberFile, baseDir.get)
       }
     }
   }
 
   def coverallsCommand(state: State,
-                        projectDirectory: File,
+                        rootProjectDir: File,
                         rootCoberturaFile: File,
                         childCoberturaFiles: Seq[CoberturaFile],
                         coverallsFile: File,
@@ -116,11 +116,8 @@ trait AbstractCoverallsPlugin  {
 
     writer.start(state.log)
 
-    val allCoberturaFiles = if(rootCoberturaFile.exists) {
-      CoberturaFile(rootCoberturaFile, projectDirectory) +: childCoberturaFiles
-    } else {
-      childCoberturaFiles
-    }
+    val allCoberturaFiles =
+      (CoberturaFile(rootCoberturaFile, rootProjectDir) +: childCoberturaFiles).filter(_.exists)
 
     if(allCoberturaFiles.isEmpty) {
       state.log.error("Could not find any cobertura.xml files. Has SCCT run?")
@@ -128,7 +125,7 @@ trait AbstractCoverallsPlugin  {
     }
 
     allCoberturaFiles.foreach(coberturaFile => {
-      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase, enc)
+      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase, rootProjectDir, enc)
       val sourceFiles = reader.sourceFilenames
 
       sourceFiles.foreach(sourceFile => {

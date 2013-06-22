@@ -8,14 +8,15 @@ import java.io.File
  * Date: 10/03/2013
  * Time: 17:42
  */
-class CoberturaReader(val file: File, val baseDirFile: File, enc: Codec) {
+class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: File, enc: Codec) {
 
-  val elem = XML.loadFile(file)
+  val elem = XML.loadFile(coberturaFile)
 
-  val baseDir = baseDirFile.getAbsolutePath + File.separator
+  val rootProjectDir = rootProject.getAbsolutePath + File.separator
+  val childProjectDir = childProjectRoot.getAbsolutePath + File.separator
 
   def sourceFilenames = {
-    elem \\ "class" \\ "@filename"  map { baseDir + _.toString } toSet
+    elem \\ "class" \\ "@filename"  map { childProjectDir + _.toString } toSet
   }
 
   /**
@@ -23,7 +24,7 @@ class CoberturaReader(val file: File, val baseDirFile: File, enc: Codec) {
    */
   protected def lineCoverage(sourceFile: String) = {
     val classElems = (elem \\ "class")
-    val fileElems = classElems filter { n:Node => (baseDir + (n \\ "@filename").toString) == sourceFile }
+    val fileElems = classElems filter { n:Node => (childProjectDir + (n \\ "@filename").toString) == sourceFile }
     val lineElems = fileElems.flatMap(n => {
       n \\ "line"
     })
@@ -41,10 +42,12 @@ class CoberturaReader(val file: File, val baseDirFile: File, enc: Codec) {
     val lineHitMap = lineCoverage(source)
     val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
 
-    SourceFileReport(source, fullLineHit.toList)
+    SourceFileReport(rootProjectDir, source, fullLineHit.toList)
   }
 }
 
 case class CoberturaReaderException(cause: Exception) extends Exception(cause)
 
-case class SourceFileReport(file: String, lineCoverage: List[Option[Int]])
+case class SourceFileReport(projectRoot: String, file: String, lineCoverage: List[Option[Int]]) {
+  def fileRel = file.replace(projectRoot, "")
+}

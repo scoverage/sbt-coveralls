@@ -9,6 +9,13 @@ For an example project that uses this plugin [click here](https://github.com/the
 
 For example output [click here](https://coveralls.io/builds/6727)
 
+## New in 0.0.3-SNAPSHOT
+
+ * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your `build.sbt`. This is to support multi project builds.
+ * Bug Fix: unicode characters encoded correctly
+ * New ways to [specify your repo token](#specifying-your-repo-token)
+ * Support for [different encodings](#custom-encoding) of source files
+
 ## Installation
 
 1) Adding the following to your `project/build.sbt` file
@@ -94,7 +101,7 @@ Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 
 ## Custom Encoding
 
-By default `xsbt-coveralls-plugin` uses `UTF-8` encoding. To use a different encoding, add the following to your `build.sbt`
+By default `xsbt-coveralls-plugin` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
 
 ```scala
 import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._

@@ -37,7 +37,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
 
       "generate a correct starting payload with travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Codec("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Codec("UTF-8")  )
 
         coverallsW.start
         coverallsW.flush
@@ -67,8 +67,10 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
         val w = new StringWriter()
         val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Codec("UTF-8"))
 
+        val projectRoot = new File("").getAbsolutePath + "/"
+
         coverallsW.addSourceFile (
-          SourceFileReport("src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
+          SourceFileReport(projectRoot, projectRoot + "src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
         )
         coverallsW.flush
 

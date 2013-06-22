@@ -79,7 +79,7 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
 
   def addSourceFile(report: SourceFileReport) {
     gen.writeStartObject
-    gen.writeStringField("name", report.file)
+    gen.writeStringField("name", report.fileRel)
 
     val source = Source.fromFile(report.file)(enc)
     val sourceCode = source.mkString

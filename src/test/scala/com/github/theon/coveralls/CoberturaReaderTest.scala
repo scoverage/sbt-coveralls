@@ -11,7 +11,7 @@ import scala.io.Codec
  */
 class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
 
-  val reader = new CoberturaReader(new File("src/test/resources/test_cobertura.xml"), new File(""), Codec("UTF-8"))
+  val reader = new CoberturaReader(new File("src/test/resources/test_cobertura.xml"), new File(""), new File(""), Codec("UTF-8"))
 
   "CoberturaReader" when {
     "reading a Cobertura file" should {
@@ -25,6 +25,7 @@ class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with ShouldMat
       "return a valid SourceFileReport instance" in {
         val fileReport = reader.reportForSource(new File("src/test/resources/TestSourceFile.scala").getAbsolutePath)
         fileReport.file should endWith("src/test/resources/TestSourceFile.scala")
+        fileReport.projectRoot should equal(new File("").getAbsolutePath + File.separator)
         fileReport.lineCoverage should equal(
           List(None, None, None, Some(1), Some(1), Some(2), None, None, Some(1), Some(1))
         )
