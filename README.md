@@ -9,7 +9,7 @@ For an example project that uses this plugin [click here](https://github.com/the
 
 For example output [click here](https://coveralls.io/builds/6727)
 
-# Installation
+## Installation
 
 1) Adding the following to your `project/build.sbt` file
 
@@ -35,7 +35,7 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 4) Follow the instructions for either [Travis CI](#travis-ci-integration) or [Manual Usage](#manual-usage)
 
-# Travis CI Integration
+## Travis CI Integration
 
 `xsbt-coverall-plugin` can be run by [Travis CI](http://about.travis-ci.org/) by following these instructions:
 
@@ -45,7 +45,7 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
-# Manual Usage
+## Manual Usage
 
 1) Let `xsbt-coverall-plugin` know what you coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
 
@@ -56,36 +56,49 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 For example output [click here](https://coveralls.io/builds/6727)
 
-# Specifying Your Repo Token
+## Specifying Your Repo Token
 
 There are several ways to tell `xsbt-coverall-plugin` your repo token to support different use cases:
 
- * Write your repo token into a file and add the following to your `build.sbt`. The path can be absolute and point to somewhere outside the project or relative and point somewhere inside the project (such as `src/main/resources/token.txt`). Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
+### Write your repo token into a file 
 
-    import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+Add the following to your `build.sbt`. The path can be absolute and point to somewhere outside the project or relative and point somewhere inside the project (such as `src/main/resources/token.txt`). 
 
-    coverallsTokenFile := "/path/to/my/repo/token.txt"
+Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
 
+```scala
+import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
 
- * Put your repo token directly in your `build.sbt`. **Do not store repo tokens inside your project if it is in a public git repository!**
+coverallsTokenFile := "/path/to/my/repo/token.txt"
+```
 
-    import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+### Put your repo token directly in your `build.sbt`
 
-    coverallsToken := "my-token"
+**Do not store repo tokens inside your project if it is in a public git repository!**
 
- * Add a environment variable `COVERALLS_REPO_TOKEN`, for example:
+```scala
+import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+
+coverallsToken := "my-token"
+```
+
+### Add an environment variable
+
+Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 
     export COVERALLS_REPO_TOKEN=my-token
 
-# Custom Encoding
+## Custom Encoding
 
 By default `xsbt-coveralls-plugin` uses `UTF-8` encoding. To use a different encoding, add the following to your `build.sbt`
 
-    import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+```scala
+import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
 
-    encoding := "ISO-8859-1"
+encoding := "ISO-8859-1"
+```
 
-# SNAPSHOT Builds
+## SNAPSHOT Builds
 
 Add the following to your `project/build.sbt` file
 
@@ -102,7 +115,7 @@ addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.3-SNAPSHOT")
 ```
 
-# TODO
+## TODO
 
 For a list of features that going to be implemented see the [issue tracker](https://github.com/theon/xsbt-coveralls-plugin/issues?labels=enhancement&page=1&state=open)
 
