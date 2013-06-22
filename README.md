@@ -47,9 +47,7 @@ seq(ScctPlugin.instrumentSettings : _*)
 
 # Manual Usage
 
-1) Either write your token into the file `~/.sbt/coveralls.repo.token` or into the environment variable `COVERALLS_REPO_TOKEN`
-
-    export COVERALLS_REPO_TOKEN=<your-coveralls-repo-token>
+1) Let `xsbt-coverall-plugin` know what you coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
 
 2) In the SBT console run the command `coveralls`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
 
@@ -57,6 +55,27 @@ seq(ScctPlugin.instrumentSettings : _*)
     https://coveralls.io/jobs/12207
 
 For example output [click here](https://coveralls.io/builds/6727)
+
+# Specifying Your Repo Token
+
+There are several ways to tell `xsbt-coverall-plugin` your repo token to support different use cases:
+
+ * Write your repo token into a file and add the following to your `build.sbt`. The path can be absolute and point to somewhere outside the project or relative and point somewhere inside the project (such as `src/main/resources/token.txt`). Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
+
+    import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+
+    coverallsTokenFile := "/path/to/my/repo/token.txt"
+
+
+ * Put your repo token directly in your `build.sbt`. **Do not store repo tokens inside your project if it is in a public git repository!**
+
+    import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+
+    coverallsToken := "my-token"
+
+ * Add a environment variable `COVERALLS_REPO_TOKEN`, for example:
+
+    export COVERALLS_REPO_TOKEN=my-token
 
 # Custom Encoding
 

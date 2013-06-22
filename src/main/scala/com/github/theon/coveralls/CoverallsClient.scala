@@ -11,9 +11,8 @@ import scalaj.http.Http.Request
  * Date: 10/03/2013
  * Time: 17:19
  */
-trait CoverallsClient {
+class CoverallsClient(httpClient: HttpClient) {
 
-  def httpClient:HttpClient
   val url = "https://coveralls.io/api/v1/jobs"
   val mapper = newMapper
 

@@ -9,9 +9,7 @@ import org.scalatest.matchers.ShouldMatchers
  */
 class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
 
-  val reader = new CoberturaReader {
-    def file = "src/test/resources/test_cobertura.xml"
-  }
+  val reader = new CoberturaReader("src/test/resources/test_cobertura.xml")
 
   "CoberturaReader" when {
     "reading a Cobertura file" should {

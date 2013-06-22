@@ -7,9 +7,8 @@ import io.Source
  * Date: 10/03/2013
  * Time: 17:42
  */
-trait CoberturaReader {
+class CoberturaReader(val file: String) {
 
-  def file:String
   val elem = XML.loadFile(file)
 
   def sourceFilenames() = {

@@ -8,7 +8,7 @@ import java.io.File
  * Date: 29/03/2013
  * Time: 11:53
  */
-trait GitClient {
+class GitClient {
 
   def cwd = Option.empty[String]
 

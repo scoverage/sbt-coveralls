@@ -17,19 +17,19 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
 
   object SuccessTestCoverallsPlugin extends AbstractCoverallsPlugin {
     def apiHttpClient = new TestSuccessHttpClient()
-    def userRepoToken = Some("test-repo-token")
+    def userRepoToken(token: Option[String], tokenFile: Option[String]) = Some("test-repo-token")
     def travisJobIdent = None
   }
 
   object FailureTestCoverallsPlugin extends AbstractCoverallsPlugin {
     def apiHttpClient = new TestFailureHttpClient()
-    def userRepoToken = Some("test-repo-token")
+    def userRepoToken(token: Option[String], tokenFile: Option[String]) = Some("test-repo-token")
     def travisJobIdent = None
   }
 
   object NoRepoTokenOfTravisJobIdTestCoverallsPlugin extends AbstractCoverallsPlugin {
     def apiHttpClient = new TestFailureHttpClient()
-    def userRepoToken = None
+    def userRepoToken(token: Option[String], tokenFile: Option[String]) = None
     def travisJobIdent = None
   }
 
@@ -40,7 +40,7 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
         val logger = new TestLogger()
         val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
 
-        SuccessTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, coverallsFile, "UTF-8")
+        SuccessTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, coverallsFile, "UTF-8", None, None)
 
         logger.messages(Level.Info) should contain("Uploading to coveralls.io succeeded: test message")
         logger.messages(Level.Info) should contain("https://github.com/theon/xsbt-coveralls-plugin")
@@ -52,7 +52,7 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
         val logger = new TestLogger()
         val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
 
-        FailureTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, coverallsFile, "UTF-8")
+        FailureTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, coverallsFile, "UTF-8", None, None)
 
         logger.messages(Level.Error) should contain("Uploading to coveralls.io failed: test error message when there was an error")
       }
@@ -63,7 +63,7 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
         val logger = new TestLogger()
         val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
 
-        NoRepoTokenOfTravisJobIdTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, coverallsFile, "UTF-8")
+        NoRepoTokenOfTravisJobIdTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, coverallsFile, "UTF-8", None, None)
 
         logger.messages(Level.Error) should contain("Could not find coveralls repo token or determine travis job id")
       }

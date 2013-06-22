@@ -8,12 +8,7 @@ import org.codehaus.jackson.io.JsonStringEncoder
 import sbt.{Logger, State}
 import annotation.tailrec
 
-trait CoverallPayloadWriter {
-
-  def file:String
-  def repoToken:Option[String]
-  def travisJobId:Option[String]
-  val gitClient:GitClient
+class CoverallPayloadWriter(file: String, repoToken: Option[String], travisJobId: Option[String], gitClient: GitClient) {
 
   import gitClient._
 
