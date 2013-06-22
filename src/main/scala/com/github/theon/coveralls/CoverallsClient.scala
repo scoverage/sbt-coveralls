@@ -12,7 +12,7 @@ import java.io.File
  * Date: 10/03/2013
  * Time: 17:19
  */
-class CoverallsClient(httpClient: HttpClient) {
+class CoverallsClient(httpClient: HttpClient, enc: Codec) {
 
   val url = "https://coveralls.io/api/v1/jobs"
   val mapper = newMapper
@@ -26,12 +26,12 @@ class CoverallsClient(httpClient: HttpClient) {
   /**
    * TODO: Performance improvement - don't read the whole file into memory - stream it from disk
    */
-  def postFile(file: File, encoding: Codec) = {
-    val source = Source.fromFile(file)(encoding)
+  def postFile(file: File) = {
+    val source = Source.fromFile(file)(enc)
     val bytes = source.map(_.toByte).toArray
     source.close()
 
-    val res = httpClient.multipart(url, "json_file","json_file.json", "application/json", bytes)
+    val res = httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=UTF-8", bytes)
     mapper.readValue(res, classOf[CoverallsResponse])
   }
 }

@@ -3,6 +3,7 @@ package com.github.theon.coveralls
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
 import java.io.File
+import scala.io.Codec
 
 /**
  * Date: 30/03/2013
@@ -10,7 +11,7 @@ import java.io.File
  */
 class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
 
-  val reader = new CoberturaReader(new File("src/test/resources/test_cobertura.xml"), new File(""))
+  val reader = new CoberturaReader(new File("src/test/resources/test_cobertura.xml"), new File(""), Codec("UTF-8"))
 
   "CoberturaReader" when {
     "reading a Cobertura file" should {

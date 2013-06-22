@@ -1,14 +1,14 @@
 package com.github.theon.coveralls
 
 import xml.{Node, XML}
-import io.Source
+import scala.io.{Codec, Source}
 import java.io.File
 
 /**
  * Date: 10/03/2013
  * Time: 17:42
  */
-class CoberturaReader(val file: File, val baseDirFile: File) {
+class CoberturaReader(val file: File, val baseDirFile: File, enc: Codec) {
 
   val elem = XML.loadFile(file)
 
@@ -34,7 +34,7 @@ class CoberturaReader(val file: File, val baseDirFile: File) {
   }
 
   def reportForSource(source: String) = {
-    val fileSrc = Source.fromFile(source)
+    val fileSrc = Source.fromFile(source)(enc)
     val lineCount = fileSrc.getLines().size
     fileSrc.close
 

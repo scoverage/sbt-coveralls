@@ -1,13 +1,13 @@
 package com.github.theon.coveralls
 
-import java.io.File
-import io.Source
+import java.io.{FileOutputStream, File}
+import scala.io.{Codec, Source}
 import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 
 import sbt.Logger
 import annotation.tailrec
 
-class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], travisJobId: Option[String], gitClient: GitClient) {
+class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], travisJobId: Option[String], gitClient: GitClient, enc: Codec) {
 
   import gitClient._
 
@@ -15,8 +15,8 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
 
   def generator(file: File) = {
     if(!file.getParentFile.exists) file.getParentFile.mkdirs
-    val factory = new JsonFactory()
-    factory.createJsonGenerator(file, JsonEncoding.UTF8)
+    val factory = new JsonFactory
+    factory.createJsonGenerator(new FileOutputStream(file))
   }
 
   def start(implicit log: Logger) {
@@ -81,7 +81,7 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
     gen.writeStartObject
     gen.writeStringField("name", report.file)
 
-    val source = Source.fromFile(report.file)
+    val source = Source.fromFile(report.file)(enc)
     val sourceCode = source.mkString
     source.close
 

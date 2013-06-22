@@ -5,6 +5,7 @@ import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 import java.io.{StringWriter, Writer, File}
+import scala.io.Codec
 
 /**
  * Date: 30/03/2013
@@ -21,8 +22,8 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
     override def lastCommit(format:String)(implicit log: Logger) = "lastCommit"
   }
 
-  def coverallsWriter(writer:Writer, tokenIn:Option[String], travisJobIdIn:Option[String]) =
-    new CoverallPayloadWriter(new File(""), tokenIn, travisJobIdIn, testGitClient) {
+  def coverallsWriter(writer:Writer, tokenIn:Option[String], travisJobIdIn:Option[String], enc: Codec) =
+    new CoverallPayloadWriter(new File(""), tokenIn, travisJobIdIn, testGitClient, enc) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
         factory.createJsonGenerator(writer)
@@ -36,7 +37,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
 
       "generate a correct starting payload with travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Codec("UTF-8"))
 
         coverallsW.start
         coverallsW.flush
@@ -50,7 +51,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
 
       "generate a correct starting payload without travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None)
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Codec("UTF-8"))
 
         coverallsW.start
         coverallsW.flush
@@ -64,7 +65,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
 
       "add source files correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None)
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Codec("UTF-8"))
 
         coverallsW.addSourceFile (
           SourceFileReport("src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
@@ -78,7 +79,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
 
       "end the file correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None)
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Codec("UTF-8"))
 
         coverallsW.start
         coverallsW.end

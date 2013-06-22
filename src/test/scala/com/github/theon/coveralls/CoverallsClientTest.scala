@@ -16,9 +16,9 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
     "making API call" should {
       "return a valid response for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(testHttpClient)
+        val coverallsClient = new CoverallsClient(testHttpClient, Codec(Codec.UTF8))
 
-        val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"), Codec(Codec.UTF8))
+        val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"))
 
         testHttpClient.dataIn should equal("/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}")
         response.message should equal("test message")
@@ -27,9 +27,9 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
       }
       "return a valid response with Korean for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(testHttpClient)
+        val coverallsClient = new CoverallsClient(testHttpClient, Codec(Codec.ISO8859))
 
-        val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"), Codec(Codec.ISO8859))
+        val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
 
         testHttpClient.dataIn should equal("/**\n * 한글 테스트\n */\nclass TestSourceFile {\n\n\n\n\n\n}\n")
         response.message should equal("test message")

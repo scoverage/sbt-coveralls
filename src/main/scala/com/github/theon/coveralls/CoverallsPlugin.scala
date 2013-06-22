@@ -41,7 +41,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
   }
 
   lazy val coverallsSettings = Seq (
-    encoding := "UTF-8",
+    encoding := "ISO-8859-1",
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsFile <<= crossTarget / "coveralls.json",
@@ -102,13 +102,16 @@ trait AbstractCoverallsPlugin  {
     //Run the scct plugin to generate code coverage
     Command.process("scct:test", state)
 
-    val coverallsClient = new CoverallsClient(apiHttpClient)
+    val enc = Codec(encoding)
+
+    val coverallsClient = new CoverallsClient(apiHttpClient, enc)
 
     val writer = new CoverallPayloadWriter (
       coverallsFile,
       repoToken,
       travisJobIdent,
-      new GitClient
+      new GitClient,
+      enc
     )
 
     writer.start(state.log)
@@ -125,7 +128,7 @@ trait AbstractCoverallsPlugin  {
     }
 
     allCoberturaFiles.foreach(coberturaFile => {
-      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase)
+      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase, enc)
       val sourceFiles = reader.sourceFilenames
 
       sourceFiles.foreach(sourceFile => {
@@ -136,7 +139,7 @@ trait AbstractCoverallsPlugin  {
 
     writer.end()
 
-    val res = coverallsClient.postFile(coverallsFile, Codec(encoding))
+    val res = coverallsClient.postFile(coverallsFile)
     if(res.error) {
       state.log.error("Uploading to coveralls.io failed: " + res.message)
       if(res.message.contains("Build processing error")) {
