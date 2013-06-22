@@ -4,6 +4,7 @@ import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
 import scalaj.http.Http.Request
 import scala.io.Codec
+import java.io.File
 
 /**
  * Date: 30/03/2013
@@ -17,7 +18,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
         val testHttpClient = new TestSuccessHttpClient()
         val coverallsClient = new CoverallsClient(testHttpClient)
 
-        val response = coverallsClient.postFile("src/test/resources/TestSourceFile.scala", Codec(Codec.UTF8))
+        val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"), Codec(Codec.UTF8))
 
         testHttpClient.dataIn should equal("/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}")
         response.message should equal("test message")
@@ -28,7 +29,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
         val testHttpClient = new TestSuccessHttpClient()
         val coverallsClient = new CoverallsClient(testHttpClient)
 
-        val response = coverallsClient.postFile("src/test/resources/TestSourceFileWithKorean.scala", Codec(Codec.ISO8859))
+        val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"), Codec(Codec.ISO8859))
 
         testHttpClient.dataIn should equal("/**\n * 한글 테스트\n */\nclass TestSourceFile {\n\n\n\n\n\n}\n")
         response.message should equal("test message")

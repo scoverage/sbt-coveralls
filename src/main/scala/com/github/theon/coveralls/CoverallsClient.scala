@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scalaj.http.{HttpException, MultiPart, HttpOptions, Http}
 import scalaj.http.HttpOptions._
 import scalaj.http.Http.Request
+import java.io.File
 
 /**
  * Date: 10/03/2013
@@ -25,7 +26,7 @@ class CoverallsClient(httpClient: HttpClient) {
   /**
    * TODO: Performance improvement - don't read the whole file into memory - stream it from disk
    */
-  def postFile(file: String, encoding: Codec) = {
+  def postFile(file: File, encoding: Codec) = {
     val source = Source.fromFile(file)(encoding)
     val bytes = source.map(_.toByte).toArray
     source.close()

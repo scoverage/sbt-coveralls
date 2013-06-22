@@ -3,11 +3,8 @@ package com.github.theon.coveralls
 import sbt.Keys._
 import sbt._
 import scala.io.{Codec, Source}
-import tools.nsc.Global
-import annotation.tailrec
-import scala.Some
-import scala.Some
 import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys
+import java.io.File
 
 /**
  * Date: 10/03/2013
@@ -32,38 +29,66 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     //Better way to do this?
     implicit def strToOpt(s: String) = Option(s)
 
+    val coberturaFile = SettingKey[File]("cobertura-file")
+    val coverallsFile = SettingKey[File]("coveralls-file")
+
+    val childCoberturaFilesTask = TaskKey[Seq[CoberturaFile]]("child-cobertura-files", "Finds all the cobertura files in the sub projects")
+
     val coverallsTask = TaskKey[Unit]("coveralls", "Generate coveralls reports")
     val encoding = SettingKey[String]("encoding")
     val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
     val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
   }
 
-  override lazy val settings = Seq (
+  lazy val coverallsSettings = Seq (
     encoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
-    coverallsTask <<= (state, baseDirectory, crossTarget, encoding, coverallsToken, coverallsTokenFile) map {
-      (state, baseDirectory, crossTarget, encoding, coverallsToken, coverallsTokenFile) => {
-        val coberturaFile = crossTarget.getAbsolutePath + "/coverage-report/cobertura.xml"
-        val coverallsFile = crossTarget.getAbsolutePath + "/coveralls.json"
-        val projectDirectory = baseDirectory.getAbsoluteFile + "/"
-        coverallsCommand(state, projectDirectory, coberturaFile, coverallsFile, encoding, coverallsToken, coverallsTokenFile)
-      }
-    }
+    coverallsFile <<= crossTarget / "coveralls.json",
+    coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "/cobertura.xml"),
+    childCoberturaFilesTask <<= (thisProjectRef, buildStructure) map childCoberturaFiles,
+    coverallsTask <<= (
+      state,
+      baseDirectory,
+      coberturaFile,
+      childCoberturaFilesTask,
+      coverallsFile,
+      encoding,
+      coverallsToken,
+      coverallsTokenFile
+    ) map coverallsCommand
   )
 }
 
+case class CoberturaFile(file: File, projectBase: File)
+
 trait AbstractCoverallsPlugin  {
+
+  import CoverallsKeys._
 
   def apiHttpClient:HttpClient
 
+  def childCoberturaFiles(projectRef: ProjectRef, structure: Load.BuildStructure) = {
+    val subProjects = aggregated(projectRef, structure)
+    subProjects flatMap { p =>
+      val crossTargetOpt = (crossTarget in LocalProject(p)).get(structure.data)
+      val baseDir = (baseDirectory in LocalProject(p)).get(structure.data)
+
+      crossTargetOpt.flatMap { crossTarg =>
+        val coberFile = new File(crossTarg + File.separator + "coverage-report" + File.separator + "cobertura.xml")
+        if (coberFile.exists) Some(CoberturaFile(coberFile, baseDir.get)) else None
+      }
+    }
+  }
+
   def coverallsCommand(state: State,
-                        projectDirectory: String,
-                        coberturaFile: String,
-                        coverallsFile: String,
+                        projectDirectory: File,
+                        rootCoberturaFile: File,
+                        childCoberturaFiles: Seq[CoberturaFile],
+                        coverallsFile: File,
                         encoding: String,
                         coverallsToken: Option[String],
-                        coverallsTokenFile: Option[String]) = {
+                        coverallsTokenFile: Option[String]): State = {
 
     val repoToken = userRepoToken(coverallsToken, coverallsTokenFile)
 
@@ -71,44 +96,58 @@ trait AbstractCoverallsPlugin  {
       state.log.error("Could not find coveralls repo token or determine travis job id")
       state.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
       state.log.error(" - Otherwise, to set up your repo token read https://github.com/theon/xsbt-coveralls-plugin#specifying-your-repo-token")
-      state.fail
+      return state.fail
+    }
+
+    //Run the scct plugin to generate code coverage
+    Command.process("scct:test", state)
+
+    val coverallsClient = new CoverallsClient(apiHttpClient)
+
+    val writer = new CoverallPayloadWriter (
+      coverallsFile,
+      repoToken,
+      travisJobIdent,
+      new GitClient
+    )
+
+    writer.start(state.log)
+
+    val allCoberturaFiles = if(rootCoberturaFile.exists) {
+      CoberturaFile(rootCoberturaFile, projectDirectory) +: childCoberturaFiles
     } else {
+      childCoberturaFiles
+    }
 
-      //Run the scct plugin to generate code coverage
-      Command.process("scct:test", state)
+    if(allCoberturaFiles.isEmpty) {
+      state.log.error("Could not find any cobertura.xml files. Has SCCT run?")
+      return state.fail
+    }
 
-      val reader = new CoberturaReader(coberturaFile)
-
-      val writer = new CoverallPayloadWriter (
-        coverallsFile,
-        repoToken,
-        travisJobIdent,
-        new GitClient
-      )
-
-      val coverallsClient = new CoverallsClient(apiHttpClient)
-      val sourceFiles = reader.sourceFilenames()
-      writer.start(state.log)
+    allCoberturaFiles.foreach(coberturaFile => {
+      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase)
+      val sourceFiles = reader.sourceFilenames
 
       sourceFiles.foreach(sourceFile => {
-        val sourceReport = reader.reportForSource(projectDirectory, sourceFile)
+        val sourceReport = reader.reportForSource(sourceFile)
         writer.addSourceFile(sourceReport)
       })
+    })
 
-      writer.end()
+    writer.end()
 
-      val res = coverallsClient.postFile(coverallsFile, Codec(encoding))
-      if(res.error) {
-        state.log.error("Uploading to coveralls.io failed: " + res.message)
-        if(res.message.contains("Build processing error")) {
-          state.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
-        }
-        state.fail
-      } else {
-        state.log.info("Uploading to coveralls.io succeeded: " + res.message)
-        state.log.info(res.url)
-        state.log.info("(results may not appear immediately)")
+    val res = coverallsClient.postFile(coverallsFile, Codec(encoding))
+    if(res.error) {
+      state.log.error("Uploading to coveralls.io failed: " + res.message)
+      if(res.message.contains("Build processing error")) {
+        state.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
       }
+      state.fail
+    } else {
+      state.log.info("Uploading to coveralls.io succeeded: " + res.message)
+      state.log.info(res.url)
+      state.log.info("(results may not appear immediately)")
+      state
     }
   }
 
@@ -126,7 +165,14 @@ trait AbstractCoverallsPlugin  {
     }
   }
 
-  @deprecated("Put your repo token in ~/.sbt/coveralls.sbt instead. Use this format: coverallsRepoToken := \"my-token\"", "June 2013")
+  def aggregated(projectRef: ProjectRef, structure: Load.BuildStructure): Seq[String] = {
+    val aggregate = Project.getProject(projectRef, structure).toSeq.flatMap(_.aggregate)
+    aggregate flatMap { ref =>
+      ref.project +: aggregated(ref, structure)
+    }
+  }
+
+  @deprecated("Add this to your build.sbt instead: coverallsTokenFile := \"path/to/file/with/my/token.txt\"", "June 2013")
   def userRepoTokenFromLegacyFile =
     repoTokenFromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token")
 }

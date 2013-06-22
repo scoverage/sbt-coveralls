@@ -25,11 +25,15 @@ addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.2")
 ```
 
-2) Add the following to your `build.sbt`
+2) Add the following to the top of your `build.sbt`
 
 ```scala
 seq(ScctPlugin.instrumentSettings : _*)
+
+seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
 ```
+
+Coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token)) must come after this line.
 
 3) Register on `https://coveralls.io/` and get a repo token
 

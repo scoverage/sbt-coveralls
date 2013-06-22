@@ -3,20 +3,20 @@ package com.github.theon.coveralls
 import java.io.File
 import io.Source
 import org.codehaus.jackson.{JsonEncoding, JsonFactory}
-import org.codehaus.jackson.io.JsonStringEncoder
 
-import sbt.{Logger, State}
+import sbt.Logger
 import annotation.tailrec
 
-class CoverallPayloadWriter(file: String, repoToken: Option[String], travisJobId: Option[String], gitClient: GitClient) {
+class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], travisJobId: Option[String], gitClient: GitClient) {
 
   import gitClient._
 
-  val gen = generator(file)
+  val gen = generator(coverallsFile)
 
-  def generator(file:String) = {
+  def generator(file: File) = {
+    if(!file.getParentFile.exists) file.getParentFile.mkdirs
     val factory = new JsonFactory()
-    factory.createJsonGenerator(new File(file), JsonEncoding.UTF8)
+    factory.createJsonGenerator(file, JsonEncoding.UTF8)
   }
 
   def start(implicit log: Logger) {
@@ -77,12 +77,15 @@ class CoverallPayloadWriter(file: String, repoToken: Option[String], travisJobId
     addGitRemotes(remotes.tail)
   }
 
-  def addSourceFile(report:SourceFileReport) {
+  def addSourceFile(report: SourceFileReport) {
     gen.writeStartObject
     gen.writeStringField("name", report.file)
 
-    val source = Source.fromFile(report.file).mkString
-    gen.writeStringField("source", source)
+    val source = Source.fromFile(report.file)
+    val sourceCode = source.mkString
+    source.close
+
+    gen.writeStringField("source", sourceCode)
 
     gen.writeFieldName("coverage")
     gen.writeStartArray

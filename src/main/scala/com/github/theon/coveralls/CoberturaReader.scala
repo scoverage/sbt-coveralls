@@ -2,25 +2,28 @@ package com.github.theon.coveralls
 
 import xml.{Node, XML}
 import io.Source
+import java.io.File
 
 /**
  * Date: 10/03/2013
  * Time: 17:42
  */
-class CoberturaReader(val file: String) {
+class CoberturaReader(val file: File, val baseDirFile: File) {
 
   val elem = XML.loadFile(file)
 
-  def sourceFilenames() = {
-    elem \\ "class" \\ "@filename"  map { _.toString } toSet
+  val baseDir = baseDirFile.getAbsolutePath + File.separator
+
+  def sourceFilenames = {
+    elem \\ "class" \\ "@filename"  map { baseDir + _.toString } toSet
   }
 
   /**
    * @return Map[Int,Int]
    */
-  protected def lineCoverage(sourceFile:String) = {
+  protected def lineCoverage(sourceFile: String) = {
     val classElems = (elem \\ "class")
-    val fileElems = classElems filter { n:Node =>  (n \\ "@filename").toString == sourceFile }
+    val fileElems = classElems filter { n:Node => (baseDir + (n \\ "@filename").toString) == sourceFile }
     val lineElems = fileElems.flatMap(n => {
       n \\ "line"
     })
@@ -30,13 +33,18 @@ class CoberturaReader(val file: String) {
     }).toMap
   }
 
-  def reportForSource(baseDir:String, source:String) = {
-    val lineCount = Source.fromFile(baseDir + source).getLines().size
-    val lineHitMap:Map[Int,Int] = lineCoverage(source)
-    val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i+1))
+  def reportForSource(source: String) = {
+    val fileSrc = Source.fromFile(source)
+    val lineCount = fileSrc.getLines().size
+    fileSrc.close
+
+    val lineHitMap = lineCoverage(source)
+    val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
 
     SourceFileReport(source, fullLineHit.toList)
   }
 }
 
-case class SourceFileReport(file:String, lineCoverage:List[Option[Int]])
+case class CoberturaReaderException(cause: Exception) extends Exception(cause)
+
+case class SourceFileReport(file: String, lineCoverage: List[Option[Int]])
