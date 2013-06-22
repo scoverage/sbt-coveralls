@@ -29,6 +29,8 @@ libraryDependencies ++= Seq(
 
 seq(ScctPlugin.instrumentSettings : _*)
 
+seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
+
 publishTo <<= version { (v: String) =>
   val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT"))
