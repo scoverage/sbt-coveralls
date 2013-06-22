@@ -28,7 +28,7 @@ class CoverallsClient(httpClient: HttpClient, enc: Codec) {
    */
   def postFile(file: File) = {
     val source = Source.fromFile(file)(enc)
-    val bytes = source.map(_.toByte).toArray
+    val bytes = source.getLines.mkString("\n").getBytes(enc.charSet)
     source.close()
 
     val res = httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=UTF-8", bytes)
@@ -39,11 +39,11 @@ class CoverallsClient(httpClient: HttpClient, enc: Codec) {
 case class CoverallsResponse(message:String, error:Boolean, url:String)
 
 trait HttpClient {
-  def multipart(url:String, name:String, filename:String, mime:String, data:Array[Byte]): String
+  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): String
 }
 
 class ScalaJHttpClient extends HttpClient {
-  def multipart(url:String, name:String, filename:String, mime:String, data:Array[Byte]) = try {
+  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = try {
     Http.multipart(url, MultiPart(name, filename, mime, data))
       .option(connTimeout(60000)).option(readTimeout(60000))
       .asString

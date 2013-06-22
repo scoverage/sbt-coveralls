@@ -41,7 +41,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
   }
 
   lazy val coverallsSettings = Seq (
-    encoding := "ISO-8859-1",
+    encoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsFile <<= crossTarget / "coveralls.json",

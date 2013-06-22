@@ -5,10 +5,10 @@ package com.github.theon.coveralls
  * Time: 15:36
  */
 class TestSuccessHttpClient extends HttpClient {
-  var dataIn:String = _
+  var dataIn: String = _
 
   def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = {
-    dataIn = new String(data)
+    dataIn = new String(data, "UTF-8")
     """
       {
         "message":"test message",

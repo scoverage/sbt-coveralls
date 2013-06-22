@@ -66,7 +66,7 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
   }
 
   @tailrec
-  private def addGitRemotes(remotes:Seq[String])(implicit log: Logger) {
+  private def addGitRemotes(remotes: Seq[String])(implicit log: Logger) {
     if(remotes.isEmpty) return
 
     gen.writeStartObject
