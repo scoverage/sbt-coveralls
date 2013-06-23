@@ -7,7 +7,12 @@ import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 import sbt.Logger
 import annotation.tailrec
 
-class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], travisJobId: Option[String], gitClient: GitClient, enc: Codec) {
+class CoverallPayloadWriter(coverallsFile: File,
+                            repoToken: Option[String],
+                            travisJobId: Option[String],
+                            gitClient: GitClient,
+                            sourcesEnc: Codec,
+                            jsonEnc: JsonEncoding) {
 
   import gitClient._
 
@@ -16,7 +21,7 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
   def generator(file: File) = {
     if(!file.getParentFile.exists) file.getParentFile.mkdirs
     val factory = new JsonFactory
-    factory.createJsonGenerator(new FileOutputStream(file))
+    factory.createJsonGenerator(file, jsonEnc)
   }
 
   def start(implicit log: Logger) {
@@ -81,7 +86,7 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
     gen.writeStartObject
     gen.writeStringField("name", report.fileRel)
 
-    val source = Source.fromFile(report.file)(enc)
+    val source = Source.fromFile(report.file)(sourcesEnc)
     val sourceCode = source.mkString
     source.close
 
@@ -103,6 +108,7 @@ class CoverallPayloadWriter(coverallsFile: File, repoToken: Option[String], trav
     gen.writeEndArray
     gen.writeEndObject
     gen.flush
+    gen.close
   }
 
   def flush {

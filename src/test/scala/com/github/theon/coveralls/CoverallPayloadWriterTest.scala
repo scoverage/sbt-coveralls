@@ -22,8 +22,8 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
     override def lastCommit(format:String)(implicit log: Logger) = "lastCommit"
   }
 
-  def coverallsWriter(writer:Writer, tokenIn:Option[String], travisJobIdIn:Option[String], enc: Codec) =
-    new CoverallPayloadWriter(new File(""), tokenIn, travisJobIdIn, testGitClient, enc) {
+  def coverallsWriter(writer:Writer, tokenIn: Option[String], travisJobIdIn: Option[String], enc: Codec) =
+    new CoverallPayloadWriter(new File(""), tokenIn, travisJobIdIn, testGitClient, enc, JsonEncoding.UTF8) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
         factory.createJsonGenerator(writer)

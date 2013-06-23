@@ -7,12 +7,13 @@ import scalaj.http.{HttpException, MultiPart, HttpOptions, Http}
 import scalaj.http.HttpOptions._
 import scalaj.http.Http.Request
 import java.io.File
+import org.codehaus.jackson.JsonEncoding
 
 /**
  * Date: 10/03/2013
  * Time: 17:19
  */
-class CoverallsClient(httpClient: HttpClient, enc: Codec) {
+class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
   val url = "https://coveralls.io/api/v1/jobs"
   val mapper = newMapper
@@ -27,11 +28,11 @@ class CoverallsClient(httpClient: HttpClient, enc: Codec) {
    * TODO: Performance improvement - don't read the whole file into memory - stream it from disk
    */
   def postFile(file: File) = {
-    val source = Source.fromFile(file)(enc)
-    val bytes = source.getLines.mkString("\n").getBytes(enc.charSet)
-    source.close()
+    val source = Source.fromFile(file)(sourcesEnc)
+    val bytes = source.getLines.mkString("\n").getBytes(jsonEnc.getJavaName)
+    source.close
 
-    val res = httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=UTF-8", bytes)
+    val res = httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes)
     mapper.readValue(res, classOf[CoverallsResponse])
   }
 }

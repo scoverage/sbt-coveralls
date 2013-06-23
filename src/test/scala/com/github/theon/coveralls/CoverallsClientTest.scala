@@ -5,6 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import scalaj.http.Http.Request
 import scala.io.Codec
 import java.io.File
+import org.codehaus.jackson.JsonEncoding
 
 /**
  * Date: 30/03/2013
@@ -16,7 +17,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
     "making API call" should {
       "return a valid response for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(testHttpClient, Codec(Codec.UTF8))
+        val coverallsClient = new CoverallsClient(testHttpClient, Codec(Codec.UTF8), JsonEncoding.UTF8)
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"))
 
@@ -27,7 +28,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with ShouldMat
       }
       "return a valid response with Korean for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(testHttpClient, Codec(Codec.UTF8))
+        val coverallsClient = new CoverallsClient(testHttpClient, Codec(Codec.UTF8), JsonEncoding.UTF8)
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
 

@@ -5,6 +5,7 @@ import sbt._
 import scala.io.{Codec, Source}
 import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys
 import java.io.File
+import org.codehaus.jackson.JsonEncoding
 
 /**
  * Date: 10/03/2013
@@ -102,16 +103,21 @@ trait AbstractCoverallsPlugin  {
     //Run the scct plugin to generate code coverage
     Command.process("scct:test", state)
 
-    val enc = Codec(encoding)
+    //Users can encode their source files in whatever encoding they desire, however when we send their source code to
+    //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
+    //See http://tools.ietf.org/html/rfc4627#section-3
+    val sourcesEnc = Codec(encoding)
+    val jsonEnc = JsonEncoding.UTF8
 
-    val coverallsClient = new CoverallsClient(apiHttpClient, enc)
+    val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
 
     val writer = new CoverallPayloadWriter (
       coverallsFile,
       repoToken,
       travisJobIdent,
       new GitClient,
-      enc
+      sourcesEnc,
+      jsonEnc
     )
 
     writer.start(state.log)
@@ -125,7 +131,7 @@ trait AbstractCoverallsPlugin  {
     }
 
     allCoberturaFiles.foreach(coberturaFile => {
-      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase, rootProjectDir, enc)
+      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase, rootProjectDir, sourcesEnc)
       val sourceFiles = reader.sourceFilenames
 
       sourceFiles.foreach(sourceFile => {

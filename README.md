@@ -12,9 +12,10 @@ For example output [click here](https://coveralls.io/builds/6727)
 ## New in 0.0.3-SNAPSHOT
 
  * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your `build.sbt`. This is to support multi project builds.
- * Bug Fix: unicode characters encoded correctly
+ * Multi project build support!
+ * Bug Fix: unicode characters in source files now decoded/encoded correctly
  * New ways to [specify your repo token](#specifying-your-repo-token)
- * Support for [different encodings](#custom-encoding) of source files
+ * Support for [different source file encodings](#custom-source-file-encoding) of source files
 
 ## Installation
 
@@ -99,7 +100,7 @@ Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 
     export COVERALLS_REPO_TOKEN=my-token
 
-## Custom Encoding
+## Custom Source File Encoding
 
 By default `xsbt-coveralls-plugin` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
 
@@ -108,6 +109,8 @@ import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
 
 encoding := "ISO-8859-1"
 ```
+
+Once the plugin has slurped your source code into memory using the specified encoding, it will be converted into UTF-8 to be sent to the coveralls API. This is because the coveralls API uses a JSON request body and RFC 4627 mandates that [JSON must be UTF encoded](http://tools.ietf.org/html/rfc4627#section-3).
 
 ## SNAPSHOT Builds
 
