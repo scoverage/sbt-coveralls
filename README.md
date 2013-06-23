@@ -15,7 +15,7 @@ For example output [click here](https://coveralls.io/builds/6727)
  * Multi project build support!
  * Bug Fix: unicode characters in source files now decoded/encoded correctly
  * New ways to [specify your repo token](#specifying-your-repo-token)
- * Support for [different source file encodings](#custom-source-file-encoding) of source files
+ * Support for [different source file encodings](#custom-source-file-encoding)
 
 ## Installation
 
