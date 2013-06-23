@@ -2,7 +2,7 @@ name := "xsbt-coveralls-plugin"
 
 organization  := "com.github.theon"
 
-version       := "0.0.3-SNAPSHOT"
+version       := "0.0.3"
 
 scalaVersion  := "2.9.2"
 

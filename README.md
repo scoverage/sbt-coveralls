@@ -9,7 +9,7 @@ For an example project that uses this plugin [click here](https://github.com/the
 
 For example output [click here](https://coveralls.io/builds/6727)
 
-## New in 0.0.3-SNAPSHOT
+## New in 0.0.3
 
  * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your `build.sbt`. This is to support multi project builds.
  * Multi project build support!
@@ -30,7 +30,7 @@ resolvers ++= Seq(
 
 addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.2")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.3")
 ```
 
 2) Add the following to the top of your `build.sbt`
@@ -126,7 +126,7 @@ resolvers ++= Seq(
 
 addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
 
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.3-SNAPSHOT")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.4-SNAPSHOT")
 ```
 
 ## TODO
