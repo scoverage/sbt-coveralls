@@ -22,9 +22,8 @@ For example output [click here](https://coveralls.io/builds/6727)
 1) Adding the following to your `project/build.sbt` file
 
 ```scala
-resolvers += Classpaths.typesafeResolver
-
 resolvers ++= Seq(
+    Classpaths.typesafeResolver
     "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo"
 )
 
@@ -117,9 +116,8 @@ Once the plugin has slurped your source code into memory using the specified enc
 Add the following to your `project/build.sbt` file
 
 ```scala
-resolvers += Classpaths.typesafeResolver
-
 resolvers ++= Seq(
+    Classpaths.typesafeResolver,
     "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
     "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
 )
