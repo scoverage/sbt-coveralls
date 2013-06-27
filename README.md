@@ -23,7 +23,7 @@ For example output [click here](https://coveralls.io/builds/6727)
 
 ```scala
 resolvers ++= Seq(
-    Classpaths.typesafeResolver
+    Classpaths.typesafeResolver,
     "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo"
 )
 
