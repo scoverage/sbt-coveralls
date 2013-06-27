@@ -42,7 +42,7 @@ seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
 
 Coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token)) must come after this line.
 
-3) Register on `https://coveralls.io/` and get a repo token
+3) Register on `https://coveralls.io/`
 
 4) Follow the instructions for either [Travis CI](#travis-ci-integration) or [Manual Usage](#manual-usage)
 
@@ -58,7 +58,9 @@ Coveralls configuration options (such as [Specifying Your Repo Token](#specifyin
 
 ## Manual Usage
 
-1) Let `xsbt-coverall-plugin` know what you coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
+1)  Get the repo token for your repo from the http://coveralls.io
+
+1) Let `xsbt-coverall-plugin` know what your coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
 
 2) In the SBT console run the command `coveralls`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
 
