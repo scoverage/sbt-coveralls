@@ -58,7 +58,7 @@ Coveralls configuration options (such as [Specifying Your Repo Token](#specifyin
 
 ## Manual Usage
 
-1)  Get the repo token for your repo from the http://coveralls.io
+1)  Get the repo token for your repo from http://coveralls.io
 
 1) Let `xsbt-coverall-plugin` know what your coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
 
