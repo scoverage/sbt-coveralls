@@ -11,7 +11,7 @@ For example output [click here](https://coveralls.io/builds/6727)
 
 ## New in 0.0.3
 
- * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your `build.sbt`. This is to support multi project builds.
+ * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your root `build.sbt`. This is to support multi project builds.
  * Multi project build support!
  * Bug Fix: unicode characters in source files now decoded/encoded correctly
  * New ways to [specify your repo token](#specifying-your-repo-token)
