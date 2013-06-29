@@ -136,3 +136,5 @@ For a list of features that going to be implemented see the [issue tracker](http
 # License
 
 `xsbt-coveralls-plugin` is open source software released under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0).
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/dcca8e4ca669f859be14ac3ffff4eddd "githalytics.com")](http://githalytics.com/theon/xsbt-coveralls-plugin)
