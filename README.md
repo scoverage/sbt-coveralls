@@ -9,6 +9,10 @@ For an example project that uses this plugin [click here](https://github.com/the
 
 For example output [click here](https://coveralls.io/builds/6727)
 
+## New in 0.0.4
+
+ * OpenJDK support
+
 ## New in 0.0.3
 
  * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your root `build.sbt`. This is to support multi project builds.
