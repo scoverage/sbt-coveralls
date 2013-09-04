@@ -12,6 +12,7 @@ For example output [click here](https://coveralls.io/builds/6727)
 ## New in 0.0.3
 
  * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your root `build.sbt`. This is to support multi project builds.
+ * Command to run the plugin is now `coveralls` rather than `coverall test`. This is as a result from changing to use `TaskKey` rather than `Command`. [See explanation]()
  * Multi project build support!
  * Bug Fix: unicode characters in source files now decoded/encoded correctly
  * New ways to [specify your repo token](#specifying-your-repo-token)
