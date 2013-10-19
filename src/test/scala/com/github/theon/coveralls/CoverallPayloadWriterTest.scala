@@ -3,9 +3,9 @@ package com.github.theon.coveralls
 import sbt.{ConsoleLogger, Logger}
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
-import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 import java.io.{StringWriter, Writer, File}
 import scala.io.Codec
+import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
 
 /**
  * Date: 30/03/2013
@@ -26,7 +26,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
     new CoverallPayloadWriter(new File(""), tokenIn, travisJobIdIn, testGitClient, enc, JsonEncoding.UTF8) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
-        factory.createJsonGenerator(writer)
+        factory.createGenerator(writer)
       }
     }
 

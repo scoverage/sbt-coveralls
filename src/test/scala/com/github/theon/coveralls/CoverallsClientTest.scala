@@ -2,10 +2,9 @@ package com.github.theon.coveralls
 
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
-import scalaj.http.Http.Request
 import scala.io.Codec
 import java.io.File
-import org.codehaus.jackson.JsonEncoding
+import com.fasterxml.jackson.core.JsonEncoding
 
 /**
  * Date: 30/03/2013

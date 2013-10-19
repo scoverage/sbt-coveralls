@@ -1,11 +1,11 @@
 package com.github.theon.coveralls
 
-import java.io.{FileOutputStream, File}
+import java.io.File
 import scala.io.{Codec, Source}
-import org.codehaus.jackson.{JsonEncoding, JsonFactory}
 
 import sbt.Logger
 import annotation.tailrec
+import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
 
 class CoverallPayloadWriter(coverallsFile: File,
                             repoToken: Option[String],
@@ -21,7 +21,7 @@ class CoverallPayloadWriter(coverallsFile: File,
   def generator(file: File) = {
     if(!file.getParentFile.exists) file.getParentFile.mkdirs
     val factory = new JsonFactory
-    factory.createJsonGenerator(file, jsonEnc)
+    factory.createGenerator(file, jsonEnc)
   }
 
   def start(implicit log: Logger) {
@@ -94,12 +94,10 @@ class CoverallPayloadWriter(coverallsFile: File,
 
     gen.writeFieldName("coverage")
     gen.writeStartArray
-    report.lineCoverage.foreach(hit => {
-      hit match {
-        case Some(x) => gen.writeNumber(x)
-        case _ => gen.writeNull()
-      }
-    })
+    report.lineCoverage.foreach {
+      case Some(x) => gen.writeNumber(x)
+      case _ => gen.writeNull()
+    }
     gen.writeEndArray
     gen.writeEndObject
   }

@@ -1,5 +1,4 @@
-package com.github.theon.coveralls
-
+import com.github.theon.coveralls.{TestFailureHttpClient, TestSuccessHttpClient}
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
 import sbt._

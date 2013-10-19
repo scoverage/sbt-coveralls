@@ -123,16 +123,24 @@ Once the plugin has slurped your source code into memory using the specified enc
 Add the following to your `project/build.sbt` file
 
 ```scala
-resolvers ++= Seq(
-    Classpaths.typesafeResolver,
-    "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
-    "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
-)
-
-addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.5-SNAPSHOT")
 ```
+
+### New in 0.0.5-SNAPSHOT
+
+In a single project build now add this to your build.sbt:
+
+```scala
+seq(CoverallsPlugin.singleProject: _*)
+```
+
+ * 0.13.0 support added
+ * Moved plugin to root unnamed package
+ * Added scct as a dependency rather than requiring the user to also bring it in
+ * Added `singleProject` and `singleProject` Settings which include the scct settings, so the user doesn't need to manually include them in their `build.sbt`
+ ** Multi Project support still needs to be tested. Need to make a demo project for this.
 
 ## TODO
 

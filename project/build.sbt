@@ -1,10 +1,5 @@
-resolvers += Classpaths.typesafeResolver
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
-resolvers ++= Seq(
-  "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo",
-  "sonatype-oss-repo" at "https://oss.sonatype.org/content/groups/public/"
-)
+addSbtPlugin("net.virtual-void" % "sbt-cross-building" % "0.8.0")
 
-addSbtPlugin("reaktor" %% "sbt-scct" % "0.2-SNAPSHOT")
-
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin-meta" % "0.0.4")
+addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin-meta" % "0.0.5-SNAPSHOT")

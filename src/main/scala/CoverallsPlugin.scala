@@ -1,11 +1,9 @@
-package com.github.theon.coveralls
-
+import com.fasterxml.jackson.core.JsonEncoding
+import com.github.theon.coveralls._
 import sbt.Keys._
 import sbt._
 import scala.io.{Codec, Source}
-import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys
 import java.io.File
-import org.codehaus.jackson.JsonEncoding
 
 /**
  * Date: 10/03/2013
@@ -41,7 +39,11 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
   }
 
-  lazy val coverallsSettings = Seq (
+  lazy val singleProject = ScctPlugin.instrumentSettings ++ coverallsSettings
+
+  lazy val multiProject = ScctPlugin.mergeReportSettings ++ coverallsSettings
+
+  lazy val coverallsSettings: Seq[Setting[_]] = Seq (
     encoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
@@ -67,7 +69,7 @@ case class CoberturaFile(file: File, projectBase: File) {
 
 trait AbstractCoverallsPlugin  {
 
-  def apiHttpClient:HttpClient
+  def apiHttpClient: HttpClient
 
   def childCoberturaFiles(projectRef: ProjectRef, structure: Load.BuildStructure) = {
     val subProjects = aggregated(projectRef, structure)

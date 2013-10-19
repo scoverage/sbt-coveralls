@@ -1,15 +1,14 @@
 package com.github.theon.coveralls
 
 import scala.io.{Codec, Source}
-import org.codehaus.jackson.map.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{HttpException, MultiPart, HttpOptions, Http}
+import scalaj.http.{HttpException, MultiPart, Http}
 import scalaj.http.HttpOptions._
-import scalaj.http.Http.Request
 import java.io.File
-import org.codehaus.jackson.JsonEncoding
 import javax.net.ssl.{SSLSocket, SSLSocketFactory}
 import java.net.{Socket, InetAddress}
+import com.fasterxml.jackson.core.JsonEncoding
+import com.fasterxml.jackson.databind.ObjectMapper
 
 /**
  * Date: 10/03/2013
