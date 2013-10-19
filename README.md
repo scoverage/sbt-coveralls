@@ -139,7 +139,7 @@ seq(CoverallsPlugin.singleProject: _*)
  * 0.13.0 support added
  * Moved plugin to root unnamed package
  * Added scct as a dependency rather than requiring the user to also bring it in
- * Added `singleProject` and `singleProject` Settings which include the scct settings, so the user doesn't need to manually include them in their `build.sbt`
+ * Added `singleProject` and `multiProject` Settings which include the scct settings, so the user doesn't need to manually include them in their `build.sbt`
  ** Multi Project support still needs to be tested. Need to make a demo project for this.
 
 ## TODO
