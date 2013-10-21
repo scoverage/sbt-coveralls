@@ -37,6 +37,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     val encoding = SettingKey[String]("encoding")
     val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
     val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
+    val coverallsServiceName = SettingKey[Option[String]]("coveralls-service-name")
   }
 
   lazy val singleProject = ScctPlugin.instrumentSettings ++ coverallsSettings
@@ -47,6 +48,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     encoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
+    coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile <<= crossTarget / "coveralls.json",
     coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "/cobertura.xml"),
     childCoberturaFilesTask <<= (thisProjectRef, buildStructure) map childCoberturaFiles,
@@ -58,7 +60,8 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
       coverallsFile,
       encoding,
       coverallsToken,
-      coverallsTokenFile
+      coverallsTokenFile,
+      coverallsServiceName
     ) map coverallsCommand
   )
 }
@@ -91,7 +94,8 @@ trait AbstractCoverallsPlugin  {
                         coverallsFile: File,
                         encoding: String,
                         coverallsToken: Option[String],
-                        coverallsTokenFile: Option[String]): State = {
+                        coverallsTokenFile: Option[String],
+                        coverallsServiceName: Option[String]): State = {
 
     val repoToken = userRepoToken(coverallsToken, coverallsTokenFile)
 
@@ -117,6 +121,7 @@ trait AbstractCoverallsPlugin  {
       coverallsFile,
       repoToken,
       travisJobIdent,
+      coverallsServiceName,
       new GitClient,
       sourcesEnc,
       jsonEnc
