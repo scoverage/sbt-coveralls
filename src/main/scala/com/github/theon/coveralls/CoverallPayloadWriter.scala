@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
 class CoverallPayloadWriter(coverallsFile: File,
                             repoToken: Option[String],
                             travisJobId: Option[String],
+                            serviceName: Option[String],
                             gitClient: GitClient,
                             sourcesEnc: Codec,
                             jsonEnc: JsonEncoding) {
@@ -27,14 +28,12 @@ class CoverallPayloadWriter(coverallsFile: File,
   def start(implicit log: Logger) {
     gen.writeStartObject
 
-    if(repoToken.isDefined) {
-      gen.writeStringField("repo_token", repoToken.get)
-    }
+    def writeOpt(fieldName: String, holder: Option[String]) =
+      holder foreach { gen.writeStringField(fieldName, _) }
 
-    if(travisJobId.isDefined){
-      gen.writeStringField("service_name", "travis-ci")
-      gen.writeStringField("service_job_id", travisJobId.get)
-    }
+    writeOpt("repo_token", repoToken)
+    writeOpt("service_name", serviceName)
+    writeOpt("service_job_id", travisJobId)
 
     addGitInfo
 
