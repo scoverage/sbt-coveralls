@@ -19,7 +19,7 @@ For example output [click here](https://coveralls.io/builds/6727)
  * Command to run the plugin is now `coveralls` rather than `coverall test`. This is as a result from changing to use `TaskKey` rather than `Command`.
  * Multi project build support!
  * Bug Fix: unicode characters in source files now decoded/encoded correctly
- * New ways to [specify your repo token](#specifying-your-repo-token)
+ * New ways to [specify your repo token](#specifying-your-repo-token) for manual (non-travis) builds.
  * Support for [different source file encodings](#custom-source-file-encoding)
 
 ## Installation
