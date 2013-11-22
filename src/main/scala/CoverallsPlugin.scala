@@ -50,7 +50,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     coverallsTokenFile := None,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile <<= crossTarget / "coveralls.json",
-    coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "/cobertura.xml"),
+    coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "cobertura.xml"),
     childCoberturaFilesTask <<= (thisProjectRef, buildStructure) map childCoberturaFiles,
     coverallsTask <<= (
       state,
