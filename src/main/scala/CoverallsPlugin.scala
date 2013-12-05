@@ -96,18 +96,18 @@ trait AbstractCoverallsPlugin  {
                         coverallsToken: Option[String],
                         coverallsTokenFile: Option[String],
                         coverallsServiceName: Option[String]): State = {
-
+    var currState = state
     val repoToken = userRepoToken(coverallsToken, coverallsTokenFile)
 
     if(travisJobIdent.isEmpty && repoToken.isEmpty) {
-      state.log.error("Could not find coveralls repo token or determine travis job id")
-      state.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
-      state.log.error(" - Otherwise, to set up your repo token read https://github.com/theon/xsbt-coveralls-plugin#specifying-your-repo-token")
-      return state.fail
+      currState.log.error("Could not find coveralls repo token or determine travis job id")
+      currState.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
+      currState.log.error(" - Otherwise, to set up your repo token read https://github.com/theon/xsbt-coveralls-plugin#specifying-your-repo-token")
+      return currState.fail
     }
 
     //Run the scct plugin to generate code coverage
-    Command.process("scct:test", state)
+    currState = Command.process("scct:test", currState)
 
     //Users can encode their source files in whatever encoding they desire, however when we send their source code to
     //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
@@ -127,14 +127,14 @@ trait AbstractCoverallsPlugin  {
       jsonEnc
     )
 
-    writer.start(state.log)
+    writer.start(currState.log)
 
     val allCoberturaFiles =
       (CoberturaFile(rootCoberturaFile, rootProjectDir) +: childCoberturaFiles).filter(_.exists)
 
     if(allCoberturaFiles.isEmpty) {
-      state.log.error("Could not find any cobertura.xml files. Has SCCT run?")
-      return state.fail
+      currState.log.error("Could not find any cobertura.xml files. Has SCCT run?")
+      return currState.fail
     }
 
     allCoberturaFiles.foreach(coberturaFile => {
@@ -151,16 +151,16 @@ trait AbstractCoverallsPlugin  {
 
     val res = coverallsClient.postFile(coverallsFile)
     if(res.error) {
-      state.log.error("Uploading to coveralls.io failed: " + res.message)
+      currState.log.error("Uploading to coveralls.io failed: " + res.message)
       if(res.message.contains("Build processing error")) {
-        state.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
+        currState.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
       }
-      state.fail
+      currState.fail
     } else {
-      state.log.info("Uploading to coveralls.io succeeded: " + res.message)
-      state.log.info(res.url)
-      state.log.info("(results may not appear immediately)")
-      state
+      currState.log.info("Uploading to coveralls.io succeeded: " + res.message)
+      currState.log.info(res.url)
+      currState.log.info("(results may not appear immediately)")
+      currState
     }
   }
 
