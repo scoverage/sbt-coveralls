@@ -32,7 +32,7 @@ Coveralls configuration options (such as [Specifying Your Repo Token](#specifyin
 
 ## Travis CI Integration
 
-`xsbt-coverall-plugin` can be run by [Travis CI](http://about.travis-ci.org/) by following these instructions:
+`sbt-coveralls` can be run by [Travis CI](http://about.travis-ci.org/) by following these instructions:
 
 1) Add the following to you `travis.yml`
 
@@ -44,7 +44,7 @@ Coveralls configuration options (such as [Specifying Your Repo Token](#specifyin
 
 1)  Get the repo token for your repo from http://coveralls.io
 
-1) Let `xsbt-coverall-plugin` know what your coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
+1) Let `sbt-coveralls` know what your coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
 
 2) In the SBT console run the command `coveralls`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
 
@@ -87,46 +87,16 @@ Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 
 ## Custom Source File Encoding
 
-By default `xsbt-coveralls-plugin` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
+By default `sbt-coveralls` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
 
 ```scala
-import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+import CoverallsPlugin.CoverallsKeys._
 
 encoding := "ISO-8859-1"
 ```
 
 Once the plugin has slurped your source code into memory using the specified encoding, it will be converted into UTF-8 to be sent to the coveralls API. This is because the coveralls API uses a JSON request body and RFC 4627 mandates that [JSON must be UTF encoded](http://tools.ietf.org/html/rfc4627#section-3).
 
-## SNAPSHOT Builds
-
-Add the following to your `project/build.sbt` file
-
-```scala
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.5-SNAPSHOT")
-```
-
-### New in 0.0.5-SNAPSHOT
-
-In a single project build now add this to your build.sbt:
-
-```scala
-seq(CoverallsPlugin.singleProject: _*)
-```
-
- * 0.13.0 support added
- * Moved plugin to root unnamed package
- * Added scct as a dependency rather than requiring the user to also bring it in
- * Added `singleProject` and `multiProject` Settings which include the scct settings, so the user doesn't need to manually include them in their `build.sbt`
-  * Multi Project support still needs to be tested. Need to make a demo project for this.
-
-## TODO
-
-For a list of features that going to be implemented see the [issue tracker](https://github.com/theon/xsbt-coveralls-plugin/issues?labels=enhancement&page=1&state=open)
-
 # License
 
-`xsbt-coveralls-plugin` is open source software released under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0).
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/dcca8e4ca669f859be14ac3ffff4eddd "githalytics.com")](http://githalytics.com/theon/xsbt-coveralls-plugin)
+`sbt-coveralls` is open source software released under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0).
