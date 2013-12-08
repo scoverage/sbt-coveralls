@@ -1,27 +1,10 @@
-# xsbt-coverall-plugin
+# sbt-coveralls
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses either [scoverage](http://mtkopone.github.com/scoverage/) or SCCT to generate the code coverage metrics. This repo is a fork of the original xsbt-coverall-plugin to add support for scoverage.
+SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses either [scoverage](http://mtkopone.github.com/scoverage/) or SCCT to generate the code coverage metrics. This repo is a fork of the original [xsbt-coverall-plugin](https://github.com/theon/xsbt-coveralls-plugin) to add support for scoverage.
 
 For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples)
 
 For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
-
-## New in 0.05
-
-* Support for scoverage
-
-## New in 0.0.4
-
- * OpenJDK support
-
-## New in 0.0.3
-
- * You must now add `seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)` to your root `build.sbt`. This is to support multi project builds.
- * Command to run the plugin is now `coveralls` rather than `coverall test`. This is as a result from changing to use `TaskKey` rather than `Command`.
- * Multi project build support!
- * Bug Fix: unicode characters in source files now decoded/encoded correctly
- * New ways to [specify your repo token](#specifying-your-repo-token) for manual (non-travis) builds.
- * Support for [different source file encodings](#custom-source-file-encoding)
 
 ## Installation
 
@@ -30,7 +13,7 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 ```scala
 addSbtPlugin("com.github.sksamuel" % "sbt-scoverage" % "0.93")
 
-addSbtPlugin("com.github.sksamuel" %% "xsbt-coveralls-plugin" % "0.0.5")
+addSbtPlugin("com.github.sksamuel" %% "sbt-coveralls" % "0.0.5")
 ```
 
 2) Add the following to the top of your `build.sbt`
