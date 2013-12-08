@@ -8,7 +8,7 @@ scalaVersion := "2.10.3"
 
 sbtPlugin := true
 
-publishMavenStyle := true
+publishMavenStyle := false
 
 publishArtifact in Test := false
 
@@ -37,7 +37,7 @@ publishTo <<= version {
     Some(Resolver.url(name, new URL(url))(Resolver.ivyStylePatterns))
 }
 
-pomExtra := <url>https://github.com/scoverage/xsbt-coveralls-plugin</url>
+pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -46,8 +46,8 @@ pomExtra := <url>https://github.com/scoverage/xsbt-coveralls-plugin</url>
     </license>
   </licenses>
   <scm>
-    <url>git@github.com:scoverage/xsbt-coveralls-plugin.git</url>
-    <connection>scm:git@github.com:scoverage/xsbt-coveralls-plugin.git</connection>
+    <url>git@github.com:scoverage/sbt-coveralls.git</url>
+    <connection>scm:git@github.com:scoverage/sbt-coveralls.git</connection>
   </scm>
   <developers>
     <developer>

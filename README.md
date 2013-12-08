@@ -1,8 +1,13 @@
 # sbt-coveralls
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses either [scoverage](http://mtkopone.github.com/scoverage/) or [SCCT](http://mtkopone.github.io/scct/) to generate the code coverage metrics. This repo is a fork of the original [xsbt-coverall-plugin](https://github.com/theon/xsbt-coveralls-plugin) to add support for scoverage.
+SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration).
+This plugin uses either [scoverage](http://mtkopone.github.com/scoverage/) or [SCCT](http://mtkopone.github.io/scct/) to generate the code coverage metrics.
+This repo is a fork of the original [xsbt-coverall-plugin](https://github.com/theon/xsbt-coveralls-plugin) to add
+support for scoverage. Use this project if you need scoverage support and until/if scoverage is supported upstream in
+ xsbt-coveralls-plugin.
 
-For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples). For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
+For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples).
+For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
 
 ## Installation
 
@@ -53,7 +58,7 @@ For example output [click here](https://coveralls.io/builds/6727)
 
 ## Specifying Your Repo Token
 
-There are several ways to tell `xsbt-coverall-plugin` your repo token to support different use cases:
+There are several ways to tell `sbt-coveralls` your repo token to support different use cases:
 
 ### Write your repo token into a file 
 
