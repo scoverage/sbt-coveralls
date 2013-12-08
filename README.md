@@ -2,9 +2,7 @@
 
 SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses either [scoverage](http://mtkopone.github.com/scoverage/) or SCCT to generate the code coverage metrics. This repo is a fork of the original [xsbt-coverall-plugin](https://github.com/theon/xsbt-coveralls-plugin) to add support for scoverage.
 
-For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples)
-
-For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
+For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples). For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
 
 ## Installation
 
