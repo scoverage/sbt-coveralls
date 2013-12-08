@@ -21,28 +21,28 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     sys.env.get("COVERALLS_REPO_TOKEN")
       .orElse(coverallsToken)
       .orElse(coverallsTokenFile.flatMap(repoTokenFromFile))
-      .orElse(userRepoTokenFromLegacyFile)
 
   object CoverallsKeys {
     //So people can configure coverallsToken := "string" even though it is a SettingKey[Option[String]]
     //Better way to do this?
     implicit def strToOpt(s: String) = Option(s)
 
-    val coberturaFile = SettingKey[File]("cobertura-file")
-    val coverallsFile = SettingKey[File]("coveralls-file")
-
-    val childCoberturaFilesTask = TaskKey[Seq[CoberturaFile]]("child-cobertura-files", "Finds all the cobertura files in the sub projects")
-
     val coverallsTask = TaskKey[Unit]("coveralls", "Generate coveralls reports")
-    val encoding = SettingKey[String]("encoding")
+    val coverallsFile = SettingKey[File]("coveralls-file")
     val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
     val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
     val coverallsServiceName = SettingKey[Option[String]]("coveralls-service-name")
+    val coverallsCoverageTask = SettingKey[String]("coveralls-coverage-task")
+
+    val coberturaFile = SettingKey[File]("cobertura-file")
+    val childCoberturaFilesTask = TaskKey[Seq[CoberturaFile]]("child-cobertura-files", "Finds all the cobertura files in the sub projects")
+
+    val encoding = SettingKey[String]("encoding")
   }
 
-  lazy val singleProject = ScctPlugin.instrumentSettings ++ coverallsSettings
+  lazy val singleProject = coverallsSettings
 
-  lazy val multiProject = ScctPlugin.mergeReportSettings ++ coverallsSettings
+  //lazy val multiProject = ScctPlugin.mergeReportSettings ++ coverallsSettings
 
   lazy val coverallsSettings: Seq[Setting[_]] = Seq (
     encoding := "UTF-8",
@@ -50,6 +50,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     coverallsTokenFile := None,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile <<= crossTarget / "coveralls.json",
+    coverallsCoverageTask := "scoverage:test",
     coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "cobertura.xml"),
     childCoberturaFilesTask <<= (thisProjectRef, buildStructure) map childCoberturaFiles,
     coverallsTask <<= (
@@ -61,7 +62,8 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
       encoding,
       coverallsToken,
       coverallsTokenFile,
-      coverallsServiceName
+      coverallsServiceName,
+      coverallsCoverageTask
     ) map coverallsCommand
   )
 }
@@ -95,7 +97,8 @@ trait AbstractCoverallsPlugin  {
                         encoding: String,
                         coverallsToken: Option[String],
                         coverallsTokenFile: Option[String],
-                        coverallsServiceName: Option[String]): State = {
+                        coverallsServiceName: Option[String],
+                        coverallsCoverageTask: String): State = {
     var currState = state
     val repoToken = userRepoToken(coverallsToken, coverallsTokenFile)
 
@@ -106,8 +109,8 @@ trait AbstractCoverallsPlugin  {
       return currState.fail
     }
 
-    //Run the scct plugin to generate code coverage
-    currState = Command.process("scct:test", currState)
+    //Run the code coverage plugin to generate code coverage
+    currState = Command.process(coverallsCoverageTask, currState)
 
     //Users can encode their source files in whatever encoding they desire, however when we send their source code to
     //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
@@ -133,7 +136,7 @@ trait AbstractCoverallsPlugin  {
       (CoberturaFile(rootCoberturaFile, rootProjectDir) +: childCoberturaFiles).filter(_.exists)
 
     if(allCoberturaFiles.isEmpty) {
-      currState.log.error("Could not find any cobertura.xml files. Has SCCT run?")
+      currState.log.error("Could not find any cobertura.xml files. Has the coverage plugin run?")
       return currState.fail
     }
 
@@ -184,8 +187,4 @@ trait AbstractCoverallsPlugin  {
       ref.project +: aggregated(ref, structure)
     }
   }
-
-  @deprecated("Add this to your build.sbt instead: coverallsTokenFile := \"path/to/file/with/my/token.txt\"", "June 2013")
-  def userRepoTokenFromLegacyFile =
-    repoTokenFromFile(Path.userHome.getAbsolutePath + "/.sbt/coveralls.repo.token")
 }

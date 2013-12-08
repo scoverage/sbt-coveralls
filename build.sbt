@@ -1,16 +1,12 @@
 name := "xsbt-coveralls-plugin"
 
-organization  := "com.github.theon"
+organization := "com.sksamuel.scoverage"
 
-version       := "0.0.5-SNAPSHOT"
+version       := "0.0.5"
 
-scalaVersion  := "2.9.2"
+scalaVersion := "2.10.3"
 
 sbtPlugin := true
-
-crossBuildingSettings
-
-CrossBuilding.crossSbtVersions := Seq("0.12", "0.13")
 
 publishMavenStyle := true
 
@@ -28,29 +24,20 @@ libraryDependencies ++= Seq (
   "org.scalaj" %% "scalaj-http" % "0.3.6"
 )
 
-libraryDependencies <+= (CrossBuilding.pluginSbtVersion) {
-  case v if v startsWith "0.13" => Defaults.sbtPluginExtra("com.github.scct" % "sbt-scct" % "0.3-SNAPSHOT", "0.13", "2.10")
-  case v if v startsWith "0.12" => Defaults.sbtPluginExtra("com.github.scct" % "sbt-scct" % "0.3-SNAPSHOT", "0.12", "2.9.2")
-}
-
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
   "org.mockito" % "mockito-core" % "1.9.5"
 )
 
-
-seq(CoverallsPlugin.singleProject: _*)
-
-publishTo <<= version { (v: String) =>
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+publishTo <<= version {
+  (v: String) =>
+    val scalasbt = "http://repo.scala-sbt.org/scalasbt/"
+    val (name, url) = if (v.trim.endsWith("SNAPSHOT")) ("sbt-plugin-snapshots", scalasbt + "sbt-plugin-snapshots")
+    else ("sbt-plugin-releases", scalasbt + "sbt-plugin-releases")
+    Some(Resolver.url(name, new URL(url))(Resolver.ivyStylePatterns))
 }
 
-pomExtra := (
-  <url>https://github.com/theon/scala-uri</url>
+pomExtra := <url>https://github.com/scoverage/xsbt-coveralls-plugin</url>
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -59,8 +46,8 @@ pomExtra := (
     </license>
   </licenses>
   <scm>
-    <url>git@github.com:theon/xsbt-coveralls-plugin.git</url>
-    <connection>scm:git@github.com:theon/xsbt-coveralls-plugin.git</connection>
+    <url>git@github.com:scoverage/xsbt-coveralls-plugin.git</url>
+    <connection>scm:git@github.com:scoverage/xsbt-coveralls-plugin.git</connection>
   </scm>
   <developers>
     <developer>
@@ -68,4 +55,9 @@ pomExtra := (
       <name>Ian Forsey</name>
       <url>http://theon.github.com</url>
     </developer>
-  </developers>)
+    <developer>
+      <id>sksamuel</id>
+      <name>Stephen Samuel</name>
+      <url>http://github.com/sksamuel</url>
+    </developer>
+  </developers>
