@@ -1,4 +1,4 @@
-name := "xsbt-coveralls-plugin"
+name := "sbt-coveralls"
 
 organization := "com.sksamuel.scoverage"
 
