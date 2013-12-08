@@ -1,13 +1,14 @@
 # xsbt-coverall-plugin
 
-[![Build Status](https://travis-ci.org/theon/xsbt-coveralls-plugin.png?branch=master)](https://travis-ci.org/theon/xsbt-coveralls-plugin)
-[![Coverage Status](https://coveralls.io/repos/theon/xsbt-coveralls-plugin/badge.png?branch=master)](https://coveralls.io/r/theon/xsbt-coveralls-plugin)
+SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses either [scoverage](http://mtkopone.github.com/scoverage/) or SCCT to generate the code coverage metrics. This repo is a fork of the original xsbt-coverall-plugin to add support for scoverage.
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scct](http://mtkopone.github.com/scct/) to generate the code coverage metrics.
-
-For an example project that uses this plugin [click here](https://github.com/theon/scala-uri)
+For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples)
 
 For example output [click here](https://coveralls.io/builds/6727)
+
+## New in 0.05
+
+* Support for scoverage
 
 ## New in 0.0.4
 
@@ -27,22 +28,17 @@ For example output [click here](https://coveralls.io/builds/6727)
 1) Adding the following to your `project/build.sbt` file
 
 ```scala
-resolvers ++= Seq(
-    Classpaths.typesafeResolver,
-    "scct-github-repository" at "http://mtkopone.github.com/scct/maven-repo"
-)
+addSbtPlugin("com.github.sksamuel" % "sbt-scoverage" % "0.93")
 
-addSbtPlugin("reaktor" % "sbt-scct" % "0.2-SNAPSHOT")
-
-addSbtPlugin("com.github.theon" %% "xsbt-coveralls-plugin" % "0.0.4")
+addSbtPlugin("com.github.sksamuel" %% "xsbt-coveralls-plugin" % "0.0.5")
 ```
 
 2) Add the following to the top of your `build.sbt`
 
 ```scala
-seq(ScctPlugin.instrumentSettings : _*)
+ScctPlugin.instrumentSettings
 
-seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
+CoverallsPlugin.coverallsSettings
 ```
 
 Coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token)) must come after this line.
