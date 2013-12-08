@@ -4,7 +4,7 @@ SBT plugin that uploads scala code coverage to [https://coveralls.io](https://co
 
 For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples)
 
-For example output [click here](https://coveralls.io/builds/6727)
+For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
 
 ## New in 0.05
 
