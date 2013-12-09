@@ -1,3 +1,5 @@
+import bintray.Keys._
+
 name := "sbt-coveralls"
 
 organization := "com.sksamuel.scoverage"
@@ -14,6 +16,14 @@ publishArtifact in Test := false
 
 pomIncludeRepository := { _ => false }
 
+bintrayPublishSettings
+
+repository in bintray := "sbt-plugins"
+
+licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+
+bintrayOrganization in bintray := None
+
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -21,21 +31,10 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 libraryDependencies ++= Seq (
   "com.fasterxml.jackson.core" % "jackson-core" % "2.2.3",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.3",
-  "org.scalaj" %% "scalaj-http" % "0.3.6"
-)
-
-libraryDependencies ++= Seq(
+  "org.scalaj" %% "scalaj-http" % "0.3.6",
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
   "org.mockito" % "mockito-core" % "1.9.5"
 )
-
-publishTo <<= version {
-  (v: String) =>
-    val scalasbt = "http://repo.scala-sbt.org/scalasbt/"
-    val (name, url) = if (v.trim.endsWith("SNAPSHOT")) ("sbt-plugin-snapshots", scalasbt + "sbt-plugin-snapshots")
-    else ("sbt-plugin-releases", scalasbt + "sbt-plugin-releases")
-    Some(Resolver.url(name, new URL(url))(Resolver.ivyStylePatterns))
-}
 
 pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
   <licenses>
