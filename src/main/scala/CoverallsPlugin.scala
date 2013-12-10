@@ -105,7 +105,8 @@ trait AbstractCoverallsPlugin  {
     if(travisJobIdent.isEmpty && repoToken.isEmpty) {
       currState.log.error("Could not find coveralls repo token or determine travis job id")
       currState.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
-      currState.log.error(" - Otherwise, to set up your repo token read https://github.com/theon/xsbt-coveralls-plugin#specifying-your-repo-token")
+      currState.log.error(" - Otherwise, to set up your repo token read https://github" +
+        ".com/scoverage/sbt-coveralls#specifying-your-repo-token")
       return currState.fail
     }
 
