@@ -11,9 +11,11 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 
 ## Installation
 
-1) Adding the following to your `project/build.sbt` file
+1) Add the following to your `project/build.sbt` file
 
 ```scala
+resolvers += Classpaths.sbtPluginReleases
+
 addSbtPlugin("com.sksamuel.scoverage" % "sbt-scoverage" % "0.95.0")
 
 addSbtPlugin("com.sksamuel.scoverage" %% "sbt-coveralls" % "0.0.5")
