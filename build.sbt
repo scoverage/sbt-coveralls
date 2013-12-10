@@ -1,5 +1,3 @@
-import bintray.Keys._
-
 name := "sbt-coveralls"
 
 organization := "com.sksamuel.scoverage"
@@ -16,13 +14,7 @@ publishArtifact in Test := false
 
 pomIncludeRepository := { _ => false }
 
-bintrayPublishSettings
-
-repository in bintray := "sbt-plugins"
-
 licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html"))
-
-bintrayOrganization in bintray := None
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
@@ -35,6 +27,19 @@ libraryDependencies ++= Seq (
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
   "org.mockito" % "mockito-core" % "1.9.5"
 )
+
+publishMavenStyle := false
+
+publishArtifact in Test := false
+
+publishTo := {
+  Some(
+    Resolver.url(
+      "sbt-plugin-releases",
+      new URL("https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/")
+    )(Resolver.ivyStylePatterns)
+  )
+}
 
 pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
   <licenses>
