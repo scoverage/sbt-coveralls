@@ -14,7 +14,7 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 1) Adding the following to your `project/build.sbt` file
 
 ```scala
-addSbtPlugin("com.github.sksamuel" % "sbt-scoverage" % "0.93")
+addSbtPlugin("com.github.sksamuel" % "sbt-scoverage" % "0.95.0")
 
 addSbtPlugin("com.github.sksamuel" %% "sbt-coveralls" % "0.0.5")
 ```
@@ -22,7 +22,7 @@ addSbtPlugin("com.github.sksamuel" %% "sbt-coveralls" % "0.0.5")
 2) Add the following to the top of your `build.sbt`
 
 ```scala
-ScctPlugin.instrumentSettings
+ScoverageSbtPlugin.instrumentSettings
 
 CoverallsPlugin.coverallsSettings
 ```
