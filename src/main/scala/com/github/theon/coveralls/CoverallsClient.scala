@@ -6,7 +6,7 @@ import scalaj.http.{HttpException, MultiPart, Http}
 import scalaj.http.HttpOptions._
 import java.io.File
 import javax.net.ssl.{SSLSocket, SSLSocketFactory}
-import java.net.{Socket, InetAddress}
+import java.net.{HttpURLConnection, Socket, InetAddress}
 import com.fasterxml.jackson.core.JsonEncoding
 import com.fasterxml.jackson.databind.ObjectMapper
 
@@ -16,7 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
  */
 class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
-  val url = "https://coveralls.io/api/v1/jobs"
+  import CoverallsClient._
+
   val mapper = newMapper
 
   def newMapper = {
@@ -33,29 +34,43 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
     val bytes = source.getLines.mkString("\n").getBytes(jsonEnc.getJavaName)
     source.close
 
-    val res = httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes)
-    mapper.readValue(res, classOf[CoverallsResponse])
+    val CoverallHttpResponse(responseCode, body) =
+      httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes)
+    if (responseCode == 500 && body.contains(serverErrorString))
+      CoverallsResponse(serverErrorString, error = true, "")
+    else
+      mapper.readValue(body, classOf[CoverallsResponse])
   }
 }
 
+object CoverallsClient {
+  val url = "https://coveralls.io/api/v1/jobs"
+  val serverErrorString = "Oops, something went wrong"
+  val buildErrorString = "Build processing error"
+}
+
+case class CoverallHttpResponse(responseCode: Int, body: String)
 case class CoverallsResponse(message:String, error:Boolean, url:String)
 
 trait HttpClient {
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): String
+  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): CoverallHttpResponse
 }
 
 class ScalaJHttpClient extends HttpClient {
 
   val openJdkSafeSsl = new OpenJdkSafeSsl
 
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = try {
-    Http.multipart(url, MultiPart(name, filename, mime, data))
+  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): CoverallHttpResponse = try {
+    val request = Http.multipart(url, MultiPart(name, filename, mime, data))
       .option(connTimeout(60000))
       .option(readTimeout(60000))
       .option(sslSocketFactory(openJdkSafeSsl))
-      .asString
+
+    request.process { conn: HttpURLConnection =>
+      CoverallHttpResponse(conn.getResponseCode, Http.tryParse(conn.getInputStream, Http.readString))
+    }
   } catch {
-    case e:HttpException => e.body
+    case e:HttpException => CoverallHttpResponse(500, e.body)
   }
 }
 
