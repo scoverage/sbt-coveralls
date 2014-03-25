@@ -1,3 +1,5 @@
+package com.github.theon.coveralls
+
 import com.fasterxml.jackson.core.JsonEncoding
 import com.github.theon.coveralls._
 import sbt.Keys._
