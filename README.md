@@ -21,12 +21,30 @@ addSbtPlugin("com.sksamuel.scoverage" % "sbt-scoverage" % "0.95.1")
 addSbtPlugin("com.sksamuel.scoverage" %% "sbt-coveralls" % "0.0.5")
 ```
 
-2) Add the following to the top of your `build.sbt`
+2) Import the settings in your build file
 
+##### for build.sbt:
+
+Add the following to the top of your `build.sbt`:
 ```scala
 ScoverageSbtPlugin.instrumentSettings
 
 CoverallsPlugin.coverallsSettings
+```
+
+##### for build.scala projects:
+
+Import the plugin settings, and add them to your project settings (example):
+```scala
+import scoverage.ScoverageSbtPlugin.instrumentSettings
+import com.github.theon.coveralls.CoverallsPlugin.coverallsSettings
+
+...
+
+lazy val project = Project(
+  ...
+  settings = defaultSettings ++ intsrumentSettings ++ coverallsSettings
+)
 ```
 
 Coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token)) must come after this line.
@@ -62,9 +80,9 @@ For example output [click here](https://coveralls.io/builds/6727)
 
 There are several ways to tell `sbt-coveralls` your repo token to support different use cases:
 
-### Write your repo token into a file 
+### Write your repo token into a file
 
-Add the following to your `build.sbt`. The path can be absolute and point to somewhere outside the project or relative and point somewhere inside the project (such as `src/main/resources/token.txt`). 
+Add the following to your `build.sbt`. The path can be absolute and point to somewhere outside the project or relative and point somewhere inside the project (such as `src/main/resources/token.txt`).
 
 Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
 
