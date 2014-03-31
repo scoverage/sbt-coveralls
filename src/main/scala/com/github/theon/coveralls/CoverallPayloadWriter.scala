@@ -26,7 +26,7 @@ class CoverallPayloadWriter(coverallsFile: File,
   }
 
   def start(implicit log: Logger) {
-    gen.writeStartObject
+    gen.writeStartObject()
 
     def writeOpt(fieldName: String, holder: Option[String]) =
       holder foreach { gen.writeStringField(fieldName, _) }
@@ -38,15 +38,15 @@ class CoverallPayloadWriter(coverallsFile: File,
     addGitInfo
 
     gen.writeFieldName("source_files")
-    gen.writeStartArray
+    gen.writeStartArray()
   }
 
   private def addGitInfo(implicit log: Logger) {
     gen.writeFieldName("git")
-    gen.writeStartObject
+    gen.writeStartObject()
 
     gen.writeFieldName("head")
-    gen.writeStartObject
+    gen.writeStartObject()
 
     gen.writeStringField("id", lastCommit("%H"))
     gen.writeStringField("author_name", lastCommit("%an"))
@@ -55,60 +55,60 @@ class CoverallPayloadWriter(coverallsFile: File,
     gen.writeStringField("committer_email", lastCommit("%ce"))
     gen.writeStringField("message", lastCommit("%s"))
 
-    gen.writeEndObject
+    gen.writeEndObject()
 
     gen.writeStringField("branch", currentBranch)
 
     gen.writeFieldName("remotes")
-    gen.writeStartArray
+    gen.writeStartArray()
 
     addGitRemotes(remotes)
 
-    gen.writeEndArray
+    gen.writeEndArray()
 
-    gen.writeEndObject
+    gen.writeEndObject()
   }
 
   @tailrec
   private def addGitRemotes(remotes: Seq[String])(implicit log: Logger) {
     if(remotes.isEmpty) return
 
-    gen.writeStartObject
+    gen.writeStartObject()
     gen.writeStringField("name", remotes.head)
     gen.writeStringField("url", remoteUrl(remotes.head))
-    gen.writeEndObject
+    gen.writeEndObject()
 
     addGitRemotes(remotes.tail)
   }
 
   def addSourceFile(report: SourceFileReport) {
-    gen.writeStartObject
+    gen.writeStartObject()
     gen.writeStringField("name", report.fileRel)
 
     val source = Source.fromFile(report.file)(sourcesEnc)
     val sourceCode = source.mkString
-    source.close
+    source.close()
 
     gen.writeStringField("source", sourceCode)
 
     gen.writeFieldName("coverage")
-    gen.writeStartArray
+    gen.writeStartArray()
     report.lineCoverage.foreach {
       case Some(x) => gen.writeNumber(x)
       case _ => gen.writeNull()
     }
-    gen.writeEndArray
-    gen.writeEndObject
+    gen.writeEndArray()
+    gen.writeEndObject()
   }
 
   def end() {
-    gen.writeEndArray
-    gen.writeEndObject
-    gen.flush
-    gen.close
+    gen.writeEndArray()
+    gen.writeEndObject()
+    gen.flush()
+    gen.close()
   }
 
-  def flush {
-    gen.flush
+  def flush(): Unit = {
+    gen.flush()
   }
 }

@@ -1,8 +1,8 @@
 name := "sbt-coveralls"
 
-organization := "com.sksamuel.scoverage"
+organization := "org.scoverage"
 
-version       := "0.0.5"
+version       := "0.98.0"
 
 scalaVersion := "2.10.3"
 
@@ -21,11 +21,11 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq (
-  "com.fasterxml.jackson.core" % "jackson-core" % "2.2.3",
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.3",
-  "org.scalaj" %% "scalaj-http" % "0.3.6",
-  "org.scalatest" %% "scalatest" % "1.9.1" % "test",
-  "org.mockito" % "mockito-core" % "1.9.5"
+  "com.fasterxml.jackson.core"        % "jackson-core" % "2.2.3",
+  "com.fasterxml.jackson.module"      %% "jackson-module-scala" % "2.2.3",
+  "org.scalaj"                        %% "scalaj-http" % "0.3.6",
+  "org.mockito"                       % "mockito-core" % "1.9.5",
+  "org.scalatest"                     %% "scalatest" % "2.1.2" % "test"
 )
 
 publishMavenStyle := false

@@ -4,10 +4,6 @@ import xml.{Node, XML}
 import scala.io.{Codec, Source}
 import java.io.File
 
-/**
- * Date: 10/03/2013
- * Time: 17:42
- */
 class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: File, enc: Codec) {
 
   val elem = XML.loadFile(coberturaFile)
@@ -30,14 +26,14 @@ class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: 
     })
 
     lineElems.map(n => {
-      (n \\ "@number").toString.toInt -> (n \\ "@hits").toString.toInt
+      (n \\ "@number").toString().toInt -> (n \\ "@hits").toString().toInt
     }).toMap
   }
 
   def reportForSource(source: String) = {
     val fileSrc = Source.fromFile(source)(enc)
     val lineCount = fileSrc.getLines().size
-    fileSrc.close
+    fileSrc.close()
 
     val lineHitMap = lineCoverage(source)
     val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))

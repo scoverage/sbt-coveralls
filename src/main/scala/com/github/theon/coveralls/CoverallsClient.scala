@@ -10,10 +10,6 @@ import java.net.{HttpURLConnection, Socket, InetAddress}
 import com.fasterxml.jackson.core.JsonEncoding
 import com.fasterxml.jackson.databind.ObjectMapper
 
-/**
- * Date: 10/03/2013
- * Time: 17:19
- */
 class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
   import CoverallsClient._
@@ -31,8 +27,8 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
    */
   def postFile(file: File) = {
     val source = Source.fromFile(file)(sourcesEnc)
-    val bytes = source.getLines.mkString("\n").getBytes(jsonEnc.getJavaName)
-    source.close
+    val bytes = source.getLines().mkString("\n").getBytes(jsonEnc.getJavaName)
+    source.close()
 
     val CoverallHttpResponse(responseCode, body) =
       httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes)
