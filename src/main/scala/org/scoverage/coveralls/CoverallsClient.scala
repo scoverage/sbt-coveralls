@@ -1,4 +1,4 @@
-package com.github.theon.coveralls
+package org.scoverage.coveralls
 
 import scala.io.{Codec, Source}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule

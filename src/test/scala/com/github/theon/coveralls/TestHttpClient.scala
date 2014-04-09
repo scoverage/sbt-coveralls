@@ -1,5 +1,7 @@
 package com.github.theon.coveralls
 
+import org.scoverage.coveralls.HttpClient
+
 /**
  * Date: 30/03/2013
  * Time: 15:36

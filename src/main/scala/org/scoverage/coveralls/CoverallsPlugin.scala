@@ -1,7 +1,6 @@
-package com.github.theon.coveralls
+package org.scoverage.coveralls
 
 import com.fasterxml.jackson.core.JsonEncoding
-import com.github.theon.coveralls._
 import sbt.Keys._
 import sbt._
 import scala.io.{Codec, Source}

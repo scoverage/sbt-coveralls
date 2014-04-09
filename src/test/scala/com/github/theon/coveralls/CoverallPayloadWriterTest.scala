@@ -6,6 +6,8 @@ import org.scalatest.matchers.ShouldMatchers
 import java.io.{StringWriter, Writer, File}
 import scala.io.Codec
 import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
+import org.scoverage.GitClient
+import org.scoverage.coveralls.{GitClient, CoverallPayloadWriter, SourceFileReport}
 
 /**
  * Date: 30/03/2013

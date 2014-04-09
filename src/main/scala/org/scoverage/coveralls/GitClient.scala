@@ -1,4 +1,4 @@
-package com.github.theon.coveralls
+package org.scoverage.coveralls
 
 import sbt.Logger
 import scala.sys.process._

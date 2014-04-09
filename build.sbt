@@ -21,11 +21,11 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq (
-  "com.fasterxml.jackson.core"        % "jackson-core" % "2.2.3",
-  "com.fasterxml.jackson.module"      %% "jackson-module-scala" % "2.2.3",
-  "org.scalaj"                        %% "scalaj-http" % "0.3.6",
-  "org.mockito"                       % "mockito-core" % "1.9.5",
-  "org.scalatest"                     %% "scalatest" % "2.1.2" % "test"
+  "com.fasterxml.jackson.core"        % "jackson-core"                % "2.2.3",
+  "com.fasterxml.jackson.module"      %% "jackson-module-scala"       % "2.2.3",
+  "org.scalaj"                        %% "scalaj-http"                % "0.3.6",
+  "org.mockito"                       % "mockito-core"                % "1.9.5",
+  "org.scalatest"                     %% "scalatest"                  % "2.1.2"         % "test"
 )
 
 publishMavenStyle := false

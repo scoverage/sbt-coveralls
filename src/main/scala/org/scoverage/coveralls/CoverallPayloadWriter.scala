@@ -1,4 +1,4 @@
-package com.github.theon.coveralls
+package org.scoverage.coveralls
 
 import java.io.File
 import scala.io.{Codec, Source}

@@ -4,6 +4,7 @@ import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import sys.process._
 import sbt.{ConsoleLogger}
 import org.scalatest.matchers.ShouldMatchers
+import org.scoverage.coveralls.GitClient
 
 /**
  * Date: 30/03/2013

@@ -5,6 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import scala.io.Codec
 import java.io.File
 import com.fasterxml.jackson.core.JsonEncoding
+import org.scoverage.coveralls.CoverallsClient
 
 /**
  * Date: 30/03/2013

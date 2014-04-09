@@ -4,6 +4,7 @@ import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.ShouldMatchers
 import java.io.File
 import scala.io.Codec
+import org.scoverage.coveralls.CoberturaReader
 
 /**
  * Date: 30/03/2013
