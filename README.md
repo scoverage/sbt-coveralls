@@ -87,7 +87,7 @@ Add the following to your `build.sbt`. The path can be absolute and point to som
 Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
 
 ```scala
-import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+import CoverallsPlugin.CoverallsKeys._
 
 coverallsTokenFile := "/path/to/my/repo/token.txt"
 ```
@@ -97,7 +97,7 @@ coverallsTokenFile := "/path/to/my/repo/token.txt"
 **Do not store repo tokens inside your project if it is in a public git repository!**
 
 ```scala
-import com.github.theon.coveralls.CoverallsPlugin.CoverallsKeys._
+import CoverallsPlugin.CoverallsKeys._
 
 coverallsToken := "my-token"
 ```
