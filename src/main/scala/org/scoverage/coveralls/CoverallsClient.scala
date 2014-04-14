@@ -32,17 +32,19 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
 
     val CoverallHttpResponse(responseCode, body) =
       httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes)
-    if (responseCode == 500 && body.contains(serverErrorString))
-      CoverallsResponse(serverErrorString, error = true, "")
-    else
+    if (responseCode == 500) {
+      val titleStart = body.indexOf(s"<$errorResponseTitleTag>") + errorResponseTitleTag.length + 2
+      val titleEnd = body.indexOf(s"</$errorResponseTitleTag>")
+      CoverallsResponse(body.substring(titleStart, titleEnd), error = true, "")
+    } else
       mapper.readValue(body, classOf[CoverallsResponse])
   }
 }
 
 object CoverallsClient {
   val url = "https://coveralls.io/api/v1/jobs"
-  val serverErrorString = "Oops, something went wrong"
   val buildErrorString = "Build processing error"
+  val errorResponseTitleTag = "title"
 }
 
 case class CoverallHttpResponse(responseCode: Int, body: String)
