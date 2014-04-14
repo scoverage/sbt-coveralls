@@ -159,8 +159,8 @@ trait AbstractCoverallsPlugin  {
       currState.log.error("Uploading to coveralls.io failed: " + res.message)
       if(res.message.contains(CoverallsClient.buildErrorString)) {
         currState.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
-      } else if (res.message.contains(CoverallsClient.serverErrorString)) {
-        currState.log.error("Coveralls.io server internal error")
+      } else {
+        currState.log.error("Coveralls.io server internal error: " + res.message)
       }
       currState.fail
     } else {
