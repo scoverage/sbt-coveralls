@@ -2,7 +2,7 @@ name := "sbt-coveralls"
 
 organization := "org.scoverage"
 
-version       := "0.98.0"
+version       := "0.99.0-SNAPSHOT"
 
 scalaVersion := "2.10.3"
 
@@ -21,11 +21,12 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq (
-  "com.fasterxml.jackson.core"        % "jackson-core"                % "2.2.3",
-  "com.fasterxml.jackson.module"      %% "jackson-module-scala"       % "2.2.3",
-  "org.scalaj"                        %% "scalaj-http"                % "0.3.6",
+  "com.fasterxml.jackson.core"        % "jackson-core"                % "2.4.2",
+  "com.fasterxml.jackson.module"      %% "jackson-module-scala"       % "2.4.2",
+  "org.eclipse.jgit"                  % "org.eclipse.jgit"            % "3.4.1.201406201815-r",
+  "org.scalaj"                        %% "scalaj-http"                % "0.3.16",
   "org.mockito"                       % "mockito-core"                % "1.9.5",
-  "org.scalatest"                     %% "scalatest"                  % "2.1.2"         % "test"
+  "org.scalatest"                     %% "scalatest"                  % "2.2.1"         % "test"
 )
 
 publishMavenStyle := false
@@ -35,7 +36,7 @@ publishArtifact in Test := false
 publishTo := {
   Some(
     Resolver.url(
-      "sbt-plugin-releases",
+      "publishTo",
       new URL("https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/")
     )(Resolver.ivyStylePatterns)
   )

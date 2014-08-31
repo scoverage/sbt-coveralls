@@ -48,12 +48,14 @@ class CoverallPayloadWriter(coverallsFile: File,
     gen.writeFieldName("head")
     gen.writeStartObject()
 
-    gen.writeStringField("id", lastCommit("%H"))
-    gen.writeStringField("author_name", lastCommit("%an"))
-    gen.writeStringField("author_email", lastCommit("%ae"))
-    gen.writeStringField("committer_name", lastCommit("%cn"))
-    gen.writeStringField("committer_email", lastCommit("%ce"))
-    gen.writeStringField("message", lastCommit("%s"))
+    val commitInfo = lastCommit()
+
+    gen.writeStringField("id", commitInfo.id)
+    gen.writeStringField("author_name", commitInfo.authorName)
+    gen.writeStringField("author_email", commitInfo.authorEmail)
+    gen.writeStringField("committer_name", commitInfo.committerName)
+    gen.writeStringField("committer_email", commitInfo.committerEmail)
+    gen.writeStringField("message", commitInfo.shortMessage)
 
     gen.writeEndObject()
 
@@ -101,7 +103,7 @@ class CoverallPayloadWriter(coverallsFile: File,
     gen.writeEndObject()
   }
 
-  def end() {
+  def end(): Unit = {
     gen.writeEndArray()
     gen.writeEndObject()
     gen.flush()

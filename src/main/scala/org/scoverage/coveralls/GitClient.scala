@@ -1,35 +1,51 @@
 package org.scoverage.coveralls
 
-import sbt.Logger
-import scala.sys.process._
 import java.io.File
 
-class GitClient {
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.RepositoryBuilder
+import org.scoverage.coveralls.GitClient.GitRevision
+import sbt.Logger
 
-  def cwd = Option.empty[String]
+object GitClient {
+  case class GitRevision(id: String,
+                         authorName: String,
+                         authorEmail: String,
+                         committerName: String,
+                         committerEmail: String,
+                         shortMessage: String)
+}
 
-  def remotes(implicit log: Logger) =
-    execute("git remote")
+class GitClient(cwd: String)(implicit log: Logger) {
 
-  def remoteUrl(remoteName: String)(implicit log: Logger) = {
-    execute("git config --get remote." + remoteName + ".url").head
+  import scala.collection.JavaConversions._
+  val repository = new RepositoryBuilder().findGitDir(new File(cwd)).build()
+  val storedConfig = repository.getConfig
+  log.info("Repository = " + repository.getDirectory)
+
+
+  def remotes: Seq[String] = {
+    storedConfig.getSubsections("remote").toList
   }
 
-  def currentBranch(implicit log: Logger) =
-    execute("git rev-parse --abbrev-ref HEAD").head
+  def remoteUrl(remoteName: String): String = {
+    storedConfig.getString("remote", remoteName, "url")
+  }
 
-  def lastCommit(format: String)(implicit log: Logger) =
-    execute("git log -n1 --pretty=format:" + format).head
+  def currentBranch: String =
+    repository.getBranch
 
-  protected def execute(cmd: String)(implicit log: Logger): Seq[String] = {
-    val process = Process(cmd, cwd.map(new File(_)))
-    log.debug("About to execute process '%s'." format process)
-    var (out, err) = (Vector[String](), Vector[String]())
-    val exitCode = process ! ProcessLogger(out :+= _, err :+= _)
-    if (exitCode == 0)
-      out
-    else {
-      sys.error("Exit code: %s\n%s".format(exitCode, err mkString "\n"))
-    }
+  def lastCommit(): GitRevision = {
+    val git = new Git(repository)
+    val headRev = git.log().setMaxCount(1).call().head
+    val id = headRev.getId
+    val author = headRev.getAuthorIdent
+    val committer = headRev.getCommitterIdent
+    GitRevision(id.name,
+      author.getName,
+      author.getEmailAddress,
+      committer.getName,
+      committer.getEmailAddress,
+      headRev.getShortMessage)
   }
 }
