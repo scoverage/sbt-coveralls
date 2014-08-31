@@ -18,7 +18,7 @@ resolvers += Classpaths.sbtPluginReleases
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "0.99.7.1")
 
-addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "0.98.0")
+addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "0.99.0")
 ```
 
 2) Import the settings in your build file
@@ -28,7 +28,6 @@ addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "0.98.0")
 Add the following to the top of your `build.sbt`:
 ```scala
 import scoverage.ScoverageSbtPlugin.instrumentSettings
-
 import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 ```
 
