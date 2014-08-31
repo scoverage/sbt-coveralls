@@ -1,14 +1,11 @@
 import com.github.theon.coveralls.{TestFailureHttpClient, TestSuccessHttpClient}
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
+import org.scoverage.coveralls.AbstractCoverallsPlugin
 import sbt._
 import java.io.File
 
-/**
- * Date: 30/03/2013
- * Time: 15:19
- */
-class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
+class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   val projectRoot = new File("")
   val coberturaFile = new File(projectRoot + "src/test/resources/test_cobertura.xml")
@@ -37,7 +34,7 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
     "Run happy path" should {
       "display successful output" in {
         val logger = new TestLogger()
-        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
+        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null,null, null), null)
 
         SuccessTestCoverallsPlugin.coverallsCommand(state, projectRoot, coberturaFile, Nil, coverallsFile, "UTF-8",
           None, None, None, "scoverage:test")
@@ -50,7 +47,7 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
     "API fails" should {
       "display successful failure message" in {
         val logger = new TestLogger()
-        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
+        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null,null, null), null)
 
         FailureTestCoverallsPlugin
           .coverallsCommand(state,
@@ -71,7 +68,7 @@ class PluginIntegrationTest extends WordSpec with BeforeAndAfterAll with ShouldM
     "No Repo Token or Travis Job Id" should {
       "display some useful information to the user" in {
         val logger = new TestLogger()
-        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null), null)
+        val state = State(null, Seq(), Set(), None, Seq(), null, null, new GlobalLogging(logger, null, null, null, null), null)
 
         NoRepoTokenOfTravisJobIdTestCoverallsPlugin
           .coverallsCommand(state,

@@ -16,9 +16,9 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 ```scala
 resolvers += Classpaths.sbtPluginReleases
 
-addSbtPlugin("com.sksamuel.scoverage" % "sbt-scoverage" % "0.95.1")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "0.99.7.1")
 
-addSbtPlugin("com.sksamuel.scoverage" %% "sbt-coveralls" % "0.0.5")
+addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "0.98.0")
 ```
 
 2) Import the settings in your build file
@@ -27,9 +27,9 @@ addSbtPlugin("com.sksamuel.scoverage" %% "sbt-coveralls" % "0.0.5")
 
 Add the following to the top of your `build.sbt`:
 ```scala
-ScoverageSbtPlugin.instrumentSettings
+import scoverage.ScoverageSbtPlugin.instrumentSettings
 
-CoverallsPlugin.coverallsSettings
+import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 ```
 
 ##### for build.scala projects:
@@ -37,7 +37,7 @@ CoverallsPlugin.coverallsSettings
 Import the plugin settings, and add them to your project settings (example):
 ```scala
 import scoverage.ScoverageSbtPlugin.instrumentSettings
-import com.github.theon.coveralls.CoverallsPlugin.coverallsSettings
+import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 
 ...
 

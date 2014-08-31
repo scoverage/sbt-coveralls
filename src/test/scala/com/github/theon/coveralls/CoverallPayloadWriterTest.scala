@@ -1,27 +1,26 @@
 package com.github.theon.coveralls
 
-import sbt.{ConsoleLogger, Logger}
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
-import org.scalatest.matchers.ShouldMatchers
-import java.io.{StringWriter, Writer, File}
-import scala.io.Codec
-import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
-import org.scoverage.GitClient
-import org.scoverage.coveralls.{GitClient, CoverallPayloadWriter, SourceFileReport}
+import java.io.{File, StringWriter, Writer}
 
-/**
- * Date: 30/03/2013
- * Time: 13:18
- */
-class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
+import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import org.scoverage.coveralls.GitClient.GitRevision
+import org.scoverage.coveralls.{CoverallPayloadWriter, GitClient, SourceFileReport}
+import sbt.ConsoleLogger
+
+import scala.io.Codec
+
+class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   implicit val log = ConsoleLogger(System.out)
 
-  val testGitClient = new GitClient {
-    override def remotes(implicit log: Logger) = List("remote")
-    override def remoteUrl(remoteName:String)(implicit log: Logger) = "remoteUrl"
-    override def currentBranch(implicit log: Logger) = "branch"
-    override def lastCommit(format:String)(implicit log: Logger) = "lastCommit"
+  val testGitClient = new GitClient(".") {
+    override def remotes = List("remote")
+    override def remoteUrl(remoteName:String) = "remoteUrl"
+    override def currentBranch = "branch"
+    override def lastCommit(): GitRevision = {
+      GitRevision("lastCommitId","authorName", "authorEmail", "committerName", "committerEmail", "shortMsg")
+    }
   }
 
   def coverallsWriter(writer:Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String], enc: Codec) =
@@ -32,7 +31,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
       }
     }
 
-  val expectedGit = """"git":{"head":{"id":"lastCommit","author_name":"lastCommit","author_email":"lastCommit","committer_name":"lastCommit","committer_email":"lastCommit","message":"lastCommit"},"branch":"branch","remotes":[{"name":"remote","url":"remoteUrl"}]}"""
+  val expectedGit = """"git":{"head":{"id":"lastCommitId","author_name":"authorName","author_email":"authorEmail","committer_name":"committerName","committer_email":"committerEmail","message":"shortMsg"},"branch":"branch","remotes":[{"name":"remote","url":"remoteUrl"}]}"""
 
   "CoverallPayloadWriter" when {
     "generating coveralls API payload" should {
@@ -42,7 +41,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
         val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), Codec("UTF-8")  )
 
         coverallsW.start
-        coverallsW.flush
+        coverallsW.flush()
 
         w.toString should equal (
           """{"repo_token":"testRepoToken","service_name":"travis-ci","service_job_id":"testTravisJob",""" +
@@ -56,7 +55,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
         val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, None, Codec("UTF-8"))
 
         coverallsW.start
-        coverallsW.flush
+        coverallsW.flush()
 
         w.toString should equal (
           """{"repo_token":"testRepoToken",""" +
@@ -74,7 +73,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
         coverallsW.addSourceFile (
           SourceFileReport(projectRoot, projectRoot + "src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
         )
-        coverallsW.flush
+        coverallsW.flush()
 
         w.toString should equal (
           """{"name":"src/test/resources/TestSourceFile.scala","source":"/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}","coverage":[1,null,2]}"""
@@ -86,7 +85,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Sho
         val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Codec("UTF-8"))
 
         coverallsW.start
-        coverallsW.end
+        coverallsW.end()
 
         w.toString should endWith ("]}")
       }

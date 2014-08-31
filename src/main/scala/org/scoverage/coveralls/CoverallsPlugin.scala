@@ -6,10 +6,6 @@ import sbt._
 import scala.io.{Codec, Source}
 import java.io.File
 
-/**
- * Date: 10/03/2013
- * Time: 17:01
- */
 object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
 
   import CoverallsKeys._
@@ -43,8 +39,6 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
 
   lazy val singleProject = coverallsSettings
 
-  //lazy val multiProject = ScctPlugin.mergeReportSettings ++ coverallsSettings
-
   lazy val coverallsSettings: Seq[Setting[_]] = Seq (
     encoding := "UTF-8",
     coverallsToken := None,
@@ -77,7 +71,7 @@ trait AbstractCoverallsPlugin  {
 
   def apiHttpClient: HttpClient
 
-  def childCoberturaFiles(projectRef: ProjectRef, structure: Load.BuildStructure) = {
+  def childCoberturaFiles(projectRef: ProjectRef, structure: BuildStructure) = {
     val subProjects = aggregated(projectRef, structure)
     subProjects flatMap { p =>
       val crossTargetOpt = (crossTarget in LocalProject(p)).get(structure.data)
@@ -127,7 +121,7 @@ trait AbstractCoverallsPlugin  {
       repoToken,
       travisJobIdent,
       coverallsServiceName,
-      new GitClient,
+      new GitClient(".")(currState.log),
       sourcesEnc,
       jsonEnc
     )
@@ -178,14 +172,14 @@ trait AbstractCoverallsPlugin  {
     try {
       val source = Source.fromFile(path)
       val repoToken = source.mkString.trim
-      source.close
+      source.close()
       Option(repoToken)
     } catch {
       case e: Exception => None
     }
   }
 
-  def aggregated(projectRef: ProjectRef, structure: Load.BuildStructure): Seq[String] = {
+  def aggregated(projectRef: ProjectRef, structure: BuildStructure): Seq[String] = {
     val aggregate = Project.getProject(projectRef, structure).toSeq.flatMap(_.aggregate)
     aggregate flatMap { ref =>
       ref.project +: aggregated(ref, structure)

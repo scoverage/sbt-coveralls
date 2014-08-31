@@ -1,16 +1,12 @@
 package com.github.theon.coveralls
 
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 import java.io.File
 import scala.io.Codec
 import org.scoverage.coveralls.CoberturaReader
 
-/**
- * Date: 30/03/2013
- * Time: 13:22
- */
-class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with ShouldMatchers {
+class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   val reader = new CoberturaReader(new File("src/test/resources/test_cobertura.xml"), new File(""), new File(""), Codec("UTF-8"))
 
