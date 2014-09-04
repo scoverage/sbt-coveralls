@@ -29,7 +29,6 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
     val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
     val coverallsServiceName = SettingKey[Option[String]]("coveralls-service-name")
-    val coverallsCoverageTask = SettingKey[String]("coveralls-coverage-task")
 
     val coberturaFile = SettingKey[File]("cobertura-file")
     val childCoberturaFilesTask = TaskKey[Seq[CoberturaFile]]("child-cobertura-files", "Finds all the cobertura files in the sub projects")
@@ -45,7 +44,6 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
     coverallsTokenFile := None,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile <<= crossTarget / "coveralls.json",
-    coverallsCoverageTask := "scoverage:test",
     coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "cobertura.xml"),
     childCoberturaFilesTask <<= (thisProjectRef, buildStructure) map childCoberturaFiles,
     coverallsTask <<= (
@@ -57,8 +55,7 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
       encoding,
       coverallsToken,
       coverallsTokenFile,
-      coverallsServiceName,
-      coverallsCoverageTask
+      coverallsServiceName
     ) map coverallsCommand
   )
 }
@@ -92,8 +89,7 @@ trait AbstractCoverallsPlugin  {
                         encoding: String,
                         coverallsToken: Option[String],
                         coverallsTokenFile: Option[String],
-                        coverallsServiceName: Option[String],
-                        coverallsCoverageTask: String): State = {
+                        coverallsServiceName: Option[String]): State = {
     var currState = state
     val repoToken = userRepoToken(coverallsToken, coverallsTokenFile)
 
@@ -104,9 +100,6 @@ trait AbstractCoverallsPlugin  {
         ".com/scoverage/sbt-coveralls#specifying-your-repo-token")
       return currState.fail
     }
-
-    //Run the code coverage plugin to generate code coverage
-    currState = Command.process(coverallsCoverageTask, currState)
 
     //Users can encode their source files in whatever encoding they desire, however when we send their source code to
     //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
