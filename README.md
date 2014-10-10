@@ -23,8 +23,9 @@ addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "0.99.0")
 
 Add the following to the top of your `build.sbt`:
 ```scala
-import scoverage.ScoverageSbtPlugin.instrumentSettings
-import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
+scoverage.ScoverageSbtPlugin.instrumentSettings
+
+org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 ```
 
 ##### for build.scala projects:
