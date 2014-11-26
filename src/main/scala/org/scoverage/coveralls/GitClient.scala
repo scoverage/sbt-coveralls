@@ -19,7 +19,8 @@ object GitClient {
 class GitClient(cwd: String)(implicit log: Logger) {
 
   import scala.collection.JavaConversions._
-  val repository = new RepositoryBuilder().findGitDir(new File(cwd)).build()
+
+  val repository = new RepositoryBuilder().setGitDir(new File(cwd + "/.git")).findGitDir(new File(cwd)).build()
   val storedConfig = repository.getConfig
   log.info("Repository = " + repository.getDirectory)
 
