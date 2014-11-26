@@ -20,8 +20,8 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
       .orElse(coverallsTokenFile.flatMap(repoTokenFromFile))
 
   object CoverallsKeys {
-    //So people can configure coverallsToken := "string" even though it is a SettingKey[Option[String]]
-    //Better way to do this?
+    // So people can configure coverallsToken := "string" even though it is a SettingKey[Option[String]]
+    // Better way to do this?
     implicit def strToOpt(s: String) = Option(s)
 
     val coverallsTask = TaskKey[Unit]("coveralls", "Generate coveralls reports")
