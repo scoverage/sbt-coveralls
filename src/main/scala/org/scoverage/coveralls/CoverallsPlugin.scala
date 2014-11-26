@@ -6,7 +6,7 @@ import sbt._
 import scala.io.{Codec, Source}
 import java.io.File
 
-object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
+object CoverallsPlugin extends AutoPlugin with AbstractCoverallsPlugin {
 
   import CoverallsKeys._
 
@@ -22,43 +22,112 @@ object CoverallsPlugin extends Plugin with AbstractCoverallsPlugin {
   object CoverallsKeys {
     // So people can configure coverallsToken := "string" even though it is a SettingKey[Option[String]]
     // Better way to do this?
-    implicit def strToOpt(s: String) = Option(s)
+    implicit def strToOpt(s: String): Option[String] = Option(s)
 
-    val coverallsTask = TaskKey[Unit]("coveralls", "Generate coveralls reports")
-    val coverallsFile = SettingKey[File]("coveralls-file")
-    val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
-    val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
-    val coverallsServiceName = SettingKey[Option[String]]("coveralls-service-name")
+    val coveralls = taskKey[Unit]("Generate coveralls reports")
+    val coverallsFile = settingKey[File]("coveralls-file")
+    val coverallsToken = settingKey[Option[String]]("coveralls-repo-token")
+    val coverallsTokenFile = settingKey[Option[String]]("coveralls-token-file")
+    val coverallsServiceName = settingKey[Option[String]]("coverallsServiceName")
     val coverallsFailBuildOnError = settingKey[Boolean]("fail build if coveralls step fails")
-    val coberturaFile = SettingKey[File]("cobertura-file")
-    val childCoberturaFilesTask = TaskKey[Seq[CoberturaFile]]("child-cobertura-files", "Finds all the cobertura files in the sub projects")
-
-    val encoding = SettingKey[String]("encoding")
+    val coberturaFile = settingKey[File]("coberturaFile")
+    val coverallsEncoding = settingKey[String]("encoding")
+    val childCoberturaFiles = taskKey[Seq[CoberturaFile]]("Finds all the cobertura files in the sub projects")
   }
 
-  lazy val singleProject = coverallsSettings
+  lazy val singleProject = projectSettings
 
-  lazy val coverallsSettings: Seq[Setting[_]] = Seq (
-    encoding := "UTF-8",
+  override def trigger = allRequirements
+  override lazy val projectSettings: Seq[Setting[_]] = Seq(
+    coverallsFailBuildOnError := false,
+    coverallsEncoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsFailBuildOnError := false,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile <<= crossTarget / "coveralls.json",
     coberturaFile <<= crossTarget / ("coverage-report" + File.separator + "cobertura.xml"),
-    childCoberturaFilesTask <<= (thisProjectRef, buildStructure) map childCoberturaFiles,
-    coverallsTask <<= (
-      state,
-      baseDirectory,
-      coberturaFile,
-      childCoberturaFilesTask,
-      coverallsFile,
-      encoding,
-      coverallsToken,
-      coverallsTokenFile,
-      coverallsServiceName,
-      coverallsFailBuildOnError,
-    ) map coverallsCommand
+    childCoberturaFiles := {
+      val subProjects = aggregated(thisProjectRef.value, buildStructure.value)
+      subProjects flatMap { p =>
+        val crossTargetOpt = (crossTarget in LocalProject(p)).get(buildStructure.value.data)
+        val baseDir = (baseDirectory in LocalProject(p)).get(buildStructure.value.data)
+        crossTargetOpt.map { crossTarg =>
+          val coberFile = new File(crossTarg + File.separator + "coverage-report" + File.separator + "cobertura.xml")
+          CoberturaFile(coberFile, baseDir.get)
+        }
+      }
+    },
+    coveralls := {
+      val s = streams.value
+      val repoToken = userRepoToken(coverallsToken.value, coverallsTokenFile.value)
+
+      if (travisJobIdent.isEmpty && repoToken.isEmpty) {
+        s.log.error("Could not find coveralls repo token or determine travis job id")
+        s.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
+        s.log.error(
+          " - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token")
+        state.value.fail
+      }
+
+      //Users can encode their source files in whatever encoding they desire, however when we send their source code to
+      //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
+      //See http://tools.ietf.org/html/rfc4627#section-3
+      val sourcesEnc = Codec(coverallsEncoding.value)
+      val jsonEnc = JsonEncoding.UTF8
+
+      val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
+
+      val writer = new CoverallPayloadWriter(
+        coverallsFile.value,
+        repoToken,
+        travisJobIdent,
+        coverallsServiceName.value,
+        new GitClient(".")(s.log),
+        sourcesEnc,
+        jsonEnc
+      )
+
+      writer.start(s.log)
+
+      val allCoberturaFiles =(CoberturaFile(coberturaFile.value, baseDirectory.value) +: childCoberturaFiles.value).filter(_.exists)
+
+      if (allCoberturaFiles.isEmpty) {
+        s.log.error("Could not find any cobertura.xml files. Has the coverage plugin run?")
+      }
+
+      allCoberturaFiles.foreach(coberturaFile => {
+        val reader = new
+            CoberturaReader(coberturaFile.file, coberturaFile.projectBase, baseDirectory.value, sourcesEnc)
+        val sourceFiles = reader.sourceFilenames
+
+        sourceFiles.foreach(sourceFile => {
+          val sourceReport = reader.reportForSource(sourceFile)
+          writer.addSourceFile(sourceReport)
+        })
+      })
+
+      writer.end()
+
+      val res = coverallsClient.postFile(coverallsFile.value)
+      if (res.error) {
+        s.log.error("Uploading to coveralls.io failed: " + res.message)
+        if (res.message.contains(CoverallsClient.buildErrorString)) {
+          s.log.error(
+            "The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
+        } else {
+          s.log.error("Coveralls.io server internal error: " + res.message)
+        }
+        if (coverallsFailBuildOnError.value)
+          state.value.fail
+        else
+          state
+      } else {
+        s.log.info("Uploading to coveralls.io succeeded: " + res.message)
+        s.log.info(res.url)
+        s.log.info("(results may not appear immediately)")
+      }
+    }
   )
 }
 
@@ -69,99 +138,6 @@ case class CoberturaFile(file: File, projectBase: File) {
 trait AbstractCoverallsPlugin  {
 
   def apiHttpClient: HttpClient
-
-  def childCoberturaFiles(projectRef: ProjectRef, structure: BuildStructure) = {
-    val subProjects = aggregated(projectRef, structure)
-    subProjects flatMap { p =>
-      val crossTargetOpt = (crossTarget in LocalProject(p)).get(structure.data)
-      val baseDir = (baseDirectory in LocalProject(p)).get(structure.data)
-
-      crossTargetOpt.map { crossTarg =>
-        val coberFile = new File(crossTarg + File.separator + "coverage-report" + File.separator + "cobertura.xml")
-        CoberturaFile(coberFile, baseDir.get)
-      }
-    }
-  }
-
-  def coverallsCommand(state: State,
-                       rootProjectDir: File,
-                       rootCoberturaFile: File,
-                       childCoberturaFiles: Seq[CoberturaFile],
-                       coverallsFile: File,
-                       encoding: String,
-                       coverallsToken: Option[String],
-                       coverallsTokenFile: Option[String],
-                       coverallsServiceName: Option[String],
-                       coverallsFailBuildOnError: Boolean): State = {
-    val repoToken = userRepoToken(coverallsToken, coverallsTokenFile)
-
-    if(travisJobIdent.isEmpty && repoToken.isEmpty) {
-      state.log.error("Could not find coveralls repo token or determine travis job id")
-      state.log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
-      state.log.error(" - Otherwise, to set up your repo token read https://github" +
-        ".com/scoverage/sbt-coveralls#specifying-your-repo-token")
-      return state.fail
-    }
-
-    //Users can encode their source files in whatever encoding they desire, however when we send their source code to
-    //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
-    //See http://tools.ietf.org/html/rfc4627#section-3
-    val sourcesEnc = Codec(encoding)
-    val jsonEnc = JsonEncoding.UTF8
-
-    val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
-
-    val writer = new CoverallPayloadWriter (
-      coverallsFile,
-      repoToken,
-      travisJobIdent,
-      coverallsServiceName,
-      new GitClient(".")(state.log),
-      sourcesEnc,
-      jsonEnc
-    )
-
-    writer.start(state.log)
-
-    val allCoberturaFiles =
-      (CoberturaFile(rootCoberturaFile, rootProjectDir) +: childCoberturaFiles).filter(_.exists)
-
-    if(allCoberturaFiles.isEmpty) {
-      state.log.error("Could not find any cobertura.xml files. Has the coverage plugin run?")
-      return state.fail
-    }
-
-    allCoberturaFiles.foreach(coberturaFile => {
-      val reader = new CoberturaReader(coberturaFile.file, coberturaFile.projectBase, rootProjectDir, sourcesEnc)
-      val sourceFiles = reader.sourceFilenames
-
-      sourceFiles.foreach(sourceFile => {
-        val sourceReport = reader.reportForSource(sourceFile)
-        writer.addSourceFile(sourceReport)
-      })
-    })
-
-    writer.end()
-
-    val res = coverallsClient.postFile(coverallsFile)
-    if(res.error) {
-      state.log.error("Uploading to coveralls.io failed: " + res.message)
-      if(res.message.contains(CoverallsClient.buildErrorString)) {
-        state.log.error("The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
-      } else {
-        state.log.error("Coveralls.io server internal error: " + res.message)
-      }
-      if (coverallsFailBuildOnError)
-        state.fail
-      else
-        state
-    } else {
-      state.log.info("Uploading to coveralls.io succeeded: " + res.message)
-      state.log.info(res.url)
-      state.log.info("(results may not appear immediately)")
-      state
-    }
-  }
 
   def travisJobIdent: Option[String]
   def userRepoToken(coverallsToken: Option[String], coverallsTokenFile: Option[String]): Option[String]
