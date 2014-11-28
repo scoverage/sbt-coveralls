@@ -12,38 +12,12 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 ```scala
 resolvers += Classpaths.sbtPluginReleases
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "0.99.7.1")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.1")
 
-addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "0.99.0")
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0")
 ```
 
-2) Import the settings in your build file
-
-##### for build.sbt:
-
-Add the following to the top of your `build.sbt`:
-```scala
-scoverage.ScoverageSbtPlugin.instrumentSettings
-
-org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
-```
-
-##### for build.scala projects:
-
-Import the plugin settings, and add them to your project settings (example):
-```scala
-import scoverage.ScoverageSbtPlugin.instrumentSettings
-import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
-
-...
-
-lazy val project = Project(
-  ...
-  settings = defaultSettings ++ intsrumentSettings ++ coverallsSettings
-)
-```
-
-Coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token)) must come after this line.
+2) Setup coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token))
 
 3) Register on `https://coveralls.io/`
 
@@ -55,7 +29,8 @@ Coveralls configuration options (such as [Specifying Your Repo Token](#specifyin
 
 1) Add the following to you `travis.yml`
 
-    script: "sbt coveralls"
+    script: "sbt clean coverage test"
+    after_success: "sbt coveralls"
 
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
