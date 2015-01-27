@@ -30,7 +30,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0.BETA1")
 1) Add the following to you `travis.yml`
 
     script: "sbt clean coverage test"
-    after_success: "sbt coveralls"
+    after_success: "sbt coverageReport coveralls"
 
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
