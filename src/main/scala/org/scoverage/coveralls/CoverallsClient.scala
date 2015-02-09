@@ -1,5 +1,7 @@
 package org.scoverage.coveralls
 
+import org.jsoup.Jsoup
+
 import scala.io.{Codec, Source}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scalaj.http.{HttpException, MultiPart, Http}
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
   import CoverallsClient._
+
 
   val mapper = newMapper
 
@@ -30,14 +33,19 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
     val bytes = source.getLines().mkString("\n").getBytes(jsonEnc.getJavaName)
     source.close()
 
-    val CoverallHttpResponse(responseCode, body) =
-      httpClient.multipart(url, "json_file","json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes)
-    if (responseCode == 500) {
-      val titleStart = body.indexOf(s"<$errorResponseTitleTag>") + errorResponseTitleTag.length + 2
-      val titleEnd = body.indexOf(s"</$errorResponseTitleTag>")
-      CoverallsResponse(body.substring(titleStart, titleEnd), error = true, "")
-    } else
-      mapper.readValue(body, classOf[CoverallsResponse])
+    httpClient.multipart(url, "json_file", "json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes) match {
+      case CoverallHttpResponse(500, body) =>
+        Option(Jsoup.parse(body)
+          .select("title"))
+          .filter(elem => !elem.isEmpty)
+          .map(_.text()) match {
+          case Some(title) =>
+            CoverallsResponse(title, error = true, "")
+          case None =>
+            CoverallsResponse(defaultErrorMessage, error = true, "")
+        }
+      case CoverallHttpResponse(_, body) => mapper.readValue(body, classOf[CoverallsResponse])
+    }
   }
 }
 
@@ -45,10 +53,12 @@ object CoverallsClient {
   val url = "https://coveralls.io/api/v1/jobs"
   val buildErrorString = "Build processing error"
   val errorResponseTitleTag = "title"
+  val defaultErrorMessage = "ERROR (no title found)"
 }
 
 case class CoverallHttpResponse(responseCode: Int, body: String)
-case class CoverallsResponse(message:String, error:Boolean, url:String)
+
+case class CoverallsResponse(message: String, error: Boolean, url: String)
 
 trait HttpClient {
   def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): CoverallHttpResponse
@@ -68,7 +78,7 @@ class ScalaJHttpClient extends HttpClient {
       CoverallHttpResponse(conn.getResponseCode, Http.tryParse(conn.getInputStream, Http.readString))
     }
   } catch {
-    case e:HttpException => CoverallHttpResponse(500, e.body)
+    case e: HttpException => CoverallHttpResponse(500, e.body)
   }
 }
 
@@ -94,12 +104,17 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
     "TLS_EMPTY_RENEGOTIATION_INFO_SCSV")
 
   def getDefaultCipherSuites = Array.empty
+
   def getSupportedCipherSuites = Array.empty
 
   def createSocket(p1: Socket, p2: String, p3: Int, p4: Boolean) = safeSocket(child.createSocket(p1, p2, p3, p4))
+
   def createSocket(p1: String, p2: Int) = safeSocket(child.createSocket(p1, p2))
+
   def createSocket(p1: String, p2: Int, p3: InetAddress, p4: Int) = safeSocket(child.createSocket(p1, p2, p3, p4))
+
   def createSocket(p1: InetAddress, p2: Int) = safeSocket(child.createSocket(p1, p2))
+
   def createSocket(p1: InetAddress, p2: Int, p3: InetAddress, p4: Int) = safeSocket(child.createSocket(p1, p2, p3, p4))
 
   def safeSocket(sock: Socket) = sock match {

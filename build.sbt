@@ -25,6 +25,7 @@ libraryDependencies ++= Seq (
   "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.4.2",
   "org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "3.4.1.201406201815-r",
   "org.scalaj"                        %% "scalaj-http"                 % "0.3.16",
+  "org.jsoup"                         %  "jsoup"                       % "1.8.1",
   "org.mockito"                       %  "mockito-core"                % "1.9.5"         % "test",
   "org.scalatest"                     %% "scalatest"                   % "2.2.1"         % "test"
 )
