@@ -14,10 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 
 class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
-  val defaultErrorMessage = "ERROR (no title found)"
-
   import CoverallsClient._
-
 
 
   val mapper = newMapper
@@ -56,7 +53,7 @@ object CoverallsClient {
   val url = "https://coveralls.io/api/v1/jobs"
   val buildErrorString = "Build processing error"
   val errorResponseTitleTag = "title"
-  val defaultErrorMessage = "(ERROR) no title found"
+  val defaultErrorMessage = "ERROR (no title found)"
 }
 
 case class CoverallHttpResponse(responseCode: Int, body: String)
