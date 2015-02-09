@@ -18,6 +18,8 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
 
   import CoverallsClient._
 
+
+
   val mapper = newMapper
 
   def newMapper = {
@@ -54,6 +56,7 @@ object CoverallsClient {
   val url = "https://coveralls.io/api/v1/jobs"
   val buildErrorString = "Build processing error"
   val errorResponseTitleTag = "title"
+  val defaultErrorMessage = "(ERROR) no title found"
 }
 
 case class CoverallHttpResponse(responseCode: Int, body: String)

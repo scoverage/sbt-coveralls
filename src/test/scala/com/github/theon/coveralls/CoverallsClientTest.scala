@@ -56,7 +56,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
         }
 
         assert(attemptAtResponse.isSuccess)
-        assert(attemptAtResponse.get.message == coverallsClient.defaultErrorMessage)
+        assert(attemptAtResponse.get.message == CoverallsClient.defaultErrorMessage)
         assert(attemptAtResponse.get.error)
 
       }
