@@ -91,6 +91,17 @@ encoding := "ISO-8859-1"
 
 Once the plugin has slurped your source code into memory using the specified encoding, it will be converted into UTF-8 to be sent to the coveralls API. This is because the coveralls API uses a JSON request body and RFC 4627 mandates that [JSON must be UTF encoded](http://tools.ietf.org/html/rfc4627#section-3).
 
+### Using Travis-Pro
+
+It is important to set the correct `service_name` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
+
+```scala
+import CoverallsPlugin.CoverallsKeys._
+
+seq(CoverallsPlugin.singleProject: _*)
+coverallsServiceName := "travis-pro"
+```
+
 # License
 
 `sbt-coveralls` is open source software released under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0).
