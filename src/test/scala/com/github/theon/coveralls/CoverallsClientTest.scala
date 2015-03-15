@@ -21,7 +21,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"))
 
-        testHttpClient.dataIn should equal("/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}")
+        testHttpClient.dataIn should equal("""/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}""")
         response.message should equal("test message")
         response.error should equal(false)
         response.url should equal("https://github.com/theon/xsbt-coveralls-plugin")
@@ -33,7 +33,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
 
-        testHttpClient.dataIn should equal("/**\n * 한글 테스트\n */\nclass TestSourceFileWithKorean {\n\n\n\n\n\n}")
+        testHttpClient.dataIn should equal("""/**\n * 한글 테스트\n */\nclass TestSourceFileWithKorean {\n\n\n\n\n\n}""")
         response.message should equal("test message")
         response.error should equal(false)
         response.url should equal("https://github.com/theon/xsbt-coveralls-plugin")

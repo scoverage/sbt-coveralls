@@ -32,6 +32,15 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0.BETA1")
     script: "sbt clean coverage test"
     after_success: "sbt coveralls"
 
+  If you have a multi-module project, perform `coverageAggregate`
+  [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+
+    script:
+      - sbt clean coverage test &&
+        sbt coverageAggregate
+    after_success:
+      - sbt coveralls
+
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
 
 ## Manual Usage
@@ -40,7 +49,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0.BETA1")
 
 1) Let `sbt-coveralls` know what your coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
 
-2) In the SBT console run the command `coveralls`. This should run your test suite, generate code coverage reports and upload the reports to `coveralls.io`. After running the command, you should see output similar to the following:
+2) In the SBT console, run `coverage` then your tests finishing with `coveralls`. After running the command, you should see output similar to the following:
 
     Uploading to coveralls.io succeeded: Job #17.1
     https://coveralls.io/jobs/12207
