@@ -2,9 +2,9 @@ name := "sbt-coveralls"
 
 organization := "org.scoverage"
 
-version       := "1.0.0"
+version       := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.5"
 
 sbtPlugin := true
 

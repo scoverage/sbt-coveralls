@@ -25,16 +25,17 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
     mapper
   }
 
-  /**
-   * TODO: Performance improvement - don't read the whole file into memory - stream it from disk
-   */
   def postFile(file: File) = {
     val source = Source.fromFile(file)(sourcesEnc)
-    val bytes = source.getLines().mkString("\n").getBytes(jsonEnc.getJavaName)
+    // API want newlines encoded as \n, not sure about other escape chars
+    // https://coveralls.zendesk.com/hc/en-us/articles/201774865-API-Introduction
+    val bytes = source.getLines().mkString("\\n").getBytes(jsonEnc.getJavaName)
     source.close()
 
     httpClient.multipart(url, "json_file", "json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes) match {
       case CoverallHttpResponse(500, body) =>
+        println("THIS IS A KNOWN BUG, PLEASE HELP OUT BY LINKING TO YOUR LOGFILE ON https://github.com/scoverage/sbt-coveralls/issues/20")
+        println(body)
         Option(Jsoup.parse(body)
           .select("title"))
           .filter(elem => !elem.isEmpty)
@@ -44,7 +45,8 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
           case None =>
             CoverallsResponse(defaultErrorMessage, error = true, "")
         }
-      case CoverallHttpResponse(_, body) => mapper.readValue(body, classOf[CoverallsResponse])
+      case CoverallHttpResponse(_, body) =>
+        mapper.readValue(body, classOf[CoverallsResponse])
     }
   }
 }
