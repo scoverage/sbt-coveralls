@@ -3,7 +3,7 @@ package org.scoverage.coveralls
 import com.fasterxml.jackson.core.JsonEncoding
 import sbt.Keys._
 import sbt._
-import scala.io.{Codec, Source}
+import scala.io.{ Codec, Source }
 import java.io.File
 
 object Imports {
@@ -47,71 +47,73 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
 
     val repoToken = userRepoToken(coverallsToken.gimme, coverallsTokenFile.gimme)
 
-      if (travisJobIdent.isEmpty && repoToken.isEmpty) {
-        log.error("Could not find coveralls repo token or determine travis job id")
-        log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
+    if (travisJobIdent.isEmpty && repoToken.isEmpty) {
+      log.error("Could not find coveralls repo token or determine travis job id")
+      log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
+      log.error(
+        " - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token"
+      )
+      state.fail
+    }
+
+    //Users can encode their source files in whatever encoding they desire, however when we send their source code to
+    //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
+    //See http://tools.ietf.org/html/rfc4627#section-3
+    val sourcesEnc = Codec(coverallsEncoding.gimme)
+    val jsonEnc = JsonEncoding.UTF8
+
+    val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
+
+    val writer = new CoverallPayloadWriter(
+      coverallsFile.gimme,
+      repoToken,
+      travisJobIdent,
+      coverallsServiceName.gimme,
+      new GitClient(".")(log),
+      sourcesEnc,
+      jsonEnc
+    )
+
+    writer.start(log)
+
+    val report = CoberturaFile(coberturaFile.gimme, baseDirectory.gimme)
+    if (!report.exists) {
+      log.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
+      state.fail
+    }
+
+    val reader = new CoberturaReader(
+      report.file, report.projectBase, baseDirectory.gimme, sourcesEnc
+    )
+    val sourceFiles = reader.sourceFilenames
+
+    sourceFiles.foreach(sourceFile => {
+      val sourceReport = reader.reportForSource(sourceFile)
+      writer.addSourceFile(sourceReport)
+    })
+
+    writer.end()
+
+    val res = coverallsClient.postFile(coverallsFile.gimme)
+    if (res.error) {
+      log.error("Uploading to coveralls.io failed: " + res.message)
+      if (res.message.contains(CoverallsClient.buildErrorString)) {
         log.error(
-          " - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token")
-        state.fail
-      }
-
-      //Users can encode their source files in whatever encoding they desire, however when we send their source code to
-      //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
-      //See http://tools.ietf.org/html/rfc4627#section-3
-      val sourcesEnc = Codec(coverallsEncoding.gimme)
-      val jsonEnc = JsonEncoding.UTF8
-
-      val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
-
-      val writer = new CoverallPayloadWriter(
-        coverallsFile.gimme,
-        repoToken,
-        travisJobIdent,
-        coverallsServiceName.gimme,
-        new GitClient(".")(log),
-        sourcesEnc,
-        jsonEnc
-      )
-
-      writer.start(log)
-
-      val report = CoberturaFile(coberturaFile.gimme, baseDirectory.gimme)
-      if (!report.exists) {
-        log.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
-        state.fail
-      }
-
-      val reader = new CoberturaReader(
-        report.file, report.projectBase, baseDirectory.gimme, sourcesEnc
-      )
-      val sourceFiles = reader.sourceFilenames
-
-      sourceFiles.foreach(sourceFile => {
-        val sourceReport = reader.reportForSource(sourceFile)
-        writer.addSourceFile(sourceReport)
-      })
-
-      writer.end()
-
-      val res = coverallsClient.postFile(coverallsFile.gimme)
-      if (res.error) {
-        log.error("Uploading to coveralls.io failed: " + res.message)
-        if (res.message.contains(CoverallsClient.buildErrorString)) {
-          log.error(
-            "The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46")
-        } else {
-          log.error("Coveralls.io server internal error: " + res.message)
-        }
-        if (coverallsFailBuildOnError.gimme)
-          state.fail
-        else
-          state
+          "The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46"
+        )
       } else {
-        log.info("Uploading to coveralls.io succeeded: " + res.message)
-        log.info(res.url)
-        log.info("(results may not appear immediately)")
-        state
+        log.error("Coveralls.io server internal error: " + res.message)
       }
+      if (coverallsFailBuildOnError.gimme)
+        state.fail
+      else
+        state
+    } else {
+      log.info("Uploading to coveralls.io succeeded: " + res.message)
+      log.info(res.url)
+      log.info("(results may not appear immediately)")
+      state
+    }
   }
 
   def apiHttpClient = new ScalaJHttpClient
