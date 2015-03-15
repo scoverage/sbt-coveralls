@@ -14,12 +14,11 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   implicit val log = ConsoleLogger(System.out)
 
-  val git = new GitClient("/tmp/xsbt-coveralls-plugin/test_repo") {
-    //Repo generated in make_test_git_repo.sh
-  }
+  var git: GitClient = null
 
   override def beforeAll() :Unit = {
     "src/test/resources/make_test_git_repo.sh".!
+    git = new GitClient("/tmp/xsbt-coveralls-plugin/test_repo")
   }
 
   "GitClient" when {
