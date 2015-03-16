@@ -6,10 +6,6 @@ import sbt.ConsoleLogger
 import org.scalatest.Matchers
 import org.scoverage.coveralls.GitClient
 
-/**
- * Date: 30/03/2013
- * Time: 09:32
- */
 class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   implicit val log = ConsoleLogger(System.out)

@@ -21,11 +21,12 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq (
-  "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.4.2",
-  "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.4.2",
-  "org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "3.4.1.201406201815-r",
+  "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.5.1",
+  "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.5.1",
+  "org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "3.7.0.201502260915-r",
+// major version change - needs more investigation/testing
+//  "org.scalaj"                        %% "scalaj-http"                 % "1.1.4",
   "org.scalaj"                        %% "scalaj-http"                 % "0.3.16",
-  "org.jsoup"                         %  "jsoup"                       % "1.8.1",
   "org.mockito"                       %  "mockito-core"                % "1.9.5"         % "test",
   "org.scalatest"                     %% "scalatest"                   % "2.2.1"         % "test"
 )

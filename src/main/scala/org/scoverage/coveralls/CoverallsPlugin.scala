@@ -97,9 +97,10 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     val res = coverallsClient.postFile(coverallsFile.gimme)
     if (res.error) {
       log.error("Uploading to coveralls.io failed: " + res.message)
-      if (res.message.contains(CoverallsClient.buildErrorString)) {
+      if (res.message.contains(CoverallsClient.tokenErrorString)) {
         log.error(
-          "The error message 'Build processing error' can mean your repo token is incorrect. See https://github.com/lemurheavy/coveralls-public/issues/46"
+          "The error message '" + CoverallsClient.tokenErrorString +
+            "' can mean your repo token is incorrect."
         )
       } else {
         log.error("Coveralls.io server internal error: " + res.message)
