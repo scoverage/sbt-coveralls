@@ -1,7 +1,5 @@
 package org.scoverage.coveralls
 
-import org.jsoup.Jsoup
-
 import scala.io.{Codec, Source}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scalaj.http.{HttpException, MultiPart, Http}
@@ -25,7 +23,7 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
     mapper
   }
 
-  def postFile(file: File) = {
+  def postFile(file: File): CoverallsResponse = {
     val source = Source.fromFile(file)(sourcesEnc)
     // API want newlines encoded as \n, not sure about other escape chars
     // https://coveralls.zendesk.com/hc/en-us/articles/201774865-API-Introduction
@@ -33,27 +31,21 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
     source.close()
 
     httpClient.multipart(url, "json_file", "json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes) match {
-      case CoverallHttpResponse(500, body) =>
-        println("THIS IS A KNOWN BUG, PLEASE HELP OUT BY LINKING TO YOUR LOGFILE ON https://github.com/scoverage/sbt-coveralls/issues/20")
-        println(body)
-        Option(Jsoup.parse(body)
-          .select("title"))
-          .filter(elem => !elem.isEmpty)
-          .map(_.text()) match {
-          case Some(title) =>
-            CoverallsResponse(title, error = true, "")
-          case None =>
-            CoverallsResponse(defaultErrorMessage, error = true, "")
-        }
       case CoverallHttpResponse(_, body) =>
-        mapper.readValue(body, classOf[CoverallsResponse])
+        try {
+          mapper.readValue(body, classOf[CoverallsResponse])
+        }catch {
+          case t: Throwable =>
+            println("Failed to parse coveralls response: " + body)
+            CoverallsResponse("Failed to parse response: " + t, error = true, "")
+        }
     }
   }
 }
 
 object CoverallsClient {
   val url = "https://coveralls.io/api/v1/jobs"
-  val buildErrorString = "Build processing error"
+  val tokenErrorString = "Couldn't find a repository matching this job"
   val errorResponseTitleTag = "title"
   val defaultErrorMessage = "ERROR (no title found)"
 }

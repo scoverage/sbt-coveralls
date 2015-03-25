@@ -4,11 +4,10 @@ import java.io.File
 
 import com.fasterxml.jackson.core.JsonEncoding
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
-import org.scoverage.coveralls
 import org.scoverage.coveralls.CoverallsClient
 
 import scala.io.Codec
-import scala.util.{Success, Try}
+import scala.util.Try
 
 class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
@@ -41,13 +40,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
       "work when there is no title in an error HTTP response" in {
         val testHttpClient = FakeTestHttpClient(500,
-          """
-          <html>
-            <body>
-              This is a test error returned html document.
-            </body>
-          </html>
-          """
+          """{"message":"Couldn't find a repository matching this job.","error":true}"""
         )
         val coverallsClient = new CoverallsClient(testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
 
@@ -56,35 +49,9 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
         }
 
         assert(attemptAtResponse.isSuccess)
-        assert(attemptAtResponse.get.message == CoverallsClient.defaultErrorMessage)
+        assert(attemptAtResponse.get.message == "Couldn't find a repository matching this job.")
         assert(attemptAtResponse.get.error)
 
-      }
-
-      "work when there is a title in an error HTTP response" in {
-        val testErrorMessage = "test error message when there was an error"
-        val testHttpClient = FakeTestHttpClient(
-          500,
-          s"""
-          <html>
-            <title>
-             $testErrorMessage
-            </title>
-            <body>
-              This is a test error returned html document.
-            </body>
-          </html>
-          """
-        )
-        val coverallsClient = new CoverallsClient(testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
-
-        val attemptAtResponse = Try {
-          coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
-        }
-
-        assert(attemptAtResponse.isSuccess)
-        assert(attemptAtResponse.get.message == testErrorMessage)
-        assert(attemptAtResponse.get.error)
       }
     }
   }
