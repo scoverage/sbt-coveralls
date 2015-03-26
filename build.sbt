@@ -2,8 +2,6 @@ name := "sbt-coveralls"
 
 organization := "org.scoverage"
 
-version       := "1.0.0-SNAPSHOT"
-
 scalaVersion := "2.10.5"
 
 sbtPlugin := true
@@ -36,12 +34,10 @@ publishMavenStyle := false
 publishArtifact in Test := false
 
 publishTo := {
-  Some(
-    Resolver.url(
-      "publishTo",
-      new URL("https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/")
-    )(Resolver.ivyStylePatterns)
-  )
+  if (isSnapshot.value)
+    Some(Classpaths.sbtPluginSnapshots)
+  else
+    Some(Classpaths.sbtPluginReleases)
 }
 
 pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
@@ -68,3 +64,7 @@ pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
       <url>http://github.com/sksamuel</url>
     </developer>
   </developers>
+
+releaseSettings
+
+ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
