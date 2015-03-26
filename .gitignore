@@ -4,6 +4,9 @@ target/
 *.iws
 .idea/
 
+.settings/
+.cache
+.classpath
 .project
 
 # OS X
