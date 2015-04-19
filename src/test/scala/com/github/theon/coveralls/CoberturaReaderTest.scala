@@ -20,7 +20,7 @@ class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with Matchers 
       }
 
       "return a valid SourceFileReport instance" in {
-        val fileReport = reader.reportForSource(new File("src/test/resources/TestSourceFile.scala").getAbsolutePath)
+        val fileReport = reader.reportForSource(new File("").getAbsolutePath + File.separator + "src/test/resources/TestSourceFile.scala")
         fileReport.file should endWith("src/test/resources/TestSourceFile.scala")
         fileReport.projectRoot should equal(new File("").getAbsolutePath + File.separator)
         fileReport.lineCoverage should equal(
