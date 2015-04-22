@@ -3,7 +3,7 @@ package org.scoverage.coveralls
 import java.io.File
 
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.RepositoryBuilder
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.scoverage.coveralls.GitClient.GitRevision
 import sbt.Logger
 
@@ -20,7 +20,7 @@ class GitClient(cwd: String)(implicit log: Logger) {
 
   import scala.collection.JavaConversions._
 
-  val repository = new RepositoryBuilder().setGitDir(new File(cwd + "/.git")).findGitDir(new File(cwd)).build()
+  val repository = FileRepositoryBuilder.create(new File(cwd, ".git"))
   val storedConfig = repository.getConfig
   log.info("Repository = " + repository.getDirectory)
 

@@ -1,8 +1,10 @@
 package com.github.theon.coveralls
 
+import java.io.File
+
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
-import sys.process._
 import sbt.ConsoleLogger
+import org.eclipse.jgit.api.Git
 import org.scalatest.Matchers
 import org.scoverage.coveralls.GitClient
 
@@ -12,9 +14,30 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   var git: GitClient = null
 
-  override def beforeAll() :Unit = {
-    "src/test/resources/make_test_git_repo.sh".!
-    git = new GitClient("/tmp/xsbt-coveralls-plugin/test_repo")
+  override def beforeAll(): Unit = {
+    // Create local repository
+    val repoDir = File.createTempFile("test_repo", "")
+    repoDir.delete()
+    repoDir.mkdirs()
+    val gitRepo = Git.init().setDirectory(repoDir).call()
+    // Add two remotes
+    val storedConfig = gitRepo.getRepository.getConfig
+    storedConfig.setString("remote", "origin_test_1", "url", "git@origin_test_1")
+    storedConfig.setString("remote", "origin_test_2", "url", "git@origin_test_2")
+    storedConfig.save()
+    // Add and commit a file
+    val readme = new File(repoDir, "README.md")
+    readme.createNewFile();
+    gitRepo.add()
+        .addFilepattern("README.md")
+        .call()
+    gitRepo.commit()
+        .setAuthor("test_username", "test_user@test_email.com")
+        .setCommitter("test_username", "test_user@test_email.com")
+        .setMessage("Commit message for unit test")
+        .call()
+
+    git = new GitClient(repoDir.getAbsolutePath)
   }
 
   "GitClient" when {

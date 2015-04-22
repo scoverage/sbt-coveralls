@@ -88,7 +88,7 @@ class CoverallPayloadWriter(coverallsFile: File,
     gen.writeStringField("name", report.fileRel)
 
     val source = Source.fromFile(report.file)(sourcesEnc)
-    val sourceCode = source.mkString
+    val sourceCode = source.getLines().mkString("\n")
     source.close()
 
     gen.writeStringField("source", sourceCode)
