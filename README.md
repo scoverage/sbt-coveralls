@@ -69,7 +69,7 @@ Add the following to your `build.sbt`. The path can be absolute and point to som
 Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
 
 ```scala
-import CoverallsPlugin.CoverallsKeys._
+import org.scoverage.coveralls.Imports.CoverallsKeys._
 
 coverallsTokenFile := "/path/to/my/repo/token.txt"
 ```
@@ -79,9 +79,9 @@ coverallsTokenFile := "/path/to/my/repo/token.txt"
 **Do not store repo tokens inside your project if it is in a public git repository!**
 
 ```scala
-import CoverallsPlugin.CoverallsKeys._
+import org.scoverage.coveralls.Imports.CoverallsKeys._
 
-coverallsToken := "my-token"
+coverallsToken := Some("my-token")
 ```
 
 ### Add an environment variable
@@ -95,7 +95,7 @@ Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 By default `sbt-coveralls` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
 
 ```scala
-import CoverallsPlugin.CoverallsKeys._
+import org.scoverage.coveralls.Imports.CoverallsKeys._
 
 encoding := "ISO-8859-1"
 ```
@@ -107,7 +107,7 @@ Once the plugin has slurped your source code into memory using the specified enc
 It is important to set the correct `service_name` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
 
 ```scala
-import CoverallsPlugin.CoverallsKeys._
+import org.scoverage.coveralls.Imports.CoverallsKeys._
 
 seq(CoverallsPlugin.singleProject: _*)
 coverallsServiceName := "travis-pro"
