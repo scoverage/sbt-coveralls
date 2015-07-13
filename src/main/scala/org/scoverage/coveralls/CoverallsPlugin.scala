@@ -82,9 +82,10 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
       state.fail
     }
 
-    val reader = new CoberturaReader(
-      report.file, report.projectBase, baseDirectory.gimme, sourcesEnc
-    )
+//    val reader = new CoberturaReader(
+//      report.file, report.projectBase, baseDirectory.gimme, sourcesEnc
+//    )
+    val reader = new CoberturaMultiSourceReader(report.file, (sourceDirectories in Compile).gimme, sourcesEnc)
     val sourceFiles = reader.sourceFilenames
 
     sourceFiles.foreach(sourceFile => {
