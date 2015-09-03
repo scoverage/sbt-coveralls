@@ -1,9 +1,9 @@
 package com.github.theon.coveralls
 
-import java.io.{FileNotFoundException, File}
+import java.io.{ FileNotFoundException, File }
 
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
-import org.scoverage.coveralls.{CoberturaMultiSourceReader}
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scoverage.coveralls.{ CoberturaMultiSourceReader }
 
 import scala.io.Codec
 
@@ -40,7 +40,6 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
     }
   }
 
-
   "CoberturaMultiSourceReader" should {
     "correctly determine who is parent file and who is child file" in {
       reader.isChild(srcFoo, srcFoo) shouldBe true
@@ -54,7 +53,6 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
       reader.isChild(new File(root, "srcB-2.10"), srcFoo) shouldBe false
     }
   }
-
 
   "CoberturaMultiSourceReader" should {
 
@@ -97,6 +95,5 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
       }
     }
   }
-
 
 }
