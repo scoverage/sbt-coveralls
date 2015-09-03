@@ -2,7 +2,7 @@ package com.github.theon.coveralls
 
 import java.io.File
 
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
+import org.scalatest.{ BeforeAndAfterAll, WordSpec }
 import sbt.ConsoleLogger
 import org.eclipse.jgit.api.Git
 import org.scalatest.Matchers
@@ -29,13 +29,13 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
     val readme = new File(repoDir, "README.md")
     readme.createNewFile();
     gitRepo.add()
-        .addFilepattern("README.md")
-        .call()
+      .addFilepattern("README.md")
+      .call()
     gitRepo.commit()
-        .setAuthor("test_username", "test_user@test_email.com")
-        .setCommitter("test_username", "test_user@test_email.com")
-        .setMessage("Commit message for unit test")
-        .call()
+      .setAuthor("test_username", "test_user@test_email.com")
+      .setCommitter("test_username", "test_user@test_email.com")
+      .setMessage("Commit message for unit test")
+      .call()
 
     git = new GitClient(repoDir.getAbsolutePath)
   }
@@ -44,21 +44,21 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
     "asked for remotes" should {
       "return a valid response" in {
-        git.remotes should contain ("origin_test_1")
-        git.remotes should contain ("origin_test_2")
+        git.remotes should contain("origin_test_1")
+        git.remotes should contain("origin_test_2")
       }
     }
 
     "asked for a remote's url" should {
       "return a valid response" in {
-        git.remoteUrl("origin_test_1") should equal ("git@origin_test_1")
-        git.remoteUrl("origin_test_2") should equal ("git@origin_test_2")
+        git.remoteUrl("origin_test_1") should equal("git@origin_test_1")
+        git.remoteUrl("origin_test_2") should equal("git@origin_test_2")
       }
     }
 
     "asked for the current branch" should {
       "return a valid response" in {
-        git.currentBranch should equal ("master")
+        git.currentBranch should equal("master")
       }
     }
 

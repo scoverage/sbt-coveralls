@@ -1,7 +1,7 @@
 package org.scoverage.coveralls
 
-import xml.{Node, XML}
-import scala.io.{Codec, Source}
+import xml.{ Node, XML }
+import scala.io.{ Codec, Source }
 import java.io.File
 
 class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: File, enc: Codec) {
@@ -12,7 +12,7 @@ class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: 
   val childProjectDir = childProjectRoot.getAbsolutePath + File.separator
 
   def sourceFilenames = {
-    (elem \\ "class" \\ "@filename").map{ childProjectDir + _.toString }.toSet
+    (elem \\ "class" \\ "@filename").map { childProjectDir + _.toString }.toSet
   }
 
   /**
@@ -20,7 +20,7 @@ class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: 
    */
   protected def lineCoverage(sourceFile: String) = {
     val classElems = elem \\ "class"
-    val fileElems = classElems filter { n:Node => (childProjectDir + (n \\ "@filename").toString) == sourceFile }
+    val fileElems = classElems filter { n: Node => (childProjectDir + (n \\ "@filename").toString) == sourceFile }
     val lineElems = fileElems.flatMap(n => {
       n \\ "line"
     })

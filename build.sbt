@@ -16,18 +16,24 @@ licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+dependencyOverrides ++= Set(
+  "com.jcraft"                        %  "jsch"                        % "0.1.51"
+)
 
 libraryDependencies ++= Seq (
-  "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.5.1",
-  "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.5.1",
+  "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.6.1",
+  "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.6.1",
+  // DO NOT UPGRADE: later versions of jgit use Java 7 and we still need to support Java 6
   "org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "3.7.0.201502260915-r",
+  //"org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "4.0.1.201506240215-r",
 // major version change - needs more investigation/testing
 //  "org.scalaj"                        %% "scalaj-http"                 % "1.1.4",
   "org.scalaj"                        %% "scalaj-http"                 % "0.3.16",
-  "org.mockito"                       %  "mockito-core"                % "1.9.5"         % "test",
-  "org.scalatest"                     %% "scalatest"                   % "2.2.1"         % "test"
+  "org.mockito"                       %  "mockito-core"                % "1.10.19"       % "test",
+  "org.scalatest"                     %% "scalatest"                   % "2.2.5"         % "test"
 )
+
+scalariformSettings
 
 publishMavenStyle := false
 
@@ -64,7 +70,3 @@ pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
       <url>http://github.com/sksamuel</url>
     </developer>
   </developers>
-
-releaseSettings
-
-ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value

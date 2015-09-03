@@ -1,11 +1,11 @@
 package com.github.theon.coveralls
 
-import java.io.{File, StringWriter, Writer}
+import java.io.{ File, StringWriter, Writer }
 
-import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import com.fasterxml.jackson.core.{ JsonEncoding, JsonFactory }
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import org.scoverage.coveralls.GitClient.GitRevision
-import org.scoverage.coveralls.{CoverallPayloadWriter, GitClient, SourceFileReport}
+import org.scoverage.coveralls.{ CoverallPayloadWriter, GitClient, SourceFileReport }
 import sbt.ConsoleLogger
 
 import scala.io.Codec
@@ -16,14 +16,14 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
   val testGitClient = new GitClient(".") {
     override def remotes = List("remote")
-    override def remoteUrl(remoteName:String) = "remoteUrl"
+    override def remoteUrl(remoteName: String) = "remoteUrl"
     override def currentBranch = "branch"
     override def lastCommit(): GitRevision = {
-      GitRevision("lastCommitId","authorName", "authorEmail", "committerName", "committerEmail", "shortMsg")
+      GitRevision("lastCommitId", "authorName", "authorEmail", "committerName", "committerEmail", "shortMsg")
     }
   }
 
-  def coverallsWriter(writer:Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String], enc: Codec) =
+  def coverallsWriter(writer: Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String], enc: Codec) =
     new CoverallPayloadWriter(new File(""), tokenIn, travisJobIdIn, serviceName, testGitClient, enc, JsonEncoding.UTF8) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
@@ -38,15 +38,15 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "generate a correct starting payload with travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), Codec("UTF-8")  )
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), Codec("UTF-8"))
 
         coverallsW.start
         coverallsW.flush()
 
-        w.toString should equal (
+        w.toString should equal(
           """{"repo_token":"testRepoToken","service_name":"travis-ci","service_job_id":"testTravisJob",""" +
-          expectedGit +
-          ""","source_files":["""
+            expectedGit +
+            ""","source_files":["""
         )
       }
 
@@ -57,7 +57,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
         coverallsW.start
         coverallsW.flush()
 
-        w.toString should equal (
+        w.toString should equal(
           """{"repo_token":"testRepoToken",""" +
             expectedGit +
             ""","source_files":["""
@@ -70,12 +70,12 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
         val projectRoot = new File("").getAbsolutePath + "/"
 
-        coverallsW.addSourceFile (
+        coverallsW.addSourceFile(
           SourceFileReport(projectRoot, projectRoot + "src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
         )
         coverallsW.flush()
 
-        w.toString should equal (
+        w.toString should equal(
           """{"name":"src/test/resources/TestSourceFile.scala","source":"/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}","coverage":[1,null,2]}"""
         )
       }
@@ -87,7 +87,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
         coverallsW.start
         coverallsW.end()
 
-        w.toString should endWith ("]}")
+        w.toString should endWith("]}")
       }
     }
   }
