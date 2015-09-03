@@ -16,7 +16,9 @@ licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+dependencyOverrides ++= Set(
+  "com.jcraft"                        %  "jsch"                        % "0.1.51"
+)
 
 libraryDependencies ++= Seq (
   "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.5.1",
@@ -64,7 +66,3 @@ pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
       <url>http://github.com/sksamuel</url>
     </developer>
   </developers>
-
-releaseSettings
-
-ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
