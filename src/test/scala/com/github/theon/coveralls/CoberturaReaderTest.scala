@@ -1,6 +1,6 @@
 package com.github.theon.coveralls
 
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
+import org.scalatest.{ BeforeAndAfterAll, WordSpec }
 import org.scalatest.Matchers
 import java.io.File
 import scala.io.Codec

@@ -8,12 +8,14 @@ import org.scoverage.coveralls.GitClient.GitRevision
 import sbt.Logger
 
 object GitClient {
-  case class GitRevision(id: String,
-                         authorName: String,
-                         authorEmail: String,
-                         committerName: String,
-                         committerEmail: String,
-                         shortMessage: String)
+  case class GitRevision(
+    id: String,
+    authorName: String,
+    authorEmail: String,
+    committerName: String,
+    committerEmail: String,
+    shortMessage: String
+  )
 }
 
 class GitClient(cwd: String)(implicit log: Logger) {
@@ -23,7 +25,6 @@ class GitClient(cwd: String)(implicit log: Logger) {
   val repository = FileRepositoryBuilder.create(new File(cwd, ".git"))
   val storedConfig = repository.getConfig
   log.info("Repository = " + repository.getDirectory)
-
 
   def remotes: Seq[String] = {
     storedConfig.getSubsections("remote").toList
@@ -42,11 +43,13 @@ class GitClient(cwd: String)(implicit log: Logger) {
     val id = headRev.getId
     val author = headRev.getAuthorIdent
     val committer = headRev.getCommitterIdent
-    GitRevision(id.name,
+    GitRevision(
+      id.name,
       author.getName,
       author.getEmailAddress,
       committer.getName,
       committer.getEmailAddress,
-      headRev.getShortMessage)
+      headRev.getShortMessage
+    )
   }
 }

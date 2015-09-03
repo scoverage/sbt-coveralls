@@ -31,6 +31,8 @@ libraryDependencies ++= Seq (
   "org.scalatest"                     %% "scalatest"                   % "2.2.1"         % "test"
 )
 
+scalariformSettings
+
 publishMavenStyle := false
 
 publishArtifact in Test := false

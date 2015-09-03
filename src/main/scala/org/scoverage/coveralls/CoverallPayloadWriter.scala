@@ -1,26 +1,28 @@
 package org.scoverage.coveralls
 
 import java.io.File
-import scala.io.{Codec, Source}
+import scala.io.{ Codec, Source }
 
 import sbt.Logger
 import annotation.tailrec
-import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
+import com.fasterxml.jackson.core.{ JsonFactory, JsonEncoding }
 
-class CoverallPayloadWriter(coverallsFile: File,
-                            repoToken: Option[String],
-                            travisJobId: Option[String],
-                            serviceName: Option[String],
-                            gitClient: GitClient,
-                            sourcesEnc: Codec,
-                            jsonEnc: JsonEncoding) {
+class CoverallPayloadWriter(
+    coverallsFile: File,
+    repoToken: Option[String],
+    travisJobId: Option[String],
+    serviceName: Option[String],
+    gitClient: GitClient,
+    sourcesEnc: Codec,
+    jsonEnc: JsonEncoding
+) {
 
   import gitClient._
 
   val gen = generator(coverallsFile)
 
   def generator(file: File) = {
-    if(!file.getParentFile.exists) file.getParentFile.mkdirs
+    if (!file.getParentFile.exists) file.getParentFile.mkdirs
     val factory = new JsonFactory
     factory.createGenerator(file, jsonEnc)
   }
@@ -73,7 +75,7 @@ class CoverallPayloadWriter(coverallsFile: File,
 
   @tailrec
   private def addGitRemotes(remotes: Seq[String])(implicit log: Logger) {
-    if(remotes.isEmpty) return
+    if (remotes.isEmpty) return
 
     gen.writeStartObject()
     gen.writeStringField("name", remotes.head)

@@ -1,19 +1,18 @@
 package org.scoverage.coveralls
 
-import scala.io.{Codec, Source}
+import scala.io.{ Codec, Source }
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{HttpException, MultiPart, Http}
+import scalaj.http.{ HttpException, MultiPart, Http }
 import scalaj.http.HttpOptions._
 import java.io.File
-import javax.net.ssl.{SSLSocket, SSLSocketFactory}
-import java.net.{HttpURLConnection, Socket, InetAddress}
+import javax.net.ssl.{ SSLSocket, SSLSocketFactory }
+import java.net.{ HttpURLConnection, Socket, InetAddress }
 import com.fasterxml.jackson.core.JsonEncoding
 import com.fasterxml.jackson.databind.ObjectMapper
 
 class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
   import CoverallsClient._
-
 
   val mapper = newMapper
 
@@ -34,7 +33,7 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
       case CoverallHttpResponse(_, body) =>
         try {
           mapper.readValue(body, classOf[CoverallsResponse])
-        }catch {
+        } catch {
           case t: Throwable =>
             println("Failed to parse coveralls response: " + body)
             CoverallsResponse("Failed to parse response: " + t, error = true, "")
@@ -95,7 +94,8 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
     "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
     "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
     "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
-    "TLS_EMPTY_RENEGOTIATION_INFO_SCSV")
+    "TLS_EMPTY_RENEGOTIATION_INFO_SCSV"
+  )
 
   def getDefaultCipherSuites = Array.empty
 
@@ -112,7 +112,8 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
   def createSocket(p1: InetAddress, p2: Int, p3: InetAddress, p4: Int) = safeSocket(child.createSocket(p1, p2, p3, p4))
 
   def safeSocket(sock: Socket) = sock match {
-    case ssl: SSLSocket => ssl.setEnabledCipherSuites(safeCiphers); ssl
+    case ssl: SSLSocket =>
+      ssl.setEnabledCipherSuites(safeCiphers); ssl
     case other => other
   }
 }

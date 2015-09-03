@@ -3,7 +3,7 @@ package com.github.theon.coveralls
 import java.io.File
 
 import com.fasterxml.jackson.core.JsonEncoding
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import org.scoverage.coveralls.CoverallsClient
 
 import scala.io.Codec
@@ -39,7 +39,8 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
       }
 
       "work when there is no title in an error HTTP response" in {
-        val testHttpClient = FakeTestHttpClient(500,
+        val testHttpClient = FakeTestHttpClient(
+          500,
           """{"message":"Couldn't find a repository matching this job.","error":true}"""
         )
         val coverallsClient = new CoverallsClient(testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
