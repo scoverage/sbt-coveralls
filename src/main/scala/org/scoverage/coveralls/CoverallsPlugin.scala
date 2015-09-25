@@ -33,7 +33,6 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     coverallsEncoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
-    coverallsFailBuildOnError := false,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile := crossTarget.value / "coveralls.json",
     coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml")
