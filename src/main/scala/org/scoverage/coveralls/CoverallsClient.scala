@@ -84,6 +84,9 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
     "TLS_RSA_WITH_AES_128_CBC_SHA",
     "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
     "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+    "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+    "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
     "SSL_RSA_WITH_3DES_EDE_CBC_SHA",
     "SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
     "SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
@@ -95,7 +98,7 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
     "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
     "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
     "TLS_EMPTY_RENEGOTIATION_INFO_SCSV"
-  )
+  ) intersect SSLSocketFactory.getDefault.asInstanceOf[SSLSocketFactory].getSupportedCipherSuites
 
   def getDefaultCipherSuites = Array.empty
 

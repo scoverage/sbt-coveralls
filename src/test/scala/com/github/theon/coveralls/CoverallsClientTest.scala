@@ -1,13 +1,16 @@
 package com.github.theon.coveralls
 
 import java.io.File
+import java.net.HttpURLConnection
 
 import com.fasterxml.jackson.core.JsonEncoding
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-import org.scoverage.coveralls.CoverallsClient
+import org.scoverage.coveralls.{ OpenJdkSafeSsl, CoverallsClient }
 
 import scala.io.Codec
 import scala.util.Try
+import scalaj.http.Http
+import scalaj.http.HttpOptions._
 
 class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
@@ -53,6 +56,22 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
         assert(attemptAtResponse.get.message == "Couldn't find a repository matching this job.")
         assert(attemptAtResponse.get.error)
 
+      }
+    }
+  }
+
+  "OpenJdkSafeSsl" when {
+    "connecting to " + CoverallsClient.url should {
+      "connect using ssl" in {
+        val openJdkSafeSsl = new OpenJdkSafeSsl
+        val request = Http.get(CoverallsClient.url)
+          .option(connTimeout(60000))
+          .option(readTimeout(60000))
+          .option(sslSocketFactory(openJdkSafeSsl))
+
+        request.process { conn: HttpURLConnection =>
+          conn.getResponseCode should equal(404)
+        }
       }
     }
   }
