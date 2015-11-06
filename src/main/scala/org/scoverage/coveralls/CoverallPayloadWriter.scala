@@ -36,6 +36,7 @@ class CoverallPayloadWriter(
     writeOpt("repo_token", repoToken)
     writeOpt("service_name", serviceName)
     writeOpt("service_job_id", travisJobId)
+    writeOpt("service_pull_request", sys.env.get("CI_PULL_REQUEST"))
 
     addGitInfo
 
