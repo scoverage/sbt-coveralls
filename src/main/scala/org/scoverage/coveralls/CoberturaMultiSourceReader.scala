@@ -3,7 +3,6 @@ package org.scoverage.coveralls
 import xml.{ Node, XML }
 import scala.io.{ Codec, Source }
 import java.io.File
-
 /**
  * The file will replace the original CoberturaReader
  */
@@ -40,12 +39,15 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
    */
   private def sourceFilesRelative: Set[String] = reportXML \\ "class" \\ "@filename" map (_.toString()) toSet
 
-  def sourceFiles: Set[File] = for {
-    relativePath <- sourceFilesRelative
-    sourceDir <- sourceDirs
-    //only one directory contains the file
-    sourceFile = new File(sourceDir, relativePath) if sourceFile.exists
-  } yield sourceFile
+  def sourceFiles: Set[File] = {
+    for {
+      relativePath <- sourceFilesRelative
+      sourceDir <- sourceDirs
+      //only one directory contains the file
+      sourceFile = new File(sourceDir, relativePath)
+      if sourceFile.exists
+    } yield sourceFile
+  }
 
   def sourceFilenames = sourceFiles.map(_.getCanonicalPath)
 

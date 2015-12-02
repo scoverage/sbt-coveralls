@@ -1,5 +1,9 @@
 package org.scoverage.coveralls
 
+import _root_.sbt.Keys._
+import _root_.sbt.ScopeFilter
+import _root_.sbt.ThisProject
+import _root_.sbt._
 import com.fasterxml.jackson.core.JsonEncoding
 import sbt.Keys._
 import sbt._
@@ -9,12 +13,14 @@ import java.io.File
 object Imports {
   object CoverallsKeys {
     val coverallsFile = SettingKey[File]("coveralls-file")
+    val projectBaseDir = SettingKey[File]("base-dir")
     val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
     val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
     val coverallsServiceName = SettingKey[Option[String]]("coverallsServiceName")
     val coverallsFailBuildOnError = SettingKey[Boolean]("fail build if coveralls step fails")
     val coberturaFile = SettingKey[File]("coberturaFile")
     val coverallsEncoding = SettingKey[String]("encoding")
+    val coverallsSourceRoots = SettingKey[Seq[Seq[File]]]("Source roots")
   }
 }
 
@@ -33,10 +39,14 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     coverallsEncoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
+    projectBaseDir := baseDirectory.value,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile := crossTarget.value / "coveralls.json",
-    coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml")
+    coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml"),
+    coverallsSourceRoots := sourceDirectories.all(aggregateFilter).value
   )
+
+  val aggregateFilter = ScopeFilter(inAggregates(ThisProject), inConfigurations(Compile)) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
 
   def doCoveralls(state: State): State = {
     implicit val iState = state
@@ -64,6 +74,7 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
 
     val writer = new CoverallPayloadWriter(
+      projectBaseDir.gimme,
       coverallsFile.gimme,
       repoToken,
       travisJobIdent,
@@ -81,10 +92,12 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
       state.fail
     }
 
-    //    val reader = new CoberturaReader(
-    //      report.file, report.projectBase, baseDirectory.gimme, sourcesEnc
-    //    )
-    val reader = new CoberturaMultiSourceReader(report.file, (sourceDirectories in Compile).gimme, sourcesEnc)
+    // include all of the sources (stanard roots and multi-module roots)
+    val sources: Seq[File] = (sourceDirectories in Compile).gimme
+    val multiSources: Seq[File] = coverallsSourceRoots.gimme.flatten
+    val allSources = sources ++ multiSources
+
+    val reader = new CoberturaMultiSourceReader(report.file, allSources, sourcesEnc)
     val sourceFiles = reader.sourceFilenames
 
     sourceFiles.foreach(sourceFile => {
