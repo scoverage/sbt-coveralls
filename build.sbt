@@ -6,7 +6,7 @@ scalaVersion := "2.10.5"
 
 sbtPlugin := true
 
-publishMavenStyle := false
+publishMavenStyle := true
 
 publishArtifact in Test := false
 
