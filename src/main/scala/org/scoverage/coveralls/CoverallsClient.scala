@@ -10,11 +10,12 @@ import java.net.{ HttpURLConnection, Socket, InetAddress }
 import com.fasterxml.jackson.core.JsonEncoding
 import com.fasterxml.jackson.databind.ObjectMapper
 
-class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
+class CoverallsClient(endpoint: String, httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
 
   import CoverallsClient._
 
   val mapper = newMapper
+  def url = s"$endpoint/api/v1/jobs"
 
   def newMapper = {
     val mapper = new ObjectMapper
@@ -43,7 +44,6 @@ class CoverallsClient(httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEn
 }
 
 object CoverallsClient {
-  val url = "https://coveralls.io/api/v1/jobs"
   val tokenErrorString = "Couldn't find a repository matching this job"
   val errorResponseTitleTag = "title"
   val defaultErrorMessage = "ERROR (no title found)"

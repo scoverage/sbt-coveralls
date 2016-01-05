@@ -21,6 +21,7 @@ object Imports {
     val coberturaFile = SettingKey[File]("coberturaFile")
     val coverallsEncoding = SettingKey[String]("encoding")
     val coverallsSourceRoots = SettingKey[Seq[Seq[File]]]("Source roots")
+    val coverallsEndpoint = SettingKey[Option[String]]("coveralls-endpoint")
   }
 }
 
@@ -39,6 +40,7 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     coverallsEncoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
+    coverallsEndpoint := Option("https://coveralls.io"),
     projectBaseDir := baseDirectory.value,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile := crossTarget.value / "coveralls.json",
@@ -71,7 +73,9 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     val sourcesEnc = Codec(coverallsEncoding.gimme)
     val jsonEnc = JsonEncoding.UTF8
 
-    val coverallsClient = new CoverallsClient(apiHttpClient, sourcesEnc, jsonEnc)
+    val endpoint = userEndpoint(coverallsEndpoint.gimme).get
+
+    val coverallsClient = new CoverallsClient(endpoint, apiHttpClient, sourcesEnc, jsonEnc)
 
     val writer = new CoverallPayloadWriter(
       projectBaseDir.gimme,
@@ -109,21 +113,21 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
 
     val res = coverallsClient.postFile(coverallsFile.gimme)
     if (res.error) {
-      log.error("Uploading to coveralls.io failed: " + res.message)
+      log.error(s"Uploading to $endpoint failed: " + res.message)
       if (res.message.contains(CoverallsClient.tokenErrorString)) {
         log.error(
           "The error message '" + CoverallsClient.tokenErrorString +
             "' can mean your repo token is incorrect."
         )
       } else {
-        log.error("Coveralls.io server internal error: " + res.message)
+        log.error(s"$endpoint server internal error: " + res.message)
       }
       if (coverallsFailBuildOnError.gimme)
         state.fail
       else
         state
     } else {
-      log.info("Uploading to coveralls.io succeeded: " + res.message)
+      log.info(s"Uploading to $endpoint succeeded: " + res.message)
       log.info(res.url)
       log.info("(results may not appear immediately)")
       state
@@ -150,6 +154,9 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
       .orElse(coverallsToken)
       .orElse(coverallsTokenFile.flatMap(repoTokenFromFile))
 
+  def userEndpoint(coverallsEndpoint: Option[String]) =
+    sys.env.get("COVERALLS_ENDPOINT")
+      .orElse(coverallsEndpoint)
 }
 
 case class CoberturaFile(file: File, projectBase: File) {
