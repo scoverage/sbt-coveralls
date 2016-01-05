@@ -63,7 +63,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
       "use the endpoint to build the url" in {
         val testHttpClient = new TestSuccessHttpClient()
         val coverallsClient = new CoverallsClient("https://test.endpoint", testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
-        
+
         assert(coverallsClient.url == "https://test.endpoint/api/v1/jobs")
       }
     }

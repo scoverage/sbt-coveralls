@@ -14,8 +14,7 @@ object GitClient {
     authorEmail: String,
     committerName: String,
     committerEmail: String,
-    shortMessage: String
-  )
+    shortMessage: String)
 }
 
 class GitClient(cwd: String)(implicit log: Logger) {

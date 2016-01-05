@@ -15,8 +15,7 @@ class CoverallPayloadWriter(
     serviceName: Option[String],
     gitClient: GitClient,
     sourcesEnc: Codec,
-    jsonEnc: JsonEncoding
-) {
+    jsonEnc: JsonEncoding) {
 
   val projectRootDirStr = projectRootDir.toString + "/"
   import gitClient._
