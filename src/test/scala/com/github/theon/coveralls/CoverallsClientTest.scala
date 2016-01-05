@@ -14,12 +14,14 @@ import scalaj.http.HttpOptions._
 
 class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
+  val defaultEndpoint = "https://coveralls.io"
+
   "CoverallsClient" when {
     "making API call" should {
 
       "return a valid response for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"))
 
@@ -31,7 +33,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
       "return a valid response with Korean for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
 
@@ -46,7 +48,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
           500,
           """{"message":"Couldn't find a repository matching this job.","error":true}"""
         )
-        val coverallsClient = new CoverallsClient(testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
 
         val attemptAtResponse = Try {
           coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
@@ -57,14 +59,22 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
         assert(attemptAtResponse.get.error)
 
       }
+
+      "use the endpoint to build the url" in {
+        val testHttpClient = new TestSuccessHttpClient()
+        val coverallsClient = new CoverallsClient("https://test.endpoint", testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+
+        assert(coverallsClient.url == "https://test.endpoint/api/v1/jobs")
+      }
     }
   }
 
   "OpenJdkSafeSsl" when {
-    "connecting to " + CoverallsClient.url should {
+    val url = "https://coveralls.io/api/v1/jobs"
+    "connecting to " + url should {
       "connect using ssl" in {
         val openJdkSafeSsl = new OpenJdkSafeSsl
-        val request = Http.get(CoverallsClient.url)
+        val request = Http.get(url)
           .option(connTimeout(60000))
           .option(readTimeout(60000))
           .option(sslSocketFactory(openJdkSafeSsl))
