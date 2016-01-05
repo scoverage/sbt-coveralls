@@ -90,6 +90,24 @@ Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 
     export COVERALLS_REPO_TOKEN=my-token
 
+## Specifying Your Coveralls Endpoint
+
+If you're using https://coveralls.io as your endpoint, then you don't need to set this option. If you're using a hosted (enterprise) instance of coveralls, you will need to specify your endpoint in one of two ways.
+
+### Put your endpoint directly in your `build.sbt`
+
+```scala
+import org.scoverage.coveralls.Imports.CoverallsKeys._
+
+coverallsEndpoint := Some("http://my-instance.com")
+```
+
+### Add an environment variable
+
+Add an environment variable `COVERALLS_ENDPOINT`, for example:
+
+    export COVERALLS_ENDPOINT=http://my-instance.com
+
 ## Custom Source File Encoding
 
 By default `sbt-coveralls` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
