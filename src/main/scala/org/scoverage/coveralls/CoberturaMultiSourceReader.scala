@@ -3,6 +3,7 @@ package org.scoverage.coveralls
 import xml.{ Node, XML }
 import scala.io.{ Codec, Source }
 import java.io.File
+import sbt.IO
 /**
  * The file will replace the original CoberturaReader
  */
@@ -25,12 +26,7 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
    *         the file tree rooted at parent.
    *         It returns true if child and parent points to the same directory
    */
-  def isChild(child: File, parent: File): Boolean = {
-    child != null && parent != null && parent.isDirectory && {
-      child.getCanonicalPath == parent.getCanonicalPath ||
-        isChild(child.getParentFile, parent)
-    }
-  }
+  def isChild(child: File, parent: File): Boolean = IO.relativize(parent, child).isDefined
 
   val reportXML = XML.loadFile(coberturaFile)
 
