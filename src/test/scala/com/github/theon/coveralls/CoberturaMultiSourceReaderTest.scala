@@ -42,7 +42,7 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
 
   "CoberturaMultiSourceReader" should {
     "correctly determine who is parent file and who is child file" in {
-      reader.isChild(srcFoo, srcFoo) shouldBe true
+      reader.isChild(srcFoo, srcFoo) shouldBe false
       reader.isChild(srcBarFoo, srcFoo) shouldBe false
       reader.isChild(srcFoo, srcBarFoo) shouldBe false
       reader.isChild(srcFoo, root) shouldBe true
