@@ -23,14 +23,10 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
    * @param parent - a parent directory
    * @return false if parent is not a directory or if child does not belongs to
    *         the file tree rooted at parent.
-   *         It returns true if child and parent points to the same directory
+   *         It returns false if child and parent points to the same directory
    */
-  def isChild(child: File, parent: File): Boolean = {
-    child != null && parent != null && parent.isDirectory && {
-      child.getCanonicalPath == parent.getCanonicalPath ||
-        isChild(child.getParentFile, parent)
-    }
-  }
+  def isChild(child: File, parent: File): Boolean =
+    sbt.IO.relativize(parent, child).isDefined
 
   val reportXML = XML.loadFile(coberturaFile)
 
