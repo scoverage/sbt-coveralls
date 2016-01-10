@@ -127,8 +127,7 @@ It is important to set the correct `service_name` when using Travis-Pro.  The de
 ```scala
 import org.scoverage.coveralls.Imports.CoverallsKeys._
 
-seq(CoverallsPlugin.singleProject: _*)
-coverallsServiceName := "travis-pro"
+coverallsServiceName := Some("travis-pro")
 ```
 
 # License
