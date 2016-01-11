@@ -4,7 +4,7 @@
 
 SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scoverage](https://github.com/scoverage/scalac-scoverage-plugin/) to generate the code coverage metrics.
 
-For an example project that uses this plugin [click here](https://github.com/scoverage/scoverage-samples).
+For an example project that uses this plugin [click here](https://github.com/scoverage/sbt-scoverage-samples).
 For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
 
 ## Installation
@@ -27,7 +27,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.3")
 
 ## Travis CI Integration
 
-`sbt-coveralls` can be run by [Travis CI](http://about.travis-ci.org/) by following these instructions:
+`sbt-coveralls` can be run by [Travis CI](https://docs.travis-ci.com/) by following these instructions:
 
 1) Add the following to you `travis.yml`
 
@@ -43,7 +43,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.3")
     after_success:
       - sbt coveralls
 
-2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on http://coveralls.io
+2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on https://coveralls.io/
 
 ## Manual Usage
 
