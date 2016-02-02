@@ -58,6 +58,18 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.3")
 
 For example output [click here](https://coveralls.io/builds/6727)
 
+## Play Framework Integration
+
+There is an issue with the latest version of sbt-coveralls and Play projects created using the default templates on 2.4.x. In order to work around this, we suggest you use the following versions of sbt-coverage/sbt-coveralls in your plugins.sbt
+
+```scala
+resolvers += Classpaths.sbtPluginReleases
+
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.1")
+
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0")
+```
+
 ## Specifying Your Repo Token
 
 There are several ways to tell `sbt-coveralls` your repo token to support different use cases:
