@@ -12,11 +12,10 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 1) Add the following to your `project/build.sbt` file
 
 ```scala
-resolvers += Classpaths.sbtPluginReleases
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.3")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 
-addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.3")
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 ```
 
 2) Setup coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token))
