@@ -2,7 +2,7 @@ name := "sbt-coveralls"
 
 organization := "org.scoverage"
 
-scalaVersion := "2.10.5"
+scalaVersion := "2.10.6"
 
 sbtPlugin := true
 
@@ -11,8 +11,6 @@ publishMavenStyle := true
 publishArtifact in Test := false
 
 pomIncludeRepository := { _ => false }
-
-licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
@@ -34,10 +32,6 @@ libraryDependencies ++= Seq (
 )
 
 scalariformSettings
-
-publishMavenStyle := false
-
-publishArtifact in Test := false
 
 publishTo <<= version {
   (v: String) =>
