@@ -3,8 +3,16 @@ jdk:
   - oraclejdk7
 scala: 
   - 2.10.6
+sudo: false
+before_cache:
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+cache:
+  directories:
+    - $HOME/.sbt/boot
+    - $HOME/.ivy2/cache
 script:
-  - sbt test && if [ $(git diff | wc -l) -ge 1 ] ; then
+  - sbt ++$TRAVIS_SCALA_VERSION test && if [ $(git diff | wc -l) -ge 1 ] ; then
       echo "Code formatting does not meet the project's standards:" ;
       git --no-pager diff ;
       exit 1 ;
