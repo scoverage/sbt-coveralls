@@ -31,7 +31,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 1) Add the following to you `travis.yml`
 
     script: "sbt clean coverage test"
-    after_success: "sbt coveralls"
+    after_success: "sbt coverageReport coveralls"
 
   If you have a multi-module project, perform `coverageAggregate`
   [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
