@@ -37,7 +37,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
   [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
 
     script:
-      - sbt clean coverage coverageReport test &&
+      - sbt clean coverage test coverageReport &&
         sbt coverageAggregate
     after_success:
       - sbt coveralls
