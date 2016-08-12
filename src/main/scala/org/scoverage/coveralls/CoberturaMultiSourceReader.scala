@@ -2,6 +2,7 @@ package org.scoverage.coveralls
 
 import xml.{ Node, XML }
 import scala.io.{ Codec, Source }
+import scala.language.postfixOps
 import java.io.File
 /**
  * The file will replace the original CoberturaReader

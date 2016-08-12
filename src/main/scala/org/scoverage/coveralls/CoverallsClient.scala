@@ -15,7 +15,7 @@ class CoverallsClient(endpoint: String, httpClient: HttpClient, sourcesEnc: Code
   import CoverallsClient._
 
   val mapper = newMapper
-  def url = s"$endpoint/api/v1/jobs"
+  def url: String = s"$endpoint/api/v1/jobs"
 
   def newMapper = {
     val mapper = new ObjectMapper
@@ -62,16 +62,15 @@ class ScalaJHttpClient extends HttpClient {
   val openJdkSafeSsl = new OpenJdkSafeSsl
 
   def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): CoverallHttpResponse = try {
-    val request = Http.multipart(url, MultiPart(name, filename, mime, data))
+    val request = Http(url).postMulti(MultiPart(name, filename, mime, data))
       .option(connTimeout(60000))
       .option(readTimeout(60000))
       .option(sslSocketFactory(openJdkSafeSsl))
 
-    request.process { conn: HttpURLConnection =>
-      CoverallHttpResponse(conn.getResponseCode, Http.tryParse(conn.getInputStream, Http.readString))
-    }
+    val response = request.execute()
+    CoverallHttpResponse(response.code, response.body)
   } catch {
-    case e: HttpException => CoverallHttpResponse(500, e.body)
+    case e: HttpException => CoverallHttpResponse(500, e.message)
   }
 }
 
