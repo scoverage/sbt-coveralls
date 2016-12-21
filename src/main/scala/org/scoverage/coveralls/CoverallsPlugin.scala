@@ -83,7 +83,7 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
       repoToken,
       travisJobIdent,
       coverallsServiceName.gimme,
-      new GitClient(".")(log),
+      new GitClient("..")(log),
       sourcesEnc,
       jsonEnc
     )
