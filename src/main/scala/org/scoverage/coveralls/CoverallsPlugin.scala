@@ -22,6 +22,7 @@ object Imports {
     val coverallsEncoding = SettingKey[String]("encoding")
     val coverallsSourceRoots = SettingKey[Seq[Seq[File]]]("Source roots")
     val coverallsEndpoint = SettingKey[Option[String]]("coveralls-endpoint")
+    val coverallsGitRepoLocation = SettingKey[Option[String]]("coveralls-git-repo")
   }
 }
 
@@ -45,7 +46,8 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile := crossTarget.value / "coveralls.json",
     coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml"),
-    coverallsSourceRoots := sourceDirectories.all(aggregateFilter).value
+    coverallsSourceRoots := sourceDirectories.all(aggregateFilter).value,
+    coverallsGitRepoLocation := Some(".")
   )
 
   val aggregateFilter = ScopeFilter(inAggregates(ThisProject), inConfigurations(Compile)) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
@@ -83,7 +85,7 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
       repoToken,
       travisJobIdent,
       coverallsServiceName.gimme,
-      new GitClient(".")(log),
+      new GitClient(coverallsGitRepoLocation.gimme getOrElse ".")(log),
       sourcesEnc,
       jsonEnc
     )
