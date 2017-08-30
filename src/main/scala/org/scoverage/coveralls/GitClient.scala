@@ -19,14 +19,14 @@ object GitClient {
 
 class GitClient(cwd: String)(implicit log: Logger) {
 
-  import scala.collection.JavaConversions._
+  import scala.collection.JavaConverters._
 
   val repository = FileRepositoryBuilder.create(new File(cwd, ".git"))
   val storedConfig = repository.getConfig
   log.info("Repository = " + repository.getDirectory)
 
   def remotes: Seq[String] = {
-    storedConfig.getSubsections("remote").toList
+    storedConfig.getSubsections("remote").asScala.to[Seq]
   }
 
   def remoteUrl(remoteName: String): String = {
@@ -38,7 +38,7 @@ class GitClient(cwd: String)(implicit log: Logger) {
 
   def lastCommit(): GitRevision = {
     val git = new Git(repository)
-    val headRev = git.log().setMaxCount(1).call().head
+    val headRev = git.log().setMaxCount(1).call().asScala.head
     val id = headRev.getId
     val author = headRev.getAuthorIdent
     val committer = headRev.getCommitterIdent
