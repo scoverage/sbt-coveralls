@@ -6,7 +6,7 @@ import scalaj.http.{ MultiPart, Http }
 import scalaj.http.HttpOptions._
 import java.io.File
 import javax.net.ssl.{ SSLSocket, SSLSocketFactory }
-import java.net.{ HttpURLConnection, Socket, InetAddress }
+import java.net.{ Socket, InetAddress }
 import com.fasterxml.jackson.core.JsonEncoding
 import com.fasterxml.jackson.databind.ObjectMapper
 

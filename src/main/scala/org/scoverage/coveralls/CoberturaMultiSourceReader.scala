@@ -1,6 +1,6 @@
 package org.scoverage.coveralls
 
-import xml.{ Node, XML }
+import xml.Node
 import scala.io.{ Codec, Source }
 import scala.language.postfixOps
 import java.io.File
@@ -32,7 +32,7 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
     childPath != parentPath && childPath.startsWith(parentPath)
   }
 
-  val reportXML = XML.loadFile(coberturaFile)
+  val reportXML: xml.Elem = XmlHelper.loadXmlFile(coberturaFile)
 
   /**
    * A sequence of source files paths that are relative to some source directory

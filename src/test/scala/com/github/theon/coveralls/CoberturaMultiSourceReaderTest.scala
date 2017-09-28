@@ -41,6 +41,16 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
   }
 
   "CoberturaMultiSourceReader" should {
+
+    "not blow up when DTD documents can't be fetched" in {
+      val withoutDTD = new CoberturaMultiSourceReader(
+        new File(root, "test_cobertura_dtd.xml"),
+        Seq(srcBarFoo, srcFoo),
+        Codec("UTF-8")
+      )
+      withoutDTD.reportXML shouldEqual reader.reportXML
+    }
+
     "correctly determine who is parent file and who is child file" in {
       reader.isChild(srcFoo, srcFoo) shouldBe false
       reader.isChild(srcBarFoo, srcFoo) shouldBe false

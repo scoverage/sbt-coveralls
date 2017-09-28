@@ -1,12 +1,12 @@
 package org.scoverage.coveralls
 
-import xml.{ Node, XML }
+import xml.Node
 import scala.io.{ Codec, Source }
 import java.io.File
 
 class CoberturaReader(coberturaFile: File, childProjectRoot: File, rootProject: File, enc: Codec) {
 
-  val elem = XML.loadFile(coberturaFile)
+  val elem: xml.Elem = XmlHelper.loadXmlFile(coberturaFile)
 
   val rootProjectDir = rootProject.getAbsolutePath + File.separator
   val childProjectDir = childProjectRoot.getAbsolutePath + File.separator
