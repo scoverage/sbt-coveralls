@@ -1,3 +1,5 @@
+import ReleaseTransformations._
+
 name := "sbt-coveralls"
 
 organization := "org.scoverage"
@@ -62,3 +64,17 @@ pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
       <url>http://github.com/sksamuel</url>
     </developer>
   </developers>
+
+// We redefine the release process so that we use SBT plugin cross building operator (^)
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  releaseStepCommandAndRemaining("^test"),
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseStepCommandAndRemaining("^publishSigned"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges)
