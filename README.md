@@ -120,6 +120,12 @@ Add an environment variable `COVERALLS_ENDPOINT`, for example:
 
     export COVERALLS_ENDPOINT=http://my-instance.com
 
+### Overriding the current branch
+
+By default `sbt-coveralls` uses the currently checked-out branch for reporting. To override the branch name add the `CI_BRANCH` variable, for example:
+
+    export CI_BRANCH=my-branch-name
+
 ## Custom Source File Encoding
 
 By default `sbt-coveralls` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
