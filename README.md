@@ -1,6 +1,7 @@
 # sbt-coveralls
 
 [![Join the chat at https://gitter.im/scoverage/sbt-coveralls](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scoverage/sbt-coveralls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[<img src="https://img.shields.io/maven-central/v/sbt-coveralls/sbt-coveralls.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22sbt-coveralls)
 
 SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scoverage](https://github.com/scoverage/scalac-scoverage-plugin/) to generate the code coverage metrics.
 
@@ -12,11 +13,10 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 1) Add the following to your `project/build.sbt` file
 
 ```scala
-resolvers += Classpaths.sbtPluginReleases
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.3")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 
-addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.3")
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 ```
 
 2) Setup coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token))
@@ -32,13 +32,13 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.3")
 1) Add the following to you `travis.yml`
 
     script: "sbt clean coverage test"
-    after_success: "sbt coveralls"
+    after_success: "sbt coverageReport coveralls"
 
   If you have a multi-module project, perform `coverageAggregate`
   [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
 
     script:
-      - sbt clean coverage test &&
+      - sbt clean coverage test coverageReport &&
         sbt coverageAggregate
     after_success:
       - sbt coveralls

@@ -48,10 +48,7 @@ class GitClient(cwd: String)(implicit log: Logger) {
   log.info("Repository = " + repository.getDirectory)
 
   def remotes: Seq[String] = {
-    storedConfig
-      .getSubsections("remote")
-      .asScala
-      .toList
+    storedConfig.getSubsections("remote").asScala.to[Seq]
   }
 
   def remoteUrl(remoteName: String): String = {

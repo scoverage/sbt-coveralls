@@ -2,6 +2,7 @@ package org.scoverage.coveralls
 
 import xml.{ Node, XML }
 import scala.io.{ Codec, Source }
+import scala.language.postfixOps
 import java.io.File
 /**
  * The file will replace the original CoberturaReader
@@ -25,8 +26,11 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
    *         the file tree rooted at parent.
    *         It returns false if child and parent points to the same directory
    */
-  def isChild(child: File, parent: File): Boolean =
-    sbt.IO.relativize(parent, child).isDefined
+  def isChild(child: File, parent: File): Boolean = {
+    val childPath = child.toURI.getPath
+    val parentPath = parent.toURI.getPath
+    childPath != parentPath && childPath.startsWith(parentPath)
+  }
 
   val reportXML = XML.loadFile(coberturaFile)
 
@@ -50,10 +54,10 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
   /**
    * Splits a path to a source file into two parts:
    *   1. the absolute path to source directory that contain this sourceFile
-   *   2. the realtive path to the  file
+   *   2. the relative path to the  file
    * Note: that paths contains File.separator that is dependant on the system
    *
-   * @return a tuple (a,b) such that "a/b" is tha canonical path to sourceFile
+   * @return a tuple (a,b) such that "a/b" is the canonical path to sourceFile
    * @throws IllegalArgumentException when a given file does not belongs to any of
    *                                  the source directories
    */
@@ -90,8 +94,8 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
     val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
 
     val rootProjectDir = splitPath(new File(source))._1.replace(File.separator, "/") + "/"
-    val sourceNoramlized = source.replace(File.separator, "/")
+    val sourceNormalized = source.replace(File.separator, "/")
 
-    SourceFileReport(rootProjectDir, sourceNoramlized, fullLineHit.toList)
+    SourceFileReport(rootProjectDir, sourceNormalized, fullLineHit.toList)
   }
 }

@@ -1,11 +1,27 @@
 language: scala
-jdk: 
-  - openjdk6
-  - oraclejdk8
-scala: 
-  - 2.10.5
+
+jdk: oraclejdk8
+
+matrix:
+  include:
+    - scala: 2.10.6
+      env: TRAVIS_SBT_VERSION="0.13.16"
+    - scala: 2.12.3
+      env: TRAVIS_SBT_VERSION="1.0.0"
+
+sudo: false
+
+before_cache:
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
+cache:
+  directories:
+    - $HOME/.sbt/boot
+    - $HOME/.ivy2/cache
+
 script:
-  - sbt test && if [ $(git diff | wc -l) -ge 1 ] ; then
+  - sbt "++${TRAVIS_SCALA_VERSION}" "^^${TRAVIS_SBT_VERSION}" test && if [ $(git diff | wc -l) -ge 1 ] ; then
       echo "Code formatting does not meet the project's standards:" ;
       git --no-pager diff ;
       exit 1 ;

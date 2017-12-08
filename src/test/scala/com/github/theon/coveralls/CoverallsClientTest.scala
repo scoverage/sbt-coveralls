@@ -74,14 +74,14 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
     "connecting to " + url should {
       "connect using ssl" in {
         val openJdkSafeSsl = new OpenJdkSafeSsl
-        val request = Http.get(url)
+        val request = Http(url)
+          .method("GET")
           .option(connTimeout(60000))
           .option(readTimeout(60000))
           .option(sslSocketFactory(openJdkSafeSsl))
 
-        request.process { conn: HttpURLConnection =>
-          conn.getResponseCode should equal(404)
-        }
+        val response = request.execute()
+        response.code should equal(404)
       }
     }
   }
