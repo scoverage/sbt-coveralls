@@ -1,9 +1,11 @@
 package org.scoverage.coveralls
 
-import xml.{ Node, XML }
+import xml.{ Elem, Node, SAXParser, XML }
 import scala.io.{ Codec, Source }
 import scala.language.postfixOps
-import java.io.File
+import java.io.{ File, IOException }
+
+import scala.xml.factory.XMLLoader
 /**
  * The file will replace the original CoberturaReader
  */
@@ -32,7 +34,16 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
     childPath != parentPath && childPath.startsWith(parentPath)
   }
 
-  val reportXML = XML.loadFile(coberturaFile)
+  /**
+   * Attempt to download and validate all DTDs.
+   *
+   * If that fails, fall back to a non validating XML library
+   */
+  private val reportXML = try {
+    XML.loadFile(coberturaFile)
+  } catch {
+    case ioe: IOException => NonValidatingXML.loadFile(coberturaFile)
+  }
 
   /**
    * A sequence of source files paths that are relative to some source directory
@@ -98,4 +109,16 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
 
     SourceFileReport(rootProjectDir, sourceNormalized, fullLineHit.toList)
   }
+}
+
+private object NonValidatingXML extends XMLLoader[Elem] {
+  val factory = javax.xml.parsers.SAXParserFactory.newInstance()
+
+  // disable DTD validation
+  factory.setValidating(false)
+  factory.setFeature("http://xml.org/sax/features/validation", false)
+  factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
+  factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+
+  override def parser: SAXParser = factory.newSAXParser()
 }

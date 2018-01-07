@@ -52,6 +52,14 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
       //catches mistakes with substrings
       reader.isChild(new File(root, "srcB-2.10"), srcFoo) shouldBe false
     }
+
+    "ignore the dtd" in {
+      val dtdReader = new CoberturaMultiSourceReader(
+        new File(root, "test_cobertura_multisource_with_dtd.xml"),
+        Seq(srcBarFoo, srcFoo),
+        Codec("UTF-8")
+      )
+    }
   }
 
   "CoberturaMultiSourceReader" should {
