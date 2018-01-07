@@ -2,7 +2,7 @@ package org.scoverage.coveralls
 
 import scala.io.{ Codec, Source }
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{ HttpException, MultiPart, Http }
+import scalaj.http.{ MultiPart, Http }
 import scalaj.http.HttpOptions._
 import java.io.File
 import javax.net.ssl.{ SSLSocket, SSLSocketFactory }
@@ -70,7 +70,7 @@ class ScalaJHttpClient extends HttpClient {
     val response = request.execute()
     CoverallHttpResponse(response.code, response.body)
   } catch {
-    case e: HttpException => CoverallHttpResponse(500, e.message)
+    case e: Exception => CoverallHttpResponse(500, e.getMessage)
   }
 }
 

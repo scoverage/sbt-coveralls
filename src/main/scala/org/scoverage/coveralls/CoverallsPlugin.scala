@@ -1,9 +1,7 @@
 package org.scoverage.coveralls
 
-import _root_.sbt.Keys._
 import _root_.sbt.ScopeFilter
 import _root_.sbt.ThisProject
-import _root_.sbt._
 import com.fasterxml.jackson.core.JsonEncoding
 import sbt.Keys._
 import sbt._
@@ -12,31 +10,34 @@ import java.io.File
 
 object Imports {
   object CoverallsKeys {
-    val coverallsFile = SettingKey[File]("coveralls-file")
-    val projectBaseDir = SettingKey[File]("base-dir")
-    val coverallsToken = SettingKey[Option[String]]("coveralls-repo-token")
-    val coverallsTokenFile = SettingKey[Option[String]]("coveralls-token-file")
+    val coverallsFile = SettingKey[File]("coverallsFile")
+    val projectBaseDir = SettingKey[File]("baseDir")
+    val coverallsToken = SettingKey[Option[String]]("coverallsRepoToken")
+    val coverallsTokenFile = SettingKey[Option[String]]("coverallsTokenFile")
     val coverallsServiceName = SettingKey[Option[String]]("coverallsServiceName")
-    val coverallsFailBuildOnError = SettingKey[Boolean]("fail build if coveralls step fails")
+    val coverallsFailBuildOnError = SettingKey[Boolean](
+      "coverallsFailBuildOnError", "fail build if coveralls step fails")
     val coberturaFile = SettingKey[File]("coberturaFile")
     val coverallsEncoding = SettingKey[String]("encoding")
-    val coverallsSourceRoots = SettingKey[Seq[Seq[File]]]("Source roots")
-    val coverallsEndpoint = SettingKey[Option[String]]("coveralls-endpoint")
+    val coverallsSourceRoots = SettingKey[Seq[Seq[File]]]("coverallsSourceRoots")
+    val coverallsEndpoint = SettingKey[Option[String]]("coverallsEndpoint")
     val coverallsGitRepoLocation = SettingKey[Option[String]]("coveralls-git-repo")
   }
 }
 
-object CoverallsPlugin extends AutoPlugin with CommandSupport {
+object CoverallsPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   val autoImport = Imports
   import autoImport._
   import CoverallsKeys._
 
-  lazy val coverallsCommand = Command.command("coveralls")(doCoveralls)
+  lazy val coveralls = taskKey[Unit](
+    "Uploads scala code coverage to coveralls.io"
+  )
 
   override lazy val projectSettings: Seq[Setting[_]] = Seq(
-    commands += coverallsCommand,
+    coveralls := coverallsTask.value,
     coverallsFailBuildOnError := false,
     coverallsEncoding := "UTF-8",
     coverallsToken := None,
@@ -52,36 +53,36 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
 
   val aggregateFilter = ScopeFilter(inAggregates(ThisProject), inConfigurations(Compile)) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
 
-  def doCoveralls(state: State): State = {
-    implicit val iState = state
-    val extracted = Project.extract(state)
+  def coverallsTask = Def.task {
+    val log = streams.value.log
+    val extracted = Project.extract(state.value)
     implicit val pr = extracted.currentRef
     implicit val bs = extracted.structure
 
-    val repoToken = userRepoToken(coverallsToken.gimme, coverallsTokenFile.gimme)
+    val repoToken = userRepoToken(coverallsToken.value, coverallsTokenFile.value)
 
     if (travisJobIdent.isEmpty && repoToken.isEmpty) {
-      log.error("Could not find coveralls repo token or determine travis job id")
-      log.error(" - If running from travis, make sure the TRAVIS_JOB_ID env variable is set")
-      log.error(
-        " - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token"
-      )
-      state.fail
+      sys.error(
+        """
+          |Could not find coveralls repo token or determine travis job id
+          | - If running from travis, make sure the TRAVIS_JOB_ID env variable is set
+          | - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token
+        """.stripMargin)
     }
 
     //Users can encode their source files in whatever encoding they desire, however when we send their source code to
     //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
     //See http://tools.ietf.org/html/rfc4627#section-3
-    val sourcesEnc = Codec(coverallsEncoding.gimme)
+    val sourcesEnc = Codec(coverallsEncoding.value)
     val jsonEnc = JsonEncoding.UTF8
 
-    val endpoint = userEndpoint(coverallsEndpoint.gimme).get
+    val endpoint = userEndpoint(coverallsEndpoint.value).get
 
     val coverallsClient = new CoverallsClient(endpoint, apiHttpClient, sourcesEnc, jsonEnc)
 
     val writer = new CoverallPayloadWriter(
-      projectBaseDir.gimme,
-      coverallsFile.gimme,
+      projectBaseDir.value,
+      coverallsFile.value,
       repoToken,
       travisJobIdent,
       coverallsServiceName.gimme,
@@ -92,15 +93,14 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
 
     writer.start(log)
 
-    val report = CoberturaFile(coberturaFile.gimme, baseDirectory.gimme)
+    val report = CoberturaFile(coberturaFile.value, baseDirectory.value)
     if (!report.exists) {
-      log.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
-      state.fail
+      sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
     }
 
     // include all of the sources (stanard roots and multi-module roots)
-    val sources: Seq[File] = (sourceDirectories in Compile).gimme
-    val multiSources: Seq[File] = coverallsSourceRoots.gimme.flatten
+    val sources: Seq[File] = (sourceDirectories in Compile).value
+    val multiSources: Seq[File] = coverallsSourceRoots.value.flatten
     val allSources = sources ++ multiSources
 
     val reader = new CoberturaMultiSourceReader(report.file, allSources, sourcesEnc)
@@ -113,26 +113,27 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
 
     writer.end()
 
-    val res = coverallsClient.postFile(coverallsFile.gimme)
+    val res = coverallsClient.postFile(coverallsFile.value)
+    val failBuildOnError = coverallsFailBuildOnError.value
+
     if (res.error) {
-      log.error(s"Uploading to $endpoint failed: " + res.message)
-      if (res.message.contains(CoverallsClient.tokenErrorString)) {
-        log.error(
-          "The error message '" + CoverallsClient.tokenErrorString +
-            "' can mean your repo token is incorrect."
-        )
-      } else {
-        log.error(s"$endpoint server internal error: " + res.message)
-      }
-      if (coverallsFailBuildOnError.gimme)
-        state.fail
+      val errorMessage =
+        s"""
+           |Uploading to $endpoint failed: ${res.message}
+           |${
+          if (res.message.contains(CoverallsClient.tokenErrorString))
+            s"The error message '${CoverallsClient.tokenErrorString}' can mean your repo token is incorrect."
+          else ""
+        }
+         """.stripMargin
+      if (failBuildOnError)
+        sys.error(errorMessage)
       else
-        state
+        log.error(errorMessage)
     } else {
       log.info(s"Uploading to $endpoint succeeded: " + res.message)
       log.info(res.url)
       log.info("(results may not appear immediately)")
-      state
     }
   }
 
@@ -147,7 +148,7 @@ object CoverallsPlugin extends AutoPlugin with CommandSupport {
       source.close()
       Option(repoToken)
     } catch {
-      case e: Exception => None
+      case _: Exception => None
     }
   }
 

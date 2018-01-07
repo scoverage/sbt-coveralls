@@ -1,8 +1,8 @@
+import ReleaseTransformations._
+
 name := "sbt-coveralls"
 
 organization := "org.scoverage"
-
-scalaVersion := "2.10.6"
 
 sbtPlugin := true
 
@@ -18,27 +18,27 @@ dependencyOverrides ++= Set(
   "com.jcraft"                        %  "jsch"                        % "0.1.51"
 )
 
+crossSbtVersions := Vector("0.13.16", "1.0.0")
+
 libraryDependencies ++= Seq (
-  "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.6.1",
-  "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.6.1",
+  "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.9.0",
+  "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.9.0",
   // DO NOT UPGRADE: later versions of jgit use Java 7 and we still need to support Java 6
   "org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "3.7.0.201502260915-r",
   //"org.eclipse.jgit"                  %  "org.eclipse.jgit"            % "4.0.1.201506240215-r",
-  "org.scalaj"                        %% "scalaj-http"                 % "1.1.4",
+  "org.scalaj"                        %% "scalaj-http"                 % "2.3.0",
   "org.mockito"                       %  "mockito-core"                % "1.10.19"       % "test",
-  "org.scalatest"                     %% "scalatest"                   % "2.2.5"         % "test"
+  "org.scalatest"                     %% "scalatest"                   % "3.0.4"         % "test"
 )
 
 scalariformSettings
 
-publishTo <<= version {
-  (v: String) =>
-    val nexus = "https://oss.sonatype.org/"
-    if (v.trim.endsWith("SNAPSHOT"))
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
 
 pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
   <licenses>
@@ -64,3 +64,17 @@ pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
       <url>http://github.com/sksamuel</url>
     </developer>
   </developers>
+
+// We redefine the release process so that we use SBT plugin cross building operator (^)
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  releaseStepCommandAndRemaining("^test"),
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseStepCommandAndRemaining("^publishSigned"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges)
