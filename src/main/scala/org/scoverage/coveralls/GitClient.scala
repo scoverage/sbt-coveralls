@@ -1,6 +1,7 @@
 package org.scoverage.coveralls
 
 import java.io.File
+import java.nio.file.Files.lines
 
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
@@ -21,7 +22,28 @@ class GitClient(cwd: String)(implicit log: Logger) {
 
   import scala.collection.JavaConverters._
 
-  val repository = FileRepositoryBuilder.create(new File(cwd, ".git"))
+  val gitDirLineRegex = """^gitdir: (.*)""".r
+
+  val gitFile = new File(cwd, ".git")
+
+  val resolvedGitDir =
+    if (gitFile.isFile)
+      lines(gitFile.toPath)
+        .iterator()
+        .asScala
+        .toList match {
+          case gitDirLineRegex(dir) :: Nil ⇒
+            log.info(s"Resolved git submodule file $gitFile to $dir")
+            new File(dir)
+          case lines ⇒
+            throw new IllegalArgumentException(
+              s"Expected single 'gitdir' line in .git file, found:\n\t${lines.mkString("\n\t")}"
+            )
+        }
+    else
+      gitFile
+
+  val repository = FileRepositoryBuilder.create(resolvedGitDir)
   val storedConfig = repository.getConfig
   log.info("Repository = " + repository.getDirectory)
 
