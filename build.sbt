@@ -18,7 +18,7 @@ dependencyOverrides ++= Set(
   "com.jcraft"                        %  "jsch"                        % "0.1.51"
 )
 
-crossSbtVersions := Vector("0.13.16", "1.0.0")
+crossSbtVersions := Vector("0.13.16", "1.0.2")
 
 libraryDependencies ++= Seq (
   "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.9.0",
