@@ -5,8 +5,11 @@ import _root_.sbt.ThisProject
 import com.fasterxml.jackson.core.JsonEncoding
 import sbt.Keys._
 import sbt._
-import scala.io.{ Codec, Source }
+
+import scala.io.{Codec, Source}
 import java.io.File
+
+import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion.Setting
 
 object Imports {
   object CoverallsKeys {
@@ -85,8 +88,8 @@ object CoverallsPlugin extends AutoPlugin {
       coverallsFile.value,
       repoToken,
       travisJobIdent,
-      coverallsServiceName.gimme,
-      new GitClient(coverallsGitRepoLocation.gimme getOrElse ".")(log),
+      coverallsServiceName.value,
+      new GitClient(coverallsGitRepoLocation.value getOrElse ".")(log),
       sourcesEnc,
       jsonEnc
     )
