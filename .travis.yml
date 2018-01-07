@@ -19,10 +19,3 @@ cache:
   directories:
     - $HOME/.sbt/boot
     - $HOME/.ivy2/cache
-
-script:
-  - sbt "++${TRAVIS_SCALA_VERSION}" "^^${TRAVIS_SBT_VERSION}" test && if [ $(git diff | wc -l) -ge 1 ] ; then
-      echo "Code formatting does not meet the project's standards:" ;
-      git --no-pager diff ;
-      exit 1 ;
-    fi

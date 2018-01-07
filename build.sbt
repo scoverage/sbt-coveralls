@@ -31,8 +31,6 @@ libraryDependencies ++= Seq (
   "org.scalatest"                     %% "scalatest"                   % "3.0.4"         % "test"
 )
 
-scalariformSettings
-
 publishTo := Some(
   if (isSnapshot.value)
     Opts.resolver.sonatypeSnapshots
