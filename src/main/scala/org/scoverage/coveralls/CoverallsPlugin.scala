@@ -9,8 +9,6 @@ import sbt._
 import scala.io.{Codec, Source}
 import java.io.File
 
-import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion.Setting
-
 object Imports {
   object CoverallsKeys {
     val coverallsFile = SettingKey[File]("coverallsFile")
