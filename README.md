@@ -33,17 +33,17 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.4")
 
 1) Add the following to you `travis.yml`
 
-    script: "sbt clean coverage test"
-    after_success: "sbt coverageReport coveralls"
+       script: "sbt clean coverage test"
+       after_success: "sbt coverageReport coveralls"
 
-  If you have a multi-module project, perform `coverageAggregate`
-  [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+    If you have a multi-module project, perform `coverageAggregate`
+    [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
 
-    script:
-      - sbt clean coverage test coverageReport &&
-        sbt coverageAggregate
-    after_success:
-      - sbt coveralls
+       script:
+         - sbt clean coverage test coverageReport &&
+           sbt coverageAggregate
+       after_success:
+         - sbt coveralls
       
 2) It is important to set the correct `service_name` when using Travis-Pro. The default is to use `travis-ci`. To override this value, add the following to your `build.sbt`:
 
