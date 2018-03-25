@@ -20,12 +20,6 @@ dependencyOverrides ++= Seq(
 
 crossSbtVersions := List("0.13.16", "1.0.2")
 
-scalaVersion := (CrossVersion partialVersion sbtCrossVersion.value match {
-  case Some((0, 13)) => "2.10.6"
-  case Some((1, _))  => "2.12.3"
-  case _             => sys error s"Unhandled sbt version ${sbtCrossVersion.value}"
-})
-
 libraryDependencies ++= Seq (
   "com.fasterxml.jackson.core"        %  "jackson-core"                % "2.9.0",
   "com.fasterxml.jackson.module"      %% "jackson-module-scala"        % "2.9.0",
@@ -82,5 +76,3 @@ releaseProcess := Seq[ReleaseStep](
   setNextVersion,
   commitNextVersion,
   pushChanges)
-
-val sbtCrossVersion = sbtVersion in pluginCrossBuild
