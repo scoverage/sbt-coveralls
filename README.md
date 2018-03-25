@@ -1,7 +1,9 @@
 # sbt-coveralls
 
+[![Build Status](https://travis-ci.org/scoverage/sbt-coveralls.png?branch=master)](https://travis-ci.org/scoverage/sbt-coveralls)
+[![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Join the chat at https://gitter.im/scoverage/sbt-coveralls](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scoverage/sbt-coveralls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Maven Release](https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls)
+[<img src="https://img.shields.io/maven-central/v/org.scoverage/sbt-coveralls.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22sbt-coveralls%22)
 
 SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scoverage](https://github.com/scoverage/scalac-scoverage-plugin/) to generate the code coverage metrics.
 
