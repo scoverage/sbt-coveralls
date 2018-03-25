@@ -14,7 +14,7 @@ pomIncludeRepository := { _ => false }
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
-dependencyOverrides ++= Set(
+dependencyOverrides ++= Seq(
   "com.jcraft"                        %  "jsch"                        % "0.1.51"
 )
 
