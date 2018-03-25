@@ -1,5 +1,6 @@
 # sbt-coveralls
 
+[![Build Status](https://travis-ci.org/scoverage/sbt-coveralls.png?branch=master)](https://travis-ci.org/scoverage/sbt-coveralls)
 [![Join the chat at https://gitter.im/scoverage/sbt-coveralls](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scoverage/sbt-coveralls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Maven Release](https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls)
 
