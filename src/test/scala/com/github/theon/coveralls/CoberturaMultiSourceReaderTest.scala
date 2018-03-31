@@ -62,6 +62,13 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
       //catches mistakes with substrings
       reader.isChild(new File(root, "srcB-2.10"), srcFoo) shouldBe false
     }
+
+    "correctly recognize that paths is not a child only because it is prefix of another path" in {
+      reader.isChild(new File(root, "/src/main/scala-2.12"), new File(root, "/src/main/scala")) shouldBe false
+      reader.isChild(new File(root, "/src/aaab"), new File(root, "/src/aaa")) shouldBe false
+
+      reader.isChild(new File(root, "/src/aaa/b"), new File(root, "/src/aaa")) shouldBe true
+    }
   }
 
   "CoberturaMultiSourceReader" should {
