@@ -102,7 +102,7 @@ object CoverallsPlugin extends AutoPlugin {
     // include all of the sources (stanard roots and multi-module roots)
     val sources: Seq[File] = (sourceDirectories in Compile).value
     val multiSources: Seq[File] = coverallsSourceRoots.value.flatten
-    val allSources = sources ++ multiSources
+    val allSources = (sources ++ multiSources).filter(_.isDirectory()).distinct
 
     val reader = new CoberturaMultiSourceReader(report.file, allSources, sourcesEnc)
     val sourceFiles = reader.sourceFilenames

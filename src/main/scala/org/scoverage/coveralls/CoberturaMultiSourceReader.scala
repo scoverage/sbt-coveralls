@@ -27,8 +27,8 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
    *         It returns false if child and parent points to the same directory
    */
   def isChild(child: File, parent: File): Boolean = {
-    val childPath = child.toURI.getPath
-    val parentPath = parent.toURI.getPath
+    val childPath = child.toPath
+    val parentPath = parent.toPath
     childPath != parentPath && childPath.startsWith(parentPath)
   }
 
