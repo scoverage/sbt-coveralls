@@ -10,8 +10,8 @@ import scala.io.Codec
 class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   val root = new File(getClass.getResource("/").getFile)
-  val srcBarFoo = new File(root, "/srcA/")
-  val srcFoo = new File(root, "/srcB/")
+  val srcBarFoo = new File(root, "srcA")
+  val srcFoo = new File(root, "srcB")
   val fileBarFoo = new File(srcBarFoo, "bar/foo/TestSourceFile.scala")
   val fileFooPath = "foo/TestSourceFile.scala".replace("/", File.separator)
   val fileFoo = new File(srcFoo, fileFooPath)
@@ -64,10 +64,10 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
     }
 
     "correctly recognize that paths is not a child only because it is prefix of another path" in {
-      reader.isChild(new File(root, "/src/main/scala-2.12"), new File(root, "/src/main/scala")) shouldBe false
-      reader.isChild(new File(root, "/src/aaab"), new File(root, "/src/aaa")) shouldBe false
+      reader.isChild(new File(root, "src/main/scala-2.12"), new File(root, "src/main/scala")) shouldBe false
+      reader.isChild(new File(root, "src/aaab"), new File(root, "src/aaa")) shouldBe false
 
-      reader.isChild(new File(root, "/src/aaa/b"), new File(root, "/src/aaa")) shouldBe true
+      reader.isChild(new File(root, "src/aaa/b"), new File(root, "src/aaa")) shouldBe true
     }
   }
 
