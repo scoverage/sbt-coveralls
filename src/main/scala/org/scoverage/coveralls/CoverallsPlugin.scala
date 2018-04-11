@@ -39,6 +39,7 @@ object CoverallsPlugin extends AutoPlugin {
 
   override lazy val projectSettings: Seq[Setting[_]] = Seq(
     coveralls := coverallsTask.value,
+    aggregate in coveralls := false,
     coverallsFailBuildOnError := false,
     coverallsEncoding := "UTF-8",
     coverallsToken := None,
@@ -99,10 +100,8 @@ object CoverallsPlugin extends AutoPlugin {
       sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
     }
 
-    // include all of the sources (stanard roots and multi-module roots)
-    val sources: Seq[File] = (sourceDirectories in Compile).value
-    val multiSources: Seq[File] = coverallsSourceRoots.value.flatten
-    val allSources = (sources ++ multiSources).filter(_.isDirectory()).distinct
+    // include all of the sources (from all modules)
+    val allSources = coverallsSourceRoots.value.flatten.filter(_.isDirectory()).distinct
 
     val reader = new CoberturaMultiSourceReader(report.file, allSources, sourcesEnc)
     val sourceFiles = reader.sourceFilenames
