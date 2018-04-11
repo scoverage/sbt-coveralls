@@ -17,7 +17,7 @@ class CoverallPayloadWriter(
     sourcesEnc: Codec,
     jsonEnc: JsonEncoding) {
 
-  val projectRootDirStr = projectRootDir.toString + "/"
+  val projectRootDirStr = projectRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
   import gitClient._
 
   val gen = generator(coverallsFile)
