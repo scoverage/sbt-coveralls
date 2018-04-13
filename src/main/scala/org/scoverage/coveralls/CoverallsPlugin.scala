@@ -12,7 +12,6 @@ import java.io.File
 object Imports {
   object CoverallsKeys {
     val coverallsFile = SettingKey[File]("coverallsFile")
-    val projectBaseDir = SettingKey[File]("baseDir")
     val coverallsToken = SettingKey[Option[String]]("coverallsRepoToken")
     val coverallsTokenFile = SettingKey[Option[String]]("coverallsTokenFile")
     val coverallsServiceName = SettingKey[Option[String]]("coverallsServiceName")
@@ -20,7 +19,6 @@ object Imports {
       "coverallsFailBuildOnError", "fail build if coveralls step fails")
     val coberturaFile = SettingKey[File]("coberturaFile")
     val coverallsEncoding = SettingKey[String]("encoding")
-    val coverallsSourceRoots = SettingKey[Seq[Seq[File]]]("coverallsSourceRoots")
     val coverallsEndpoint = SettingKey[Option[String]]("coverallsEndpoint")
     val coverallsGitRepoLocation = SettingKey[Option[String]]("coveralls-git-repo")
   }
@@ -45,11 +43,9 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsEndpoint := Option("https://coveralls.io"),
-    projectBaseDir := baseDirectory.value,
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile := crossTarget.value / "coveralls.json",
     coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml"),
-    coverallsSourceRoots := sourceDirectories.all(aggregateFilter).value,
     coverallsGitRepoLocation := Some(".")
   )
 
@@ -83,7 +79,7 @@ object CoverallsPlugin extends AutoPlugin {
     val coverallsClient = new CoverallsClient(endpoint, apiHttpClient, sourcesEnc, jsonEnc)
 
     val writer = new CoverallPayloadWriter(
-      projectBaseDir.value,
+      baseDirectory.value,
       coverallsFile.value,
       repoToken,
       travisJobIdent,
@@ -101,7 +97,7 @@ object CoverallsPlugin extends AutoPlugin {
     }
 
     // include all of the sources (from all modules)
-    val allSources = coverallsSourceRoots.value.flatten.filter(_.isDirectory()).distinct
+    val allSources = sourceDirectories.all(aggregateFilter).value.flatten.filter(_.isDirectory()).distinct
 
     val reader = new CoberturaMultiSourceReader(report.file, allSources, sourcesEnc)
     val sourceFiles = reader.sourceFilenames
