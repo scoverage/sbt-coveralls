@@ -1,6 +1,6 @@
 language: scala
 
-script: sbt ^^$TRAVIS_SBT_VERSION scripted
+script: sbt ^^$TRAVIS_SBT_VERSION test
 
 matrix:
   include:
