@@ -68,7 +68,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
         val w = new StringWriter()
         val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Codec("UTF-8"))
 
-        val projectRoot = new File("").getAbsolutePath + "/"
+        val projectRoot = new File("").getAbsolutePath.replace(File.separator, "/") + "/"
 
         coverallsW.addSourceFile(
           SourceFileReport(projectRoot, projectRoot + "src/test/resources/TestSourceFile.scala", List(Some(1), None, Some(2)))
