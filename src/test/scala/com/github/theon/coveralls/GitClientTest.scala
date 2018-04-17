@@ -37,7 +37,7 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
       .setMessage("Commit message for unit test")
       .call()
 
-    git = new GitClient(repoDir.getAbsolutePath)
+    git = new GitClient(repoDir)
   }
 
   "GitClient" when {

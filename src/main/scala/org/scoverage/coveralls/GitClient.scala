@@ -18,7 +18,7 @@ object GitClient {
     shortMessage: String)
 }
 
-class GitClient(cwd: String)(implicit log: Logger) {
+class GitClient(cwd: File)(implicit log: Logger) {
 
   import scala.collection.JavaConverters._
 
