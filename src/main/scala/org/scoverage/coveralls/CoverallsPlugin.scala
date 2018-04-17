@@ -45,7 +45,7 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsEndpoint := Option("https://coveralls.io"),
     coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
     coverallsFile := crossTarget.value / "coveralls.json",
-    coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml"),
+    coberturaFile := crossTarget.value / "coverage-report" / "cobertura.xml",
     coverallsGitRepoLocation := Some(".")
   )
 
@@ -93,15 +93,14 @@ object CoverallsPlugin extends AutoPlugin {
 
     writer.start(log)
 
-    val report = CoberturaFile(coberturaFile.value, baseDirectory.value)
-    if (!report.exists) {
+    if (!coberturaFile.value.exists) {
       sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
     }
 
     // include all of the sources (from all modules)
     val allSources = sourceDirectories.all(aggregateFilter).value.flatten.filter(_.isDirectory()).distinct
 
-    val reader = new CoberturaMultiSourceReader(report.file, allSources, sourcesEnc)
+    val reader = new CoberturaMultiSourceReader(coberturaFile.value, allSources, sourcesEnc)
     val sourceFiles = reader.sourceFilenames
 
     sourceFiles.foreach(sourceFile => {
@@ -158,8 +157,4 @@ object CoverallsPlugin extends AutoPlugin {
   def userEndpoint(coverallsEndpoint: Option[String]) =
     sys.env.get("COVERALLS_ENDPOINT")
       .orElse(coverallsEndpoint)
-}
-
-case class CoberturaFile(file: File, projectBase: File) {
-  def exists = file.exists
 }
