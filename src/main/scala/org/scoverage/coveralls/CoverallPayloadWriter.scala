@@ -8,7 +8,7 @@ import annotation.tailrec
 import com.fasterxml.jackson.core.{ JsonFactory, JsonEncoding }
 
 class CoverallPayloadWriter(
-    projectRootDir: File,
+    repoRootDir: File,
     coverallsFile: File,
     repoToken: Option[String],
     travisJobId: Option[String],
@@ -17,7 +17,7 @@ class CoverallPayloadWriter(
     sourcesEnc: Codec,
     jsonEnc: JsonEncoding) {
 
-  val projectRootDirStr = projectRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
+  val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
   import gitClient._
 
   val gen = generator(coverallsFile)
@@ -91,7 +91,7 @@ class CoverallPayloadWriter(
 
     // create a name relative to the project root (rather than the module root)
     // this is needed so that coveralls can find the file in git.
-    val fileName = report.file.replace(projectRootDirStr, "")
+    val fileName = report.file.replace(repoRootDirStr, "")
 
     gen.writeStartObject()
     gen.writeStringField("name", fileName)

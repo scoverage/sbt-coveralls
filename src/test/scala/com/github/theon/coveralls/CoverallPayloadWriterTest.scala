@@ -14,7 +14,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
   implicit val log = ConsoleLogger(System.out)
 
-  val testGitClient = new GitClient(".") {
+  val testGitClient = new GitClient(new File(".")) {
     override def remotes = List("remote")
     override def remoteUrl(remoteName: String) = "remoteUrl"
     override def currentBranch = "branch"

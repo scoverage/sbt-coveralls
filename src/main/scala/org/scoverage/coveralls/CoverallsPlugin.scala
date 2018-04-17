@@ -78,13 +78,15 @@ object CoverallsPlugin extends AutoPlugin {
 
     val coverallsClient = new CoverallsClient(endpoint, apiHttpClient, sourcesEnc, jsonEnc)
 
+    val repoRootDirectory = new File(coverallsGitRepoLocation.value getOrElse ".")
+
     val writer = new CoverallPayloadWriter(
-      baseDirectory.value,
+      repoRootDirectory,
       coverallsFile.value,
       repoToken,
       travisJobIdent,
       coverallsServiceName.value,
-      new GitClient(coverallsGitRepoLocation.value getOrElse ".")(log),
+      new GitClient(repoRootDirectory)(log),
       sourcesEnc,
       jsonEnc
     )
