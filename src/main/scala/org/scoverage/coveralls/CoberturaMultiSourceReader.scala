@@ -4,9 +4,7 @@ import xml.Node
 import scala.io.{ Codec, Source }
 import scala.language.postfixOps
 import java.io.File
-/**
- * The file will replace the original CoberturaReader
- */
+
 class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc: Codec) {
 
   require(sourceDirs.nonEmpty, "Given empty sequence of source directories")
@@ -93,9 +91,11 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
     val lineHitMap = lineCoverage(source)
     val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
 
-    val rootProjectDir = splitPath(new File(source))._1.replace(File.separator, "/") + "/"
     val sourceNormalized = source.replace(File.separator, "/")
 
-    SourceFileReport(rootProjectDir, sourceNormalized, fullLineHit.toList)
+    SourceFileReport(sourceNormalized, fullLineHit.toList)
   }
+}
+
+case class SourceFileReport(file: String, lineCoverage: List[Option[Int]]) {
 }

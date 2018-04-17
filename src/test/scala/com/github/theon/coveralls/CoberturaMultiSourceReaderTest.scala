@@ -22,7 +22,7 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
     Codec("UTF-8")
   )
 
-  "CoberturaReader" when {
+  "CoberturaMultiSourceReader" when {
     "reading a Cobertura file" should {
 
       "list the correct source files" in {
@@ -32,7 +32,6 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
       "return a valid SourceFileReport instance" in {
         val fileReport = reader.reportForSource(fileFoo.getCanonicalPath)
         fileReport.file should endWith("foo/TestSourceFile.scala")
-        fileReport.projectRoot should equal(srcFoo.getCanonicalPath.replace(File.separator, "/") + "/")
         fileReport.lineCoverage should equal(
           List(None, None, Some(1), Some(1), Some(1), None, None, None, None, None)
         )
