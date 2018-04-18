@@ -76,7 +76,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
         coverallsW.flush()
 
         w.toString should equal(
-          """{"name":"src/test/resources/TestSourceFile.scala","source":"/**\n * Test Scala Source File that is 10 lines\n */\nclass TestSourceFile {\n\n\n\n\n\n}","coverage":[1,null,2]}"""
+          """{"name":"src/test/resources/TestSourceFile.scala","source_digest":"A420A88E114B1CB1272F5984F333C75C","coverage":[1,null,2]}"""
         )
       }
 
