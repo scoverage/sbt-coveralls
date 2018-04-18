@@ -1,6 +1,7 @@
 package org.scoverage.coveralls
 
 import java.io.File
+import java.security.MessageDigest
 import scala.io.{ Codec, Source }
 
 import sbt.Logger
@@ -100,7 +101,9 @@ class CoverallPayloadWriter(
     val sourceCode = source.getLines().mkString("\n")
     source.close()
 
-    gen.writeStringField("source", sourceCode)
+    val sourceDigest = CoverallPayloadWriter.md5.digest(sourceCode.getBytes).map("%02X" format _).mkString
+
+    gen.writeStringField("source_digest", sourceDigest)
 
     gen.writeFieldName("coverage")
     gen.writeStartArray()
@@ -122,4 +125,10 @@ class CoverallPayloadWriter(
   def flush(): Unit = {
     gen.flush()
   }
+}
+
+object CoverallPayloadWriter {
+
+  val md5: MessageDigest = MessageDigest.getInstance("MD5")
+
 }
