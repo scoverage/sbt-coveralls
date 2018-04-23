@@ -33,19 +33,27 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.4")
 
 1) Add the following to you `travis.yml`
 
-    script: "sbt clean coverage test"
-    after_success: "sbt coverageReport coveralls"
+       script: "sbt clean coverage test"
+       after_success: "sbt coverageReport coveralls"
 
-  If you have a multi-module project, perform `coverageAggregate`
-  [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+    If you have a multi-module project, perform `coverageAggregate`
+    [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
 
-    script:
-      - sbt clean coverage test coverageReport &&
-        sbt coverageAggregate
-    after_success:
-      - sbt coveralls
+       script:
+         - sbt clean coverage test coverageReport &&
+           sbt coverageAggregate
+       after_success:
+         - sbt coveralls
+      
+2) It is important to set the correct `service_name` when using Travis-Pro. The default is to use `travis-ci`. To override this value, add the following to your `build.sbt`:
 
-2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on https://coveralls.io/
+    ```scala
+    import org.scoverage.coveralls.Imports.CoverallsKeys._
+    
+    coverallsServiceName := Some("travis-pro")
+    ```
+
+3) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on https://coveralls.io/
 
 ## Manual Usage
 
@@ -139,16 +147,6 @@ encoding := "ISO-8859-1"
 ```
 
 Once the plugin has slurped your source code into memory using the specified encoding, it will be converted into UTF-8 to be sent to the coveralls API. This is because the coveralls API uses a JSON request body and RFC 4627 mandates that [JSON must be UTF encoded](http://tools.ietf.org/html/rfc4627#section-3).
-
-### Using Travis-Pro
-
-It is important to set the correct `service_name` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
-
-```scala
-import org.scoverage.coveralls.Imports.CoverallsKeys._
-
-coverallsServiceName := Some("travis-pro")
-```
 
 # License
 
