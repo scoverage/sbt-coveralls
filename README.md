@@ -122,7 +122,7 @@ Add an environment variable `COVERALLS_ENDPOINT`, for example:
 
     export COVERALLS_ENDPOINT=http://my-instance.com
 
-### Overriding the current branch
+## Overriding the current branch
 
 By default `sbt-coveralls` uses the currently checked-out branch for reporting. To override the branch name add the `CI_BRANCH` variable, for example:
 
@@ -140,7 +140,7 @@ encoding := "ISO-8859-1"
 
 Once the plugin has slurped your source code into memory using the specified encoding, it will be converted into UTF-8 to be sent to the coveralls API. This is because the coveralls API uses a JSON request body and RFC 4627 mandates that [JSON must be UTF encoded](http://tools.ietf.org/html/rfc4627#section-3).
 
-### Using Travis-Pro
+## Using Travis-Pro
 
 It is important to set the correct `service_name` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
 
