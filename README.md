@@ -31,19 +31,19 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.4")
 
 `sbt-coveralls` can be run by [Travis CI](https://docs.travis-ci.com/) by following these instructions:
 
-1) Add the following to you `travis.yml`
+1) Add the following to your `travis.yml`
 
-    script: "sbt clean coverage test"
-    after_success: "sbt coverageReport coveralls"
+       script: "sbt clean coverage test"
+       after_success: "sbt coverageReport coveralls"
 
-  If you have a multi-module project, perform `coverageAggregate`
-  [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+   If you have a multi-module project, perform `coverageAggregate`
+   [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
 
-    script:
-      - sbt clean coverage test coverageReport &&
-        sbt coverageAggregate
-    after_success:
-      - sbt coveralls
+       script:
+         - sbt clean coverage test coverageReport &&
+           sbt coverageAggregate
+       after_success:
+         - sbt coveralls
 
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on https://coveralls.io/
 
@@ -55,8 +55,8 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.4")
 
 2) In the SBT console, run `coverage` then your tests finishing with `coveralls`. After running the command, you should see output similar to the following:
 
-    Uploading to coveralls.io succeeded: Job #17.1
-    https://coveralls.io/jobs/12207
+       Uploading to coveralls.io succeeded: Job #17.1
+       https://coveralls.io/jobs/12207
 
 For example output [click here](https://coveralls.io/builds/6727)
 
