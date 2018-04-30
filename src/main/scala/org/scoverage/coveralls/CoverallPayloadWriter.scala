@@ -2,7 +2,7 @@ package org.scoverage.coveralls
 
 import java.io.File
 import java.security.MessageDigest
-import scala.io.{ Codec, Source }
+import scala.io.Source
 
 import sbt.Logger
 import annotation.tailrec
@@ -14,9 +14,8 @@ class CoverallPayloadWriter(
     repoToken: Option[String],
     travisJobId: Option[String],
     serviceName: Option[String],
-    gitClient: GitClient,
-    sourcesEnc: Codec,
-    jsonEnc: JsonEncoding) {
+    sourceEncoding: Option[String],
+    gitClient: GitClient) {
 
   val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
   import gitClient._
@@ -26,7 +25,7 @@ class CoverallPayloadWriter(
   def generator(file: File) = {
     if (!file.getParentFile.exists) file.getParentFile.mkdirs
     val factory = new JsonFactory
-    factory.createGenerator(file, jsonEnc)
+    factory.createGenerator(file, JsonEncoding.UTF8)
   }
 
   def start(implicit log: Logger) {
@@ -97,7 +96,10 @@ class CoverallPayloadWriter(
     gen.writeStartObject()
     gen.writeStringField("name", fileName)
 
-    val source = Source.fromFile(report.file)(sourcesEnc)
+    val source = sourceEncoding match {
+     case Some(enc) => Source.fromFile(report.file, enc)
+     case None => Source.fromFile(report.file)
+    }
     val sourceCode = source.getLines().mkString("\n")
     source.close()
 

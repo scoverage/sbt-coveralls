@@ -2,13 +2,11 @@ package com.github.theon.coveralls
 
 import java.io.{ File, StringWriter, Writer }
 
-import com.fasterxml.jackson.core.{ JsonEncoding, JsonFactory }
+import com.fasterxml.jackson.core.JsonFactory
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import org.scoverage.coveralls.GitClient.GitRevision
 import org.scoverage.coveralls.{ CoverallPayloadWriter, GitClient, SourceFileReport }
 import sbt.ConsoleLogger
-
-import scala.io.Codec
 
 class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
@@ -23,8 +21,8 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
     }
   }
 
-  def coverallsWriter(writer: Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String], enc: Codec) =
-    new CoverallPayloadWriter(new File("").getAbsoluteFile, new File(""), tokenIn, travisJobIdIn, serviceName, testGitClient, enc, JsonEncoding.UTF8) {
+  def coverallsWriter(writer: Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String], enc: Option[String]) =
+    new CoverallPayloadWriter(new File("").getAbsoluteFile, new File(""), tokenIn, travisJobIdIn, serviceName, enc, testGitClient) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
         factory.createGenerator(writer)
@@ -38,7 +36,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "generate a correct starting payload with travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), Codec("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), Some("UTF-8"))
 
         coverallsW.start
         coverallsW.flush()
@@ -52,7 +50,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "generate a correct starting payload without travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, None, Codec("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, None, Some("UTF-8"))
 
         coverallsW.start
         coverallsW.flush()
@@ -66,7 +64,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "add source files correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Codec("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Some("UTF-8"))
 
         val projectRoot = new File("").getAbsolutePath.replace(File.separator, "/") + "/"
 
@@ -82,7 +80,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "end the file correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Codec("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Some("UTF-8"))
 
         coverallsW.start
         coverallsW.end()

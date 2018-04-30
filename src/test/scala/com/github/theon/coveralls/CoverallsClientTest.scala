@@ -3,11 +3,9 @@ package com.github.theon.coveralls
 import java.io.File
 import java.net.HttpURLConnection
 
-import com.fasterxml.jackson.core.JsonEncoding
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import org.scoverage.coveralls.{ OpenJdkSafeSsl, CoverallsClient }
 
-import scala.io.Codec
 import scala.util.Try
 import scalaj.http.Http
 import scalaj.http.HttpOptions._
@@ -21,7 +19,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
       "return a valid response for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient)
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFile.scala"))
 
@@ -33,7 +31,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
       "return a valid response with Korean for success" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient)
 
         val response = coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
 
@@ -48,7 +46,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
           500,
           """{"message":"Couldn't find a repository matching this job.","error":true}"""
         )
-        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient(defaultEndpoint, testHttpClient)
 
         val attemptAtResponse = Try {
           coverallsClient.postFile(new File("src/test/resources/TestSourceFileWithKorean.scala"))
@@ -62,7 +60,7 @@ class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers 
 
       "use the endpoint to build the url" in {
         val testHttpClient = new TestSuccessHttpClient()
-        val coverallsClient = new CoverallsClient("https://test.endpoint", testHttpClient, Codec.UTF8, JsonEncoding.UTF8)
+        val coverallsClient = new CoverallsClient("https://test.endpoint", testHttpClient)
 
         assert(coverallsClient.url == "https://test.endpoint/api/v1/jobs")
       }
