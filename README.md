@@ -116,7 +116,7 @@ By default `sbt-coveralls` uses the currently checked-out branch for reporting. 
 
     export CI_BRANCH=my-branch-name
 
-## Custom Source File Encoding
+## Specifying Source File Encoding
 
 `sbt-coveralls` finds the encoding in `scalacOptions` setting value.
 If not defined it assumes source files are encoded using platform-specific encoding.
