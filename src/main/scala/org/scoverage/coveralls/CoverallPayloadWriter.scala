@@ -5,7 +5,6 @@ import java.security.MessageDigest
 import scala.io.Source
 
 import sbt.Logger
-import annotation.tailrec
 import com.fasterxml.jackson.core.{ JsonFactory, JsonEncoding }
 
 class CoverallPayloadWriter(
@@ -28,7 +27,7 @@ class CoverallPayloadWriter(
     factory.createGenerator(file, JsonEncoding.UTF8)
   }
 
-  def start(implicit log: Logger) {
+  def start() {
     gen.writeStartObject()
 
     def writeOpt(fieldName: String, holder: Option[String]) =
@@ -45,7 +44,7 @@ class CoverallPayloadWriter(
     gen.writeStartArray()
   }
 
-  private def addGitInfo(implicit log: Logger) {
+  private def addGitInfo() {
     gen.writeFieldName("git")
     gen.writeStartObject()
 
@@ -75,16 +74,13 @@ class CoverallPayloadWriter(
     gen.writeEndObject()
   }
 
-  @tailrec
-  private def addGitRemotes(remotes: Seq[String])(implicit log: Logger) {
-    if (remotes.isEmpty) return
-
-    gen.writeStartObject()
-    gen.writeStringField("name", remotes.head)
-    gen.writeStringField("url", remoteUrl(remotes.head))
-    gen.writeEndObject()
-
-    addGitRemotes(remotes.tail)
+  private def addGitRemotes(remotes: Seq[String]) {
+    remotes.foreach( remote => {
+      gen.writeStartObject()
+      gen.writeStringField("name", remote)
+      gen.writeStringField("url", remoteUrl(remote))
+      gen.writeEndObject()
+    })
   }
 
   def addSourceFile(report: SourceFileReport) {

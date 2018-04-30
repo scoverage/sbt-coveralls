@@ -52,10 +52,9 @@ object CoverallsPlugin extends AutoPlugin {
   val aggregateFilter = ScopeFilter(inAggregates(ThisProject), inConfigurations(Compile)) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
 
   def coverallsTask = Def.task {
-    val log = streams.value.log
-    val extracted = Project.extract(state.value)
-    implicit val pr = extracted.currentRef
-    implicit val bs = extracted.structure
+    if (!coberturaFile.value.exists) {
+      sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
+    }
 
     val repoToken = userRepoToken(coverallsToken.value, coverallsTokenFile.value)
 
@@ -67,6 +66,8 @@ object CoverallsPlugin extends AutoPlugin {
           | - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token
         """.stripMargin)
     }
+
+    implicit val log = streams.value.log
 
     val sourcesEnc = sourceEncoding((scalacOptions in (Compile)).value)
 
@@ -86,22 +87,15 @@ object CoverallsPlugin extends AutoPlugin {
       new GitClient(repoRootDirectory)(log)
     )
 
-    writer.start(log)
-
-    if (!coberturaFile.value.exists) {
-      sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
-    }
+    writer.start()
 
     // include all of the sources (from all modules)
     val allSources = sourceDirectories.all(aggregateFilter).value.flatten.filter(_.isDirectory()).distinct
 
     val reader = new CoberturaMultiSourceReader(coberturaFile.value, allSources, sourcesEnc)
-    val sourceFiles = reader.sourceFilenames
-
-    sourceFiles.foreach(sourceFile => {
-      val sourceReport = reader.reportForSource(sourceFile)
-      writer.addSourceFile(sourceReport)
-    })
+    reader.sourceFilenames
+          .map(reader.reportForSource(_))
+          .foreach(writer.addSourceFile(_))
 
     writer.end()
 
