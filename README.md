@@ -118,12 +118,12 @@ By default `sbt-coveralls` uses the currently checked-out branch for reporting. 
 
 ## Custom Source File Encoding
 
-By default `sbt-coveralls` assumes your source files are `UTF-8` encoded. To use a different encoding, add the following to your `build.sbt`
+`sbt-coveralls` finds the encoding in `scalacOptions` setting value.
+If not defined it assumes source files are encoded using platform-specific encoding.
+To specify encoding, add the following to your `build.sbt`
 
 ```scala
-import org.scoverage.coveralls.Imports.CoverallsKeys._
-
-encoding := "ISO-8859-1"
+scalacOptions += Seq("-encoding", "UTF-8")
 ```
 
 Once the plugin has slurped your source code into memory using the specified encoding, it will be converted into UTF-8 to be sent to the coveralls API. This is because the coveralls API uses a JSON request body and RFC 4627 mandates that [JSON must be UTF encoded](http://tools.ietf.org/html/rfc4627#section-3).

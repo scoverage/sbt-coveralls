@@ -1,11 +1,11 @@
 package org.scoverage.coveralls
 
 import xml.Node
-import scala.io.{ Codec, Source }
+import scala.io.Source
 import scala.language.postfixOps
 import java.io.File
 
-class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc: Codec) {
+class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], sourceEncoding: Option[String]) {
 
   require(sourceDirs.nonEmpty, "Given empty sequence of source directories")
 
@@ -84,7 +84,10 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], enc
   }
 
   def reportForSource(source: String) = {
-    val fileSrc = Source.fromFile(source)(enc)
+    val fileSrc = sourceEncoding match {
+     case Some(enc) => Source.fromFile(source, enc)
+     case None => Source.fromFile(source)
+    }
     val lineCount = fileSrc.getLines().size
     fileSrc.close()
 

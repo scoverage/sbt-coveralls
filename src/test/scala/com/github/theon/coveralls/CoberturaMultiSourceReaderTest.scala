@@ -5,8 +5,6 @@ import java.io.{ FileNotFoundException, File }
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import org.scoverage.coveralls.{ CoberturaMultiSourceReader }
 
-import scala.io.Codec
-
 class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
   val root = new File(getClass.getResource("/").getFile)
@@ -19,7 +17,7 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
   val reader = new CoberturaMultiSourceReader(
     new File(root, "test_cobertura_multisource.xml"),
     Seq(srcBarFoo, srcFoo),
-    Codec("UTF-8")
+    Some("UTF-8")
   )
 
   "CoberturaMultiSourceReader" when {
@@ -45,7 +43,7 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
       val withoutDTD = new CoberturaMultiSourceReader(
         new File(root, "test_cobertura_dtd.xml"),
         Seq(srcBarFoo, srcFoo),
-        Codec("UTF-8")
+        Some("UTF-8")
       )
       withoutDTD.reportXML shouldEqual reader.reportXML
     }
@@ -74,25 +72,25 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
 
     "complain when given an empty set of source diectories" in {
       intercept[IllegalArgumentException] {
-        new CoberturaMultiSourceReader(new File(""), Seq(), Codec("UTF-8"))
+        new CoberturaMultiSourceReader(new File(""), Seq(), Some("UTF-8"))
       }
     }
 
     "complain when al least two of the source directories are nested" in {
       intercept[IllegalArgumentException] {
-        new CoberturaMultiSourceReader(new File(""), Seq(srcBarFoo, srcFoo, root), Codec("UTF-8"))
+        new CoberturaMultiSourceReader(new File(""), Seq(srcBarFoo, srcFoo, root), Some("UTF-8"))
       }
     }
 
     "complain when given a non-existing cobertura file" in {
       intercept[FileNotFoundException] {
-        new CoberturaMultiSourceReader(new File("zzz"), Seq(root), Codec("UTF-8"))
+        new CoberturaMultiSourceReader(new File("zzz"), Seq(root), Some("UTF-8"))
       }
     }
 
     "complain when given am incorrect cobertura file" in {
       intercept[Exception] {
-        new CoberturaMultiSourceReader(fileBarFoo, Seq(root), Codec("UTF-8"))
+        new CoberturaMultiSourceReader(fileBarFoo, Seq(root), Some("UTF-8"))
       }
     }
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonEncoding
 import sbt.Keys._
 import sbt._
 
-import scala.io.{Codec, Source}
+import scala.io.Source
 import java.io.File
 
 object Imports {
@@ -18,6 +18,7 @@ object Imports {
     val coverallsFailBuildOnError = SettingKey[Boolean](
       "coverallsFailBuildOnError", "fail build if coveralls step fails")
     val coberturaFile = SettingKey[File]("coberturaFile")
+    @deprecated("Add encoding to scalacOptions, default value is platform default encoding", "1.2.5")
     val coverallsEncoding = SettingKey[String]("encoding")
     val coverallsEndpoint = SettingKey[Option[String]]("coverallsEndpoint")
     val coverallsGitRepoLocation = SettingKey[Option[String]]("coveralls-git-repo")
@@ -39,7 +40,6 @@ object CoverallsPlugin extends AutoPlugin {
     coveralls := coverallsTask.value,
     aggregate in coveralls := false,
     coverallsFailBuildOnError := false,
-    coverallsEncoding := "UTF-8",
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsEndpoint := Option("https://coveralls.io"),
@@ -68,15 +68,11 @@ object CoverallsPlugin extends AutoPlugin {
         """.stripMargin)
     }
 
-    //Users can encode their source files in whatever encoding they desire, however when we send their source code to
-    //the coveralls API, it is a JSON payload. RFC4627 states that JSON must be UTF encoded.
-    //See http://tools.ietf.org/html/rfc4627#section-3
-    val sourcesEnc = Codec(coverallsEncoding.value)
-    val jsonEnc = JsonEncoding.UTF8
+    val sourcesEnc = sourceEncoding((scalacOptions in (Compile)).value)
 
     val endpoint = userEndpoint(coverallsEndpoint.value).get
 
-    val coverallsClient = new CoverallsClient(endpoint, apiHttpClient, sourcesEnc, jsonEnc)
+    val coverallsClient = new CoverallsClient(endpoint, apiHttpClient)
 
     val repoRootDirectory = new File(coverallsGitRepoLocation.value getOrElse ".")
 
@@ -86,9 +82,8 @@ object CoverallsPlugin extends AutoPlugin {
       repoToken,
       travisJobIdent,
       coverallsServiceName.value,
-      new GitClient(repoRootDirectory)(log),
       sourcesEnc,
-      jsonEnc
+      new GitClient(repoRootDirectory)(log)
     )
 
     writer.start(log)
@@ -157,4 +152,12 @@ object CoverallsPlugin extends AutoPlugin {
   def userEndpoint(coverallsEndpoint: Option[String]) =
     sys.env.get("COVERALLS_ENDPOINT")
       .orElse(coverallsEndpoint)
+
+
+  private def sourceEncoding(scalacOptions: Seq[String]): Option[String] = {
+    val i = scalacOptions.indexOf("-encoding") + 1
+    if (i > 0 && i < scalacOptions.length) Some(scalacOptions(i)) else None
+  }
+
+
 }

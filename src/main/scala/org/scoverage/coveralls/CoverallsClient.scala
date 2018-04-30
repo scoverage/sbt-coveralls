@@ -7,10 +7,9 @@ import scalaj.http.HttpOptions._
 import java.io.File
 import javax.net.ssl.{ SSLSocket, SSLSocketFactory }
 import java.net.{ Socket, InetAddress }
-import com.fasterxml.jackson.core.JsonEncoding
 import com.fasterxml.jackson.databind.ObjectMapper
 
-class CoverallsClient(endpoint: String, httpClient: HttpClient, sourcesEnc: Codec, jsonEnc: JsonEncoding) {
+class CoverallsClient(endpoint: String, httpClient: HttpClient) {
 
   import CoverallsClient._
 
@@ -24,13 +23,14 @@ class CoverallsClient(endpoint: String, httpClient: HttpClient, sourcesEnc: Code
   }
 
   def postFile(file: File): CoverallsResponse = {
-    val source = Source.fromFile(file)(sourcesEnc)
+    val codec: Codec = Codec.UTF8
+    val source = Source.fromFile(file)(codec)
     // API want newlines encoded as \n, not sure about other escape chars
     // https://coveralls.zendesk.com/hc/en-us/articles/201774865-API-Introduction
-    val bytes = source.getLines().mkString("\\n").getBytes(jsonEnc.getJavaName)
+    val bytes = source.getLines().mkString("\\n").getBytes(codec.charSet)
     source.close()
 
-    httpClient.multipart(url, "json_file", "json_file.json", "application/json; charset=" + jsonEnc.getJavaName.toLowerCase, bytes) match {
+    httpClient.multipart(url, "json_file", "json_file.json", "application/json; charset=utf-8", bytes) match {
       case CoverallHttpResponse(_, body) =>
         try {
           mapper.readValue(body, classOf[CoverallsResponse])
