@@ -18,7 +18,7 @@ object Imports {
     val coverallsFailBuildOnError = SettingKey[Boolean](
       "coverallsFailBuildOnError", "fail build if coveralls step fails")
     val coberturaFile = SettingKey[File]("coberturaFile")
-    @deprecated("Add encoding to scalacOptions, default value is platform default encoding", "1.2.5")
+    @deprecated("Read https://github.com/scoverage/sbt-coveralls#custom-source-file-encoding", "1.2.5")
     val coverallsEncoding = SettingKey[String]("encoding")
     val coverallsEndpoint = SettingKey[Option[String]]("coverallsEndpoint")
     val coverallsGitRepoLocation = SettingKey[Option[String]]("coveralls-git-repo")
