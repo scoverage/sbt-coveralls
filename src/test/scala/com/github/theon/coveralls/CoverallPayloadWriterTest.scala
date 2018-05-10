@@ -21,8 +21,8 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
     }
   }
 
-  def coverallsWriter(writer: Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String], enc: Option[String]) =
-    new CoverallPayloadWriter(new File("").getAbsoluteFile, new File(""), tokenIn, travisJobIdIn, serviceName, enc, testGitClient) {
+  def coverallsWriter(writer: Writer, tokenIn: Option[String], jobId: Option[String], serviceName: Option[String], pullRequest: Option[String], parallel: Boolean, enc: Option[String]) =
+    new CoverallPayloadWriter(new File("").getAbsoluteFile, new File(""), tokenIn, jobId, serviceName, pullRequest, parallel, enc, testGitClient) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
         factory.createGenerator(writer)
@@ -36,13 +36,13 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "generate a correct starting payload with travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), Some("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"), None, parallel = false, Some("UTF-8"))
 
         coverallsW.start
         coverallsW.flush()
 
         w.toString should equal(
-          """{"repo_token":"testRepoToken","service_name":"travis-ci","service_job_id":"testTravisJob",""" +
+          """{"repo_token":"testRepoToken","service_name":"travis-ci","service_job_id":"testTravisJob","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
@@ -50,13 +50,13 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "generate a correct starting payload without travis job id" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, None, Some("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, None, None, parallel = false, Some("UTF-8"))
 
         coverallsW.start
         coverallsW.flush()
 
         w.toString should equal(
-          """{"repo_token":"testRepoToken",""" +
+          """{"repo_token":"testRepoToken","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
@@ -64,7 +64,7 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "add source files correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Some("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), None, parallel = false, Some("UTF-8"))
 
         val projectRoot = new File("").getAbsolutePath.replace(File.separator, "/") + "/"
 
@@ -80,12 +80,26 @@ class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Mat
 
       "end the file correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), Some("UTF-8"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"), None, parallel = false, Some("UTF-8"))
 
         coverallsW.start
         coverallsW.end()
 
         w.toString should endWith("]}")
+      }
+
+      "generate a correct starting payload with circle job id" in {
+        val w = new StringWriter()
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("12345"), Some("circle-ci"), Some("100"), parallel = true, Some("UTF-8"))
+
+        coverallsW.start
+        coverallsW.flush()
+
+        w.toString should equal(
+          """{"repo_token":"testRepoToken","service_name":"circle-ci","service_job_id":"12345","service_pull_request":"100","parallel":true,""" +
+            expectedGit +
+            ""","source_files":["""
+        )
       }
     }
   }
