@@ -25,6 +25,8 @@ object Imports {
   }
 }
 
+case class ServiceConfig(name: Option[String], jobId: Option[String], pullRequest: Option[String], parallel: Boolean)
+
 object CoverallsPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
@@ -81,8 +83,11 @@ object CoverallsPlugin extends AutoPlugin {
       repoRootDirectory,
       coverallsFile.value,
       repoToken,
-      travisJobIdent,
-      coverallsServiceName.value,
+      jobId,
+      if (isCircle) Some("circle-ci") else None,
+      circlePullRequest,
+      isParallel,
+      sourcesEnc,
       new GitClient(repoRootDirectory)(log)
     )
 
@@ -132,6 +137,16 @@ object CoverallsPlugin extends AutoPlugin {
   def apiHttpClient = new ScalaJHttpClient
 
   def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
+
+  def isParallel: Boolean = sys.env.getOrElse("COVERALLS_PARALLEL", "") == "true"
+
+  def isCircle: Boolean = sys.env.getOrElse("CIRCLECI", "") == "true"
+
+  def circlePullRequest: Option[String] = sys.env.getOrElse("CI_PULL_REQUEST", "").split("/pull/").lift(1)
+
+  def circleBuildNumber: Option[String] = sys.env.get("CIRCLE_BUILD_NUM")
+
+  def jobId: Option[String] = if (isCircle) circleBuildNumber else travisJobIdent
 
   def repoTokenFromFile(path: String) = {
     try {

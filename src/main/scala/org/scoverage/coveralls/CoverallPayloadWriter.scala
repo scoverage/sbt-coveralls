@@ -10,8 +10,11 @@ class CoverallPayloadWriter(
     repoRootDir: File,
     coverallsFile: File,
     repoToken: Option[String],
-    travisJobId: Option[String],
+    jobId: Option[String],
     serviceName: Option[String],
+    pullRequest: Option[String],
+    parallel: Boolean,
+    sourceEncoding: Option[String],
     gitClient: GitClient) {
 
   val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
@@ -33,8 +36,10 @@ class CoverallPayloadWriter(
 
     writeOpt("repo_token", repoToken)
     writeOpt("service_name", serviceName)
-    writeOpt("service_job_id", travisJobId)
-    writeOpt("service_pull_request", sys.env.get("CI_PULL_REQUEST"))
+    writeOpt("service_job_id", jobId)
+    writeOpt("service_pull_request", pullRequest)
+
+    gen.writeBooleanField("parallel", parallel)
 
     addGitInfo
 
