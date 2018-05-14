@@ -84,7 +84,7 @@ object CoverallsPlugin extends AutoPlugin {
       coverallsFile.value,
       repoToken,
       jobId,
-      if (isCircle) Some("circle-ci") else None,
+      if (isCircle) Some("circleci") else None,
       circlePullRequest,
       isParallel,
       sourcesEnc,
