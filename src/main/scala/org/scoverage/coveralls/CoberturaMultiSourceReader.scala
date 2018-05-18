@@ -1,6 +1,5 @@
 package org.scoverage.coveralls
 
-import xml.Node
 import scala.io.Source
 import scala.language.postfixOps
 import java.io.File
@@ -32,10 +31,20 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], sou
 
   val reportXML: xml.Elem = XmlHelper.loadXmlFile(coberturaFile)
 
+  private val lineCoverageMap: Map[String, Map[Int, Int]] = {
+    (reportXML \\ "class").foldLeft(Map[String, Map[Int, Int]]().empty) { (x, n) =>
+      val fileName = (n \ "@filename").toString()
+      val lineCoverage = (n \ "lines" \ "line").map(
+        l => (l \ "@number").toString().toInt -> (l \ "@hits").toString().toInt
+      )
+      x + (fileName -> (x.getOrElse(fileName, Map.empty) ++ lineCoverage))
+    }
+  }
+
   /**
    * A sequence of source files paths that are relative to some source directory
    */
-  private def sourceFilesRelative: Set[String] = reportXML \\ "class" \\ "@filename" map (_.toString()) toSet
+  private def sourceFilesRelative: Set[String] = lineCoverageMap.keySet
 
   def sourceFiles: Set[File] = {
     for {
@@ -72,15 +81,7 @@ class CoberturaMultiSourceReader(coberturaFile: File, sourceDirs: Seq[File], sou
   protected def lineCoverage(sourceFile: String) = {
     val filenamePath = splitPath(new File(sourceFile))._2.replace(File.separator, "/")
 
-    val classElems = reportXML \\ "class"
-    val fileElems = classElems filter { n: Node => (n \\ "@filename").toString == filenamePath }
-    val lineElems = fileElems.flatMap(n => {
-      n \\ "line"
-    })
-
-    lineElems.map(n => {
-      (n \\ "@number").toString().toInt -> (n \\ "@hits").toString().toInt
-    }).toMap
+    lineCoverageMap(filenamePath)
   }
 
   def reportForSource(source: String) = {
