@@ -34,6 +34,14 @@ class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll wit
           List(None, None, Some(1), Some(1), Some(1), None, None, None, None, None)
         )
       }
+
+      "return a valid SourceFileReport instance if there are some classes which have the same @filename" in {
+        val fileReport = reader.reportForSource(fileBarFoo.getCanonicalPath)
+        fileReport.file should endWith("bar/foo/TestSourceFile.scala")
+        fileReport.lineCoverage should equal(
+          List(None, None, None, Some(1), Some(1), Some(2), None, None, Some(1), Some(1))
+        )
+      }
     }
   }
 
