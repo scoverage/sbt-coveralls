@@ -1,8 +1,7 @@
 package org.scoverage.coveralls
 
-import java.io.File
-import java.security.MessageDigest
-import scala.io.Source
+import java.io.{File, FileInputStream}
+import java.security.{DigestInputStream, MessageDigest}
 
 import sbt.Logger
 import com.fasterxml.jackson.core.{ JsonFactory, JsonEncoding }
@@ -13,7 +12,6 @@ class CoverallPayloadWriter(
     repoToken: Option[String],
     travisJobId: Option[String],
     serviceName: Option[String],
-    sourceEncoding: Option[String],
     gitClient: GitClient) {
 
   val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
@@ -92,14 +90,7 @@ class CoverallPayloadWriter(
     gen.writeStartObject()
     gen.writeStringField("name", fileName)
 
-    val source = sourceEncoding match {
-     case Some(enc) => Source.fromFile(report.file, enc)
-     case None => Source.fromFile(report.file)
-    }
-    val sourceCode = source.getLines().mkString("\n")
-    source.close()
-
-    val sourceDigest = CoverallPayloadWriter.md5.digest(sourceCode.getBytes).map("%02X" format _).mkString
+    val sourceDigest = computeSourceDigest(report.file)
 
     gen.writeStringField("source_digest", sourceDigest)
 
@@ -113,6 +104,16 @@ class CoverallPayloadWriter(
     gen.writeEndObject()
   }
 
+  private def computeSourceDigest(path: String) = {
+    val buffer = new Array[Byte](8192)
+    val md5 = MessageDigest.getInstance("MD5")
+
+    val dis = new DigestInputStream(new FileInputStream(new File(path)), md5)
+    try { while (dis.read(buffer) != -1) { } } finally { dis.close() }
+
+    md5.digest.map("%02x".format(_)).mkString.toUpperCase
+  }
+
   def end(): Unit = {
     gen.writeEndArray()
     gen.writeEndObject()
@@ -123,10 +124,4 @@ class CoverallPayloadWriter(
   def flush(): Unit = {
     gen.flush()
   }
-}
-
-object CoverallPayloadWriter {
-
-  val md5: MessageDigest = MessageDigest.getInstance("MD5")
-
 }

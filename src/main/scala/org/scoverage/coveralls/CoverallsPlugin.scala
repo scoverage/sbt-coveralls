@@ -83,7 +83,6 @@ object CoverallsPlugin extends AutoPlugin {
       repoToken,
       travisJobIdent,
       coverallsServiceName.value,
-      sourcesEnc,
       new GitClient(repoRootDirectory)(log)
     )
 
@@ -93,11 +92,18 @@ object CoverallsPlugin extends AutoPlugin {
     val allSources = sourceDirectories.all(aggregateFilter).value.flatten.filter(_.isDirectory()).distinct
 
     val reader = new CoberturaMultiSourceReader(coberturaFile.value, allSources, sourcesEnc)
-    reader.sourceFilenames
-          .map(reader.reportForSource(_))
-          .foreach(writer.addSourceFile(_))
+
+    log.info(s"Generating reports for ${reader.sourceFilenames.size} files")
+
+    val fileReports = reader.sourceFilenames.par.map(reader.reportForSource(_)).seq
+
+    log.info(s"Adding file reports to the coveralls file (${coverallsFile.value.getName})")
+
+    fileReports.foreach(writer.addSourceFile(_))
 
     writer.end()
+
+    log.info(s"Uploading the coveralls file (${coverallsFile.value.getName})")
 
     val res = coverallsClient.postFile(coverallsFile.value)
     val failBuildOnError = coverallsFailBuildOnError.value
