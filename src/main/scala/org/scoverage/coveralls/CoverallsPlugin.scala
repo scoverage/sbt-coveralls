@@ -25,8 +25,6 @@ object Imports {
   }
 }
 
-case class ServiceConfig(name: Option[String], jobId: Option[String], pullRequest: Option[String], parallel: Boolean)
-
 object CoverallsPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
@@ -83,8 +81,9 @@ object CoverallsPlugin extends AutoPlugin {
       repoRootDirectory,
       coverallsFile.value,
       repoToken,
-      jobId,
       if (isCircle) Some("circleci") else None,
+      serviceNumber,
+      jobId,
       circlePullRequest,
       isParallel,
       sourcesEnc,
@@ -146,7 +145,9 @@ object CoverallsPlugin extends AutoPlugin {
 
   def circleBuildNumber: Option[String] = sys.env.get("CIRCLE_WORKFLOW_ID")
 
-  def jobId: Option[String] = if (isCircle) circleBuildNumber else travisJobIdent
+  def jobId: Option[String] = if (isCircle) sys.env.get("CIRCLE_BUILD_NUM") else travisJobIdent
+
+  def serviceNumber: Option[String] = if (isCircle) circleBuildNumber else travisJobIdent
 
   def repoTokenFromFile(path: String) = {
     try {

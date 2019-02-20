@@ -10,8 +10,9 @@ class CoverallPayloadWriter(
     repoRootDir: File,
     coverallsFile: File,
     repoToken: Option[String],
-    jobId: Option[String],
     serviceName: Option[String],
+    serviceNumber: Option[String],
+    serviceJobId: Option[String],
     pullRequest: Option[String],
     parallel: Boolean,
     sourceEncoding: Option[String],
@@ -36,7 +37,8 @@ class CoverallPayloadWriter(
 
     writeOpt("repo_token", repoToken)
     writeOpt("service_name", serviceName)
-    writeOpt("service_job_id", jobId)
+    writeOpt("service_number", serviceNumber)
+    writeOpt("service_job_id", serviceJobId)
     writeOpt("service_pull_request", pullRequest)
 
     gen.writeBooleanField("parallel", parallel)

@@ -1,3 +1,5 @@
+import ReleaseTransformations._
+
 name := "sbt-coveralls"
 
 organization := "org.scoverage"
@@ -12,7 +14,7 @@ pomIncludeRepository := { _ => false }
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
-dependencyOverrides ++= Set(
+dependencyOverrides ++= Seq(
   "com.jcraft"                        %  "jsch"                        % "0.1.51"
 )
 
@@ -28,3 +30,49 @@ libraryDependencies ++= Seq (
   "org.mockito"                       %  "mockito-core"                % "1.10.19"       % "test",
   "org.scalatest"                     %% "scalatest"                   % "3.0.4"         % "test"
 )
+
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+pomExtra := <url>https://github.com/scoverage/sbt-coveralls</url>
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>git@github.com:scoverage/sbt-coveralls.git</url>
+    <connection>scm:git@github.com:scoverage/sbt-coveralls.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>theon</id>
+      <name>Ian Forsey</name>
+      <url>http://theon.github.com</url>
+    </developer>
+    <developer>
+      <id>sksamuel</id>
+      <name>Stephen Samuel</name>
+      <url>http://github.com/sksamuel</url>
+    </developer>
+  </developers>
+
+// We redefine the release process so that we use SBT plugin cross building operator (^)
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  releaseStepCommandAndRemaining("^test"),
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseStepCommandAndRemaining("^publishSigned"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges)
