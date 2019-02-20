@@ -43,7 +43,13 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsEndpoint := Option("https://coveralls.io"),
-    coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
+    coverallsServiceName := {
+      if (isCircle) {
+        Some("circleci")
+      } else {
+        travisJobIdent map { _ => "travis-ci" }
+      }
+    },
     coverallsFile := crossTarget.value / "coveralls.json",
     coberturaFile := crossTarget.value / "coverage-report" / "cobertura.xml",
     coverallsGitRepoLocation := Some(".")
@@ -81,7 +87,7 @@ object CoverallsPlugin extends AutoPlugin {
       repoRootDirectory,
       coverallsFile.value,
       repoToken,
-      if (isCircle) Some("circleci") else None,
+      coverallsServiceName.value,
       serviceNumber,
       jobId,
       circlePullRequest,
