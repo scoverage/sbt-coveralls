@@ -143,11 +143,9 @@ object CoverallsPlugin extends AutoPlugin {
 
   def circlePullRequest: Option[String] = sys.env.getOrElse("CI_PULL_REQUEST", "").split("/pull/").lift(1)
 
-  def circleBuildNumber: Option[String] = sys.env.get("CIRCLE_WORKFLOW_ID")
+  def jobId: Option[String] = sys.env.get("CIRCLE_BUILD_NUM")
 
-  def jobId: Option[String] = if (isCircle) sys.env.get("CIRCLE_BUILD_NUM") else travisJobIdent
-
-  def serviceNumber: Option[String] = if (isCircle) circleBuildNumber else travisJobIdent
+  def serviceNumber: Option[String] = if (isCircle) sys.env.get("CIRCLE_WORKFLOW_ID") else travisJobIdent
 
   def repoTokenFromFile(path: String) = {
     try {
