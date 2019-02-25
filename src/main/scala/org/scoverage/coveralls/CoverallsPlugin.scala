@@ -92,7 +92,6 @@ object CoverallsPlugin extends AutoPlugin {
       jobId,
       circlePullRequest,
       isParallel,
-      sourcesEnc,
       new GitClient(repoRootDirectory)(log)
     )
 
@@ -149,7 +148,7 @@ object CoverallsPlugin extends AutoPlugin {
 
   def circlePullRequest: Option[String] = sys.env.getOrElse("CI_PULL_REQUEST", "").split("/pull/").lift(1)
 
-  def jobId: Option[String] = Some(sys.env.getOrElse("CIRCLE_BUILD_NUM", "") + sys.env.getOrElse("CIRCLE_NODE_INDEX", ""))
+  def jobId: Option[String] = Some(sys.env.getOrElse("CIRCLE_BUILD_NUM", "") + sys.env.getOrElse("CIRCLE_NODE_INDEX", "")).filter(_.nonEmpty)
 
   def serviceNumber: Option[String] = if (isCircle) sys.env.get("CIRCLE_WORKFLOW_ID") else travisJobIdent
 

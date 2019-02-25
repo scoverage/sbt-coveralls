@@ -15,7 +15,6 @@ class CoverallPayloadWriter(
     serviceJobId: Option[String],
     pullRequest: Option[String],
     parallel: Boolean,
-    sourceEncoding: Option[String],
     gitClient: GitClient) {
 
   val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
