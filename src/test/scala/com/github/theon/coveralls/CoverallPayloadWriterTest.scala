@@ -7,7 +7,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scoverage.coveralls.GitClient.GitRevision
-import org.scoverage.coveralls.{ CoverallPayloadWriter, GitClient, SourceFileReport }
+import org.scoverage.coveralls.{ CIService, CoverallPayloadWriter, GitClient, SourceFileReport, TravisCI }
 import sbt.ConsoleLogger
 
 class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
@@ -23,8 +23,8 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
     }
   }
 
-  def coverallsWriter(writer: Writer, tokenIn: Option[String], travisJobIdIn: Option[String], serviceName: Option[String]) =
-    new CoverallPayloadWriter(new File("").getAbsoluteFile, new File(""), tokenIn, travisJobIdIn, serviceName, testGitClient) {
+  def coverallsWriter(writer: Writer, tokenIn: Option[String], service: Option[CIService]) =
+    new CoverallPayloadWriter(new File("").getAbsoluteFile, new File(""), tokenIn, service, testGitClient) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
         factory.createGenerator(writer)
@@ -36,23 +36,30 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
   "CoverallPayloadWriter" when {
     "generating coveralls API payload" should {
 
-      "generate a correct starting payload with travis job id" in {
+      "generate a correct starting payload with a job id from a CI service" in {
+        val testService: CIService = new CIService {
+          override def name = "my-service"
+          override def jobId = Some("testServiceJob")
+          override def pullRequest = None
+          override def currentBranch = None
+        }
+
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some("testTravisJob"), Some("travis-ci"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some(testService))
 
         coverallsW.start
         coverallsW.flush()
 
         w.toString should equal(
-          """{"repo_token":"testRepoToken","service_name":"travis-ci","service_job_id":"testTravisJob",""" +
+          """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob",""" +
             expectedGit +
             ""","source_files":["""
         )
       }
 
-      "generate a correct starting payload without travis job id" in {
+      "generate a correct starting payload without a CI service" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, None)
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None)
 
         coverallsW.start
         coverallsW.flush()
@@ -66,7 +73,7 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
 
       "add source files correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some(TravisCI))
 
         val projectRoot = new File("").getAbsolutePath.replace(File.separator, "/") + "/"
 
@@ -82,7 +89,7 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
 
       "end the file correctly" in {
         val w = new StringWriter()
-        val coverallsW = coverallsWriter(w, Some("testRepoToken"), None, Some("travis-ci"))
+        val coverallsW = coverallsWriter(w, Some("testRepoToken"), Some(TravisCI))
 
         coverallsW.start
         coverallsW.end()

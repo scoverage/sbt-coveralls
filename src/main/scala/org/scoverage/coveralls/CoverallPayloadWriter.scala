@@ -10,8 +10,7 @@ class CoverallPayloadWriter(
     repoRootDir: File,
     coverallsFile: File,
     repoToken: Option[String],
-    travisJobId: Option[String],
-    serviceName: Option[String],
+    service: Option[CIService],
     gitClient: GitClient) {
 
   val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
@@ -32,9 +31,12 @@ class CoverallPayloadWriter(
       holder foreach { gen.writeStringField(fieldName, _) }
 
     writeOpt("repo_token", repoToken)
-    writeOpt("service_name", serviceName)
-    writeOpt("service_job_id", travisJobId)
-    writeOpt("service_pull_request", sys.env.get("CI_PULL_REQUEST"))
+    writeOpt("service_name", service.map(_.name))
+    writeOpt("service_job_id", service.flatMap(_.jobId))
+    writeOpt("service_pull_request", service.flatMap(_.pullRequest))
+
+    // to provide an unique additional label in jobs with multiple submissions
+    writeOpt("flag_name", sys.env.get("COVERALLS_FLAG_NAME"))
 
     addGitInfo
 
@@ -60,7 +62,9 @@ class CoverallPayloadWriter(
 
     gen.writeEndObject()
 
-    gen.writeStringField("branch", currentBranch)
+    gen.writeStringField("branch",
+      service.flatMap(_.currentBranch).getOrElse(gitClient.currentBranch)
+    )
 
     gen.writeFieldName("remotes")
     gen.writeStartArray()
