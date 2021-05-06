@@ -2,12 +2,13 @@ package com.github.theon.coveralls
 
 import java.io.File
 
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 import org.scoverage.coveralls.XmlHelper
 
 import scala.xml.XML
 
-class XmlHelperTest extends WordSpec with Matchers {
+class XmlHelperTest extends AnyWordSpec with Matchers {
 
   val root = new File(getClass.getResource("/").getFile)
 
