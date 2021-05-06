@@ -3,12 +3,14 @@ package com.github.theon.coveralls
 import java.io.{ File, StringWriter, Writer }
 
 import com.fasterxml.jackson.core.JsonFactory
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterAll
 import org.scoverage.coveralls.GitClient.GitRevision
 import org.scoverage.coveralls.{ CoverallPayloadWriter, GitClient, SourceFileReport }
 import sbt.ConsoleLogger
 
-class CoverallPayloadWriterTest extends WordSpec with BeforeAndAfterAll with Matchers {
+class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
   implicit val log = ConsoleLogger(System.out)
 

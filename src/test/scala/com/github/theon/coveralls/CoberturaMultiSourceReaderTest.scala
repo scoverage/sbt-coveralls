@@ -2,10 +2,12 @@ package com.github.theon.coveralls
 
 import java.io.{ FileNotFoundException, File }
 
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterAll
 import org.scoverage.coveralls.{ CoberturaMultiSourceReader }
 
-class CoberturaMultiSourceReaderTest extends WordSpec with BeforeAndAfterAll with Matchers {
+class CoberturaMultiSourceReaderTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
   val root = new File(getClass.getResource("/").getFile)
   val srcBarFoo = new File(root, "srcA")

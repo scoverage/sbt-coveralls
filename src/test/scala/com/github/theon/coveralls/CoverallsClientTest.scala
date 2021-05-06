@@ -3,14 +3,16 @@ package com.github.theon.coveralls
 import java.io.File
 import java.net.HttpURLConnection
 
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterAll
 import org.scoverage.coveralls.{ OpenJdkSafeSsl, CoverallsClient }
 
 import scala.util.Try
 import scalaj.http.Http
 import scalaj.http.HttpOptions._
 
-class CoverallsClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
+class CoverallsClientTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
   val defaultEndpoint = "https://coveralls.io"
 

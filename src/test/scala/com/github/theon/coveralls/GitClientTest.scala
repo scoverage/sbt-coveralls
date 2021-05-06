@@ -2,13 +2,14 @@ package com.github.theon.coveralls
 
 import java.io.File
 
-import org.scalatest.{ BeforeAndAfterAll, WordSpec }
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterAll
 import sbt.ConsoleLogger
 import org.eclipse.jgit.api.Git
-import org.scalatest.Matchers
 import org.scoverage.coveralls.GitClient
 
-class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
+class GitClientTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
   implicit val log = ConsoleLogger(System.out)
 
@@ -58,7 +59,9 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
     "asked for the current branch" should {
       "return a valid response" in {
-        git.currentBranch should equal("master")
+        // git checkout action defaults to master for this, so we'll just check
+        // to ensure it starts with ma for [main|master]
+        git.currentBranch should startWith("ma")
       }
     }
 

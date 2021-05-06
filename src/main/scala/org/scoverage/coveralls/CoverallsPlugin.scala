@@ -38,7 +38,7 @@ object CoverallsPlugin extends AutoPlugin {
 
   override lazy val projectSettings: Seq[Setting[_]] = Seq(
     coveralls := coverallsTask.value,
-    aggregate in coveralls := false,
+    coveralls / aggregate := false,
     coverallsFailBuildOnError := false,
     coverallsToken := None,
     coverallsTokenFile := None,
@@ -69,7 +69,7 @@ object CoverallsPlugin extends AutoPlugin {
 
     implicit val log = streams.value.log
 
-    val sourcesEnc = sourceEncoding((scalacOptions in (Compile)).value)
+    val sourcesEnc = sourceEncoding((Compile / scalacOptions).value)
 
     val endpoint = userEndpoint(coverallsEndpoint.value).get
 
@@ -158,6 +158,4 @@ object CoverallsPlugin extends AutoPlugin {
     val i = scalacOptions.indexOf("-encoding") + 1
     if (i > 0 && i < scalacOptions.length) Some(scalacOptions(i)) else None
   }
-
-
 }
