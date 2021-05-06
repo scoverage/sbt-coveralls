@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+      - '*.md'
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  scala:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '8', '11' ]
+
+    steps:
+      - name: checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up JVM
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: ${{ matrix.java }}
+
+      - name: run tests
+        run: sbt test
