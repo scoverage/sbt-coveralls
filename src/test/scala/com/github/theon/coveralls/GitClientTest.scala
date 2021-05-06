@@ -58,7 +58,7 @@ class GitClientTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
     "asked for the current branch" should {
       "return a valid response" in {
-        git.currentBranch should equal("master")
+        git.currentBranch should equal("main")
       }
     }
 
