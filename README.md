@@ -4,7 +4,7 @@
 [![Join the chat at https://gitter.im/scoverage/sbt-coveralls](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scoverage/sbt-coveralls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg?kill_cache=1)](https://search.maven.org/artifact/org.scoverage/sbt-coveralls/)
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration). This plugin uses [scoverage](https://github.com/scoverage/scalac-scoverage-plugin/) to generate the code coverage metrics.
+SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration) and [GitHub Actions](#github-actions-integration). This plugin uses [scoverage](https://github.com/scoverage/scalac-scoverage-plugin/) to generate the code coverage metrics.
 
 For an example project that uses this plugin [click here](https://github.com/scoverage/sbt-scoverage-samples).
 For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
@@ -32,19 +32,53 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.7")
 
 1) Add the following to your `travis.yml`
 
-       script: "sbt clean coverage test"
-       after_success: "sbt coverageReport coveralls"
+    ```yaml
+    script: "sbt clean coverage test"
+    after_success: "sbt coverageReport coveralls"
+    ```
 
    If you have a multi-module project, perform `coverageAggregate`
    [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
 
-       script:
-         - sbt clean coverage test coverageReport &&
-           sbt coverageAggregate
-       after_success:
-         - sbt coveralls
+    ```yaml
+    script:
+      - sbt clean coverage test coverageReport &&
+        sbt coverageAggregate
+    after_success:
+      - sbt coveralls
+    ```
 
 2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on https://coveralls.io/
+
+## GitHub Actions Integration
+
+`sbt-coveralls` can be run by [GitHub Actions](https://github.com/features/actions) by following these instructions:
+
+1) Add the following to your `.github/workflows/ci.yml`
+
+    ```yaml
+    - name: Run tests
+      run: sbt clean coverage test
+
+    - name: Upload coverage data to Coveralls
+      run: sbt coverageReport coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
+    ```
+
+    If you have a multi-module project, perform `coverageAggregate`
+    [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+
+    ```yaml
+    - name: Upload coverage data to Coveralls
+      run: sbt coverageAggregate coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
+    ```
+
+2) Job done! Commit these changes to kick off your GitHub Actions build and you should see coverage reports appear on https://coveralls.io/
 
 ## Manual Usage
 
