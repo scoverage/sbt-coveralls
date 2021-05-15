@@ -45,6 +45,6 @@ lazy val root = Project("sbt-coveralls", file("."))
       "org.eclipse.jgit" % "org.eclipse.jgit" % "5.11.1.202105131744-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
       "org.mockito" % "mockito-core" % "3.10.0" % Test,
-      "org.scalatest" %% "scalatest" % "3.2.8" % Test
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     )
   )
