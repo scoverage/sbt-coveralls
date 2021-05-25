@@ -14,7 +14,7 @@ object Imports {
     val coverallsFile = SettingKey[File]("coverallsFile")
     val coverallsToken = SettingKey[Option[String]]("coverallsRepoToken")
     val coverallsTokenFile = SettingKey[Option[String]]("coverallsTokenFile")
-    val coverallsServiceName = SettingKey[Option[String]]("coverallsServiceName")
+    val coverallsService = SettingKey[Option[CIService]]("coverallsService")
     val coverallsFailBuildOnError = SettingKey[Boolean](
       "coverallsFailBuildOnError", "fail build if coveralls step fails")
     val coberturaFile = SettingKey[File]("coberturaFile")
@@ -43,7 +43,11 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsToken := None,
     coverallsTokenFile := None,
     coverallsEndpoint := Option("https://coveralls.io"),
-    coverallsServiceName := travisJobIdent map { _ => "travis-ci" },
+    coverallsService := {
+      if(travisJobIdent.isDefined) Some(TravisCI)
+      else if(githubActionsRunIdent.isDefined) Some(GitHubActions)
+      else None
+    },
     coverallsFile := crossTarget.value / "coveralls.json",
     coberturaFile := crossTarget.value / "coverage-report" / "cobertura.xml",
     coverallsGitRepoLocation := Some(".")
@@ -81,8 +85,7 @@ object CoverallsPlugin extends AutoPlugin {
       repoRootDirectory,
       coverallsFile.value,
       repoToken,
-      travisJobIdent,
-      coverallsServiceName.value,
+      coverallsService.value,
       new GitClient(repoRootDirectory)(log)
     )
 
@@ -132,6 +135,8 @@ object CoverallsPlugin extends AutoPlugin {
   def apiHttpClient = new ScalaJHttpClient
 
   def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
+
+  def githubActionsRunIdent = sys.env.get("GITHUB_RUN_ID")
 
   def repoTokenFromFile(path: String) = {
     try {

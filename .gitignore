@@ -3,6 +3,9 @@ target/
 *.ipr
 *.iws
 .idea/
+.bloop/
+.metals/
+metals.sbt
 
 .settings/
 .cache

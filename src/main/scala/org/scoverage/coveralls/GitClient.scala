@@ -55,8 +55,7 @@ class GitClient(cwd: File)(implicit log: Logger) {
     storedConfig.getString("remote", remoteName, "url")
   }
 
-  def currentBranch: String =
-    sys.env.getOrElse("CI_BRANCH", repository.getBranch)
+  def currentBranch: String = repository.getBranch
 
   def lastCommit(): GitRevision = {
     val git = new Git(repository)
