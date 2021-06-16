@@ -15,9 +15,9 @@ For example output [click here](https://coveralls.io/r/scoverage/scoverage-sampl
 
 ```scala
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.8.2")
 
-addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.7")
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
 ```
 
 2) Setup coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token))
@@ -161,12 +161,13 @@ scalacOptions += Seq("-encoding", "UTF-8")
 
 ## Using Travis-Pro
 
-It is important to set the correct `service_name` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
+It is important to set the correct `service` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
 
 ```scala
 import org.scoverage.coveralls.Imports.CoverallsKeys._
+import org.scoverage.coveralls.TravisPro
 
-coverallsServiceName := Some("travis-pro")
+coverallsService := Some(TravisPro)
 ```
 
 # License
