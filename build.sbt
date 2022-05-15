@@ -40,11 +40,11 @@ lazy val root = Project("sbt-coveralls", file("."))
       "com.jcraft" % "jsch" % "0.1.51"
     ),
     libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-core" % "2.13.2",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2",
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.13.3",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.3",
       "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.0.202109080827-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
-      "org.mockito" % "mockito-core" % "4.3.1" % Test,
+      "org.mockito" % "mockito-core" % "4.5.1" % Test,
       "org.scalatest" %% "scalatest" % "3.2.10" % Test
     )
   )
