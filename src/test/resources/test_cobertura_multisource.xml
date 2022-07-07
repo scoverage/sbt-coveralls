@@ -1,8 +1,8 @@
 <coverage line-rate="0.87">
     <packages>
-        <package line-rate="0.87" name="com.github.theon.coveralls">
+        <package line-rate="0.87" name="org.scoverage.coveralls">
             <classes>
-                <class line-rate="0.87" name="TestSourceFile" filename="bar/foo/TestSourceFile.scala">
+                <class line-rate="0.87" name="TestSourceFile" filename="src/test/resources/projectA/src/main/scala/bar/foo/TestSourceFile.scala">
                     <methods/>
                     <lines>
                         <line number="4" hits="1"/>
@@ -10,14 +10,14 @@
                         <line number="6" hits="2"/>
                     </lines>
                 </class>
-                <class line-rate="0.87" name="TestSourceFile" filename="bar/foo/TestSourceFile.scala">
+                <class line-rate="0.87" name="TestSourceFile" filename="src/test/resources/projectA/src/main/scala/bar/foo/TestSourceFile.scala">
                     <methods/>
                     <lines>
                         <line number="9" hits="1"/>
                         <line number="10" hits="1"/>
                     </lines>
                 </class>
-                <class line-rate="0.87" name="TestSourceFile" filename="foo/TestSourceFile.scala">
+                <class line-rate="0.87" name="TestSourceFile" filename="src/test/resources/projectB/src/main/scala/foo/TestSourceFile.scala">
                     <methods/>
                     <lines>
                         <line number="3" hits="1"/>
