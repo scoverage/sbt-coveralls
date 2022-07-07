@@ -10,8 +10,12 @@ class CoberturaMultiSourceReader(
     sourceDirs: Seq[File],
     sourceEncoding: Option[String]
 )(implicit log: Logger) {
-  log.debug(s"sbt-coveralls: CobertaMultiSourceReader: coberturaFile: ${coberturaFile}")
-  log.debug(s"sbt-coveralls: CobertaMultiSourceReader: sourceDirs: ${sourceDirs}")
+  log.debug(
+    s"sbt-coveralls: CobertaMultiSourceReader: coberturaFile: ${coberturaFile}"
+  )
+  log.debug(
+    s"sbt-coveralls: CobertaMultiSourceReader: sourceDirs: ${sourceDirs}"
+  )
 
   require(sourceDirs.nonEmpty, "Given empty sequence of source directories")
 
@@ -52,7 +56,10 @@ class CoberturaMultiSourceReader(
         val lineCoverage = (n \ "lines" \ "line").map(l =>
           (l \ "@number").toString().toInt -> (l \ "@hits").toString().toInt
         )
-        map + (relativeFileName -> (map.getOrElse(relativeFileName, Map.empty) ++ lineCoverage))
+        map + (relativeFileName -> (map.getOrElse(
+          relativeFileName,
+          Map.empty
+        ) ++ lineCoverage))
     }
   }
 
@@ -62,8 +69,12 @@ class CoberturaMultiSourceReader(
   private def sourceFilesRelative: Set[String] = lineCoverageMap.keySet
 
   def sourceFiles: Set[File] = {
-    log.debug(s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFilesRelative: ${sourceFilesRelative}")
-    log.debug(s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceDirs: ${sourceDirs}")
+    log.debug(
+      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFilesRelative: ${sourceFilesRelative}"
+    )
+    log.debug(
+      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceDirs: ${sourceDirs}"
+    )
     val sfs = for {
       relativePath <- sourceFilesRelative
       sourceDir <- sourceDirs
@@ -71,7 +82,9 @@ class CoberturaMultiSourceReader(
       sourceFile = new File(sourceDir, relativePath)
       if sourceFile.exists
     } yield sourceFile
-    log.debug(s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFiles: ${sfs}")
+    log.debug(
+      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFiles: ${sfs}"
+    )
     sfs
   }
 
@@ -83,9 +96,9 @@ class CoberturaMultiSourceReader(
     *      File.separator that is dependant on the system
     *
     * @return
-    *   a tuple (a,b) such that "a/b" is the canonical path to sourceFile
-    * throws IllegalArgumentException
-    *   when a given file does not belongs to any of the source directories
+    *   a tuple (a,b) such that "a/b" is the canonical path to sourceFile throws
+    *   IllegalArgumentException when a given file does not belongs to any of
+    *   the source directories
     */
   def splitPath(sourceFile: File): (String, String) = {
     val parentDir = sourceDirs.find(p => isChild(sourceFile, p))

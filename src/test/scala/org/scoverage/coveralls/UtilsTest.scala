@@ -11,7 +11,9 @@ class UtilsTest extends AnyWordSpec with Matchers {
 
       "return the right path" in {
         val path = Seq(".", "a", "b")
-        Utils.mkFileFromPath(path).getPath shouldEqual path.mkString(File.separator)
+        Utils.mkFileFromPath(path).getPath shouldEqual path.mkString(
+          File.separator
+        )
       }
     }
   }

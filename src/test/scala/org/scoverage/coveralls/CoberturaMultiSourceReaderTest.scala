@@ -1,18 +1,23 @@
 package org.scoverage.coveralls
 
-import java.io.{ FileNotFoundException, File }
+import java.io.{FileNotFoundException, File}
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Ignore
 
-class CoberturaMultiSourceReaderTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
+class CoberturaMultiSourceReaderTest
+    extends AnyWordSpec
+    with BeforeAndAfterAll
+    with Matchers {
   implicit val log = sbt.Logger.Null
 
   val resourceDir = Utils.mkFileFromPath(Seq(".", "src", "test", "resources"))
-  val sourceDirA = Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala"))
-  val sourceDirB = Utils.mkFileFromPath(resourceDir, Seq("projectB", "src", "main", "scala"))
+  val sourceDirA =
+    Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala"))
+  val sourceDirB =
+    Utils.mkFileFromPath(resourceDir, Seq("projectB", "src", "main", "scala"))
   val sourceDirs = Seq(sourceDirA, sourceDirB)
 
   val reader = new CoberturaMultiSourceReader(
@@ -26,27 +31,62 @@ class CoberturaMultiSourceReaderTest extends AnyWordSpec with BeforeAndAfterAll 
 
       "list the correct source files" in {
         val sourceFiles = Seq(
-          Utils.mkFileFromPath(sourceDirA, Seq("bar", "foo", "TestSourceFile.scala")),
+          Utils.mkFileFromPath(
+            sourceDirA,
+            Seq("bar", "foo", "TestSourceFile.scala")
+          ),
           Utils.mkFileFromPath(sourceDirB, Seq("foo", "TestSourceFile.scala"))
         )
         reader.sourceFiles shouldEqual sourceFiles.toSet
       }
 
       "return a valid SourceFileReport instance" in {
-        val sourceFile = Utils.mkFileFromPath(sourceDirA, Seq("bar", "foo", "TestSourceFile.scala"))
+        val sourceFile = Utils.mkFileFromPath(
+          sourceDirA,
+          Seq("bar", "foo", "TestSourceFile.scala")
+        )
         val fileReport = reader.reportForSource(sourceFile.getCanonicalPath)
-        fileReport.file should endWith(Seq("foo", "TestSourceFile.scala").mkString(File.separator))
+        fileReport.file should endWith(
+          Seq("foo", "TestSourceFile.scala").mkString(File.separator)
+        )
         fileReport.lineCoverage should equal(
-          List(None, None, None, Some(1), Some(1), Some(2), None, None, Some(1), Some(1))
+          List(
+            None,
+            None,
+            None,
+            Some(1),
+            Some(1),
+            Some(2),
+            None,
+            None,
+            Some(1),
+            Some(1)
+          )
         )
       }
 
       "return a valid SourceFileReport instance if there are some classes which have the same @filename" in {
-        val sourceFile = Utils.mkFileFromPath(sourceDirA, Seq("bar", "foo", "TestSourceFile.scala"))
+        val sourceFile = Utils.mkFileFromPath(
+          sourceDirA,
+          Seq("bar", "foo", "TestSourceFile.scala")
+        )
         val fileReport = reader.reportForSource(sourceFile.getCanonicalPath)
-        fileReport.file should endWith(Seq("bar", "foo", "TestSourceFile.scala").mkString(File.separator))
+        fileReport.file should endWith(
+          Seq("bar", "foo", "TestSourceFile.scala").mkString(File.separator)
+        )
         fileReport.lineCoverage should equal(
-          List(None, None, None, Some(1), Some(1), Some(2), None, None, Some(1), Some(1))
+          List(
+            None,
+            None,
+            None,
+            Some(1),
+            Some(1),
+            Some(2),
+            None,
+            None,
+            Some(1),
+            Some(1)
+          )
         )
       }
     }
@@ -73,7 +113,10 @@ class CoberturaMultiSourceReaderTest extends AnyWordSpec with BeforeAndAfterAll 
       // this is an edge case that we are ignoring for now
       // reader.isChild(Utils.mkFileFromPath(resourceDir, Seq("src", "main", "scala-2.12")), Utils.mkFileFromPath(resourceDir, Seq("src", "main", "scala"))) shouldBe false
       // reader.isChild(Utils.mkFileFromPath(resourceDir, Seq("src", "aaab")), Utils.mkFileFromPath(resourceDir, Seq("src", "aaa"))) shouldBe false
-      reader.isChild(Utils.mkFileFromPath(resourceDir, Seq("src", "aaa", "b")), Utils.mkFileFromPath(resourceDir, Seq("src", "aaa"))) shouldBe true
+      reader.isChild(
+        Utils.mkFileFromPath(resourceDir, Seq("src", "aaa", "b")),
+        Utils.mkFileFromPath(resourceDir, Seq("src", "aaa"))
+      ) shouldBe true
     }
   }
 
@@ -87,7 +130,11 @@ class CoberturaMultiSourceReaderTest extends AnyWordSpec with BeforeAndAfterAll 
 
     "complain when at least two of the source directories are nested" in {
       intercept[IllegalArgumentException] {
-        new CoberturaMultiSourceReader(resourceDir, sourceDirs ++ Seq(resourceDir), Some("UTF-8"))
+        new CoberturaMultiSourceReader(
+          resourceDir,
+          sourceDirs ++ Seq(resourceDir),
+          Some("UTF-8")
+        )
       }
     }
 
@@ -100,7 +147,8 @@ class CoberturaMultiSourceReaderTest extends AnyWordSpec with BeforeAndAfterAll 
     "complain when given am incorrect cobertura file" in {
       intercept[Exception] {
         new CoberturaMultiSourceReader(
-          Utils.mkFileFromPath(resourceDir, Seq("test_cobertura_corrupted.xml")),
+          Utils
+            .mkFileFromPath(resourceDir, Seq("test_cobertura_corrupted.xml")),
           sourceDirs,
           Some("UTF-8")
         )

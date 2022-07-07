@@ -1,12 +1,12 @@
 package org.scoverage.coveralls
 
-import scala.io.{ Codec, Source }
+import scala.io.{Codec, Source}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{ MultiPart, Http }
+import scalaj.http.{MultiPart, Http}
 import scalaj.http.HttpOptions._
 import java.io.File
-import javax.net.ssl.{ SSLSocket, SSLSocketFactory }
-import java.net.{ Socket, InetAddress }
+import javax.net.ssl.{SSLSocket, SSLSocketFactory}
+import java.net.{Socket, InetAddress}
 import com.fasterxml.jackson.databind.ObjectMapper
 
 class CoverallsClient(endpoint: String, httpClient: HttpClient) {
@@ -30,13 +30,23 @@ class CoverallsClient(endpoint: String, httpClient: HttpClient) {
     val bytes = source.getLines().mkString("\\n").getBytes(codec.charSet)
     source.close()
 
-    httpClient.multipart(url, "json_file", "json_file.json", "application/json; charset=utf-8", bytes) match {
+    httpClient.multipart(
+      url,
+      "json_file",
+      "json_file.json",
+      "application/json; charset=utf-8",
+      bytes
+    ) match {
       case CoverallHttpResponse(_, body) =>
         try {
           mapper.readValue(body, classOf[CoverallsResponse])
         } catch {
           case t: Throwable =>
-            CoverallsResponse("Failed to parse response: " + t, error = true, "")
+            CoverallsResponse(
+              "Failed to parse response: " + t,
+              error = true,
+              ""
+            )
         }
     }
   }
@@ -53,15 +63,28 @@ case class CoverallHttpResponse(responseCode: Int, body: String)
 case class CoverallsResponse(message: String, error: Boolean, url: String)
 
 trait HttpClient {
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): CoverallHttpResponse
+  def multipart(
+      url: String,
+      name: String,
+      filename: String,
+      mime: String,
+      data: Array[Byte]
+  ): CoverallHttpResponse
 }
 
 class ScalaJHttpClient extends HttpClient {
 
   val openJdkSafeSsl = new OpenJdkSafeSsl
 
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]): CoverallHttpResponse = try {
-    val request = Http(url).postMulti(MultiPart(name, filename, mime, data))
+  def multipart(
+      url: String,
+      name: String,
+      filename: String,
+      mime: String,
+      data: Array[Byte]
+  ): CoverallHttpResponse = try {
+    val request = Http(url)
+      .postMulti(MultiPart(name, filename, mime, data))
       .option(connTimeout(60000))
       .option(readTimeout(60000))
       .option(sslSocketFactory(openJdkSafeSsl))
@@ -96,21 +119,30 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
     "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
     "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
     "TLS_EMPTY_RENEGOTIATION_INFO_SCSV"
-  ) intersect SSLSocketFactory.getDefault.asInstanceOf[SSLSocketFactory].getSupportedCipherSuites
+  ) intersect SSLSocketFactory.getDefault
+    .asInstanceOf[SSLSocketFactory]
+    .getSupportedCipherSuites
 
   def getDefaultCipherSuites = Array.empty
 
   def getSupportedCipherSuites = Array.empty
 
-  def createSocket(p1: Socket, p2: String, p3: Int, p4: Boolean) = safeSocket(child.createSocket(p1, p2, p3, p4))
+  def createSocket(p1: Socket, p2: String, p3: Int, p4: Boolean) = safeSocket(
+    child.createSocket(p1, p2, p3, p4)
+  )
 
   def createSocket(p1: String, p2: Int) = safeSocket(child.createSocket(p1, p2))
 
-  def createSocket(p1: String, p2: Int, p3: InetAddress, p4: Int) = safeSocket(child.createSocket(p1, p2, p3, p4))
+  def createSocket(p1: String, p2: Int, p3: InetAddress, p4: Int) = safeSocket(
+    child.createSocket(p1, p2, p3, p4)
+  )
 
-  def createSocket(p1: InetAddress, p2: Int) = safeSocket(child.createSocket(p1, p2))
+  def createSocket(p1: InetAddress, p2: Int) = safeSocket(
+    child.createSocket(p1, p2)
+  )
 
-  def createSocket(p1: InetAddress, p2: Int, p3: InetAddress, p4: Int) = safeSocket(child.createSocket(p1, p2, p3, p4))
+  def createSocket(p1: InetAddress, p2: Int, p3: InetAddress, p4: Int) =
+    safeSocket(child.createSocket(p1, p2, p3, p4))
 
   def safeSocket(sock: Socket) = sock match {
     case ssl: SSLSocket =>

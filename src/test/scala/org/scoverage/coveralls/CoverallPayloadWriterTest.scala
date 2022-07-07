@@ -1,13 +1,16 @@
 package org.scoverage.coveralls
 
-import java.io.{ File, StringWriter, Writer }
+import java.io.{File, StringWriter, Writer}
 
 import com.fasterxml.jackson.core.JsonFactory
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterAll
 
-class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
+class CoverallPayloadWriterTest
+    extends AnyWordSpec
+    with BeforeAndAfterAll
+    with Matchers {
   implicit val log = sbt.Logger.Null
 
   val resourceDir = Utils.mkFileFromPath(Seq(".", "src", "test", "resources"))
@@ -26,8 +29,18 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
     )
   }
 
-  def coverallsWriter(writer: Writer, tokenIn: Option[String], service: Option[CIService]): (CoverallPayloadWriter, Writer) = {
-    val payloadWriter = new CoverallPayloadWriter(new File(".").getAbsoluteFile, new File("."), tokenIn, service, testGitClient) {
+  def coverallsWriter(
+      writer: Writer,
+      tokenIn: Option[String],
+      service: Option[CIService]
+  ): (CoverallPayloadWriter, Writer) = {
+    val payloadWriter = new CoverallPayloadWriter(
+      new File(".").getAbsoluteFile,
+      new File("."),
+      tokenIn,
+      service,
+      testGitClient
+    ) {
       override def generator(file: File) = {
         val factory = new JsonFactory()
         factory.createGenerator(writer)
@@ -36,7 +49,8 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
     (payloadWriter, writer)
   }
 
-  val expectedGit = """"git":{"head":{"id":"lastCommitId","author_name":"authorName","author_email":"authorEmail","committer_name":"committerName","committer_email":"committerEmail","message":"shortMsg"},"branch":"branch","remotes":[{"name":"remote","url":"remoteUrl"}]}"""
+  val expectedGit =
+    """"git":{"head":{"id":"lastCommitId","author_name":"authorName","author_email":"authorEmail","committer_name":"committerName","committer_email":"committerEmail","message":"shortMsg"},"branch":"branch","remotes":[{"name":"remote","url":"remoteUrl"}]}"""
 
   "CoverallPayloadWriter" when {
     "generating coveralls API payload" should {
@@ -49,7 +63,11 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
           override def currentBranch = None
         }
 
-        val (payloadWriter, writer) = coverallsWriter(new StringWriter(), Some("testRepoToken"), Some(testService))
+        val (payloadWriter, writer) = coverallsWriter(
+          new StringWriter(),
+          Some("testRepoToken"),
+          Some(testService)
+        )
 
         payloadWriter.start
         payloadWriter.flush()
@@ -62,7 +80,8 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
       }
 
       "generate a correct starting payload without a CI service" in {
-        val (payloadWriter, writer) = coverallsWriter(new StringWriter(), Some("testRepoToken"), None)
+        val (payloadWriter, writer) =
+          coverallsWriter(new StringWriter(), Some("testRepoToken"), None)
 
         payloadWriter.start
         payloadWriter.flush()
@@ -75,13 +94,27 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
       }
 
       "add source files correctly" in {
-        val sourceFile = Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala", "bar", "foo", "TestSourceFile.scala"))
-        val (payloadWriter, writer) = coverallsWriter(new StringWriter(), Some("testRepoToken"), Some(TravisCI))
+        val sourceFile = Utils.mkFileFromPath(
+          resourceDir,
+          Seq(
+            "projectA",
+            "src",
+            "main",
+            "scala",
+            "bar",
+            "foo",
+            "TestSourceFile.scala"
+          )
+        )
+        val (payloadWriter, writer) = coverallsWriter(
+          new StringWriter(),
+          Some("testRepoToken"),
+          Some(TravisCI)
+        )
         payloadWriter.addSourceFile(
           SourceFileReport(
             sourceFile.getPath(),
-            List(Some(1), None, Some(2)
-            )
+            List(Some(1), None, Some(2))
           )
         )
         payloadWriter.flush()
@@ -92,7 +125,11 @@ class CoverallPayloadWriterTest extends AnyWordSpec with BeforeAndAfterAll with 
       }
 
       "end the file correctly" in {
-        val (payloadWriter, writer) = coverallsWriter(new StringWriter(), Some("testRepoToken"), Some(TravisCI))
+        val (payloadWriter, writer) = coverallsWriter(
+          new StringWriter(),
+          Some("testRepoToken"),
+          Some(TravisCI)
+        )
 
         payloadWriter.start
         payloadWriter.end()

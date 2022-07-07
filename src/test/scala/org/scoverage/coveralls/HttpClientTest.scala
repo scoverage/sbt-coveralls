@@ -3,7 +3,13 @@ package org.scoverage.coveralls
 class HttpClientTestSuccess extends HttpClient {
   var dataIn: String = _
 
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = {
+  def multipart(
+      url: String,
+      name: String,
+      filename: String,
+      mime: String,
+      data: Array[Byte]
+  ) = {
     dataIn = new String(data, "UTF-8")
     new CoverallHttpResponse(
       200,
@@ -19,7 +25,13 @@ class HttpClientTestSuccess extends HttpClient {
 }
 
 class HttpClientTestFailure extends HttpClient {
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = {
+  def multipart(
+      url: String,
+      name: String,
+      filename: String,
+      mime: String,
+      data: Array[Byte]
+  ) = {
     new CoverallHttpResponse(
       200,
       """
@@ -33,7 +45,13 @@ class HttpClientTestFailure extends HttpClient {
 }
 
 case class HttpClientTestFake(status: Int, body: String) extends HttpClient {
-  def multipart(url: String, name: String, filename: String, mime: String, data: Array[Byte]) = {
+  def multipart(
+      url: String,
+      name: String,
+      filename: String,
+      mime: String,
+      data: Array[Byte]
+  ) = {
     new CoverallHttpResponse(status, body)
   }
 }

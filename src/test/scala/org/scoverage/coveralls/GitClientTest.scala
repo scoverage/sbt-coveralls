@@ -23,16 +23,28 @@ class GitClientTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
     val gitRepo = Git.init().setDirectory(repoDir).call()
     // Add two remotes
     val storedConfig = gitRepo.getRepository.getConfig
-    storedConfig.setString("remote", "origin_test_1", "url", "git@origin_test_1")
-    storedConfig.setString("remote", "origin_test_2", "url", "git@origin_test_2")
+    storedConfig.setString(
+      "remote",
+      "origin_test_1",
+      "url",
+      "git@origin_test_1"
+    )
+    storedConfig.setString(
+      "remote",
+      "origin_test_2",
+      "url",
+      "git@origin_test_2"
+    )
     storedConfig.save()
     // Add and commit a file
     val readme = new File(repoDir, "README.md")
     readme.createNewFile();
-    gitRepo.add()
+    gitRepo
+      .add()
       .addFilepattern("README.md")
       .call()
-    gitRepo.commit()
+    gitRepo
+      .commit()
       .setAuthor("test_username", "test_user@test_email.com")
       .setCommitter("test_username", "test_user@test_email.com")
       .setMessage("Commit message for unit test")
@@ -82,7 +94,9 @@ class GitClientTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
         git.lastCommit().committerEmail should equal("test_user@test_email.com")
       }
       "return a valid author commit message" in {
-        git.lastCommit().shortMessage should equal("Commit message for unit test")
+        git.lastCommit().shortMessage should equal(
+          "Commit message for unit test"
+        )
       }
     }
   }

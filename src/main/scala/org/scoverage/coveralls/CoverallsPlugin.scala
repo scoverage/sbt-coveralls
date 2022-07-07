@@ -16,12 +16,18 @@ object Imports {
     val coverallsTokenFile = SettingKey[Option[String]]("coverallsTokenFile")
     val coverallsService = SettingKey[Option[CIService]]("coverallsService")
     val coverallsFailBuildOnError = SettingKey[Boolean](
-      "coverallsFailBuildOnError", "fail build if coveralls step fails")
+      "coverallsFailBuildOnError",
+      "fail build if coveralls step fails"
+    )
     val coberturaFile = SettingKey[File]("coberturaFile")
-    @deprecated("Read https://github.com/scoverage/sbt-coveralls#custom-source-file-encoding", "1.2.5")
+    @deprecated(
+      "Read https://github.com/scoverage/sbt-coveralls#custom-source-file-encoding",
+      "1.2.5"
+    )
     val coverallsEncoding = SettingKey[String]("encoding")
     val coverallsEndpoint = SettingKey[Option[String]]("coverallsEndpoint")
-    val coverallsGitRepoLocation = SettingKey[Option[String]]("coveralls-git-repo")
+    val coverallsGitRepoLocation =
+      SettingKey[Option[String]]("coveralls-git-repo")
   }
 }
 
@@ -44,8 +50,8 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsTokenFile := None,
     coverallsEndpoint := Some("https://coveralls.io"),
     coverallsService := {
-      if(travisJobIdent.isDefined) Some(TravisCI)
-      else if(githubActionsRunIdent.isDefined) Some(GitHubActions)
+      if (travisJobIdent.isDefined) Some(TravisCI)
+      else if (githubActionsRunIdent.isDefined) Some(GitHubActions)
       else None
     },
     coverallsFile := crossTarget.value / "coveralls.json",
@@ -53,20 +59,25 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsGitRepoLocation := Some(".")
   )
 
-  val aggregateFilter = ScopeFilter(inAggregates(ThisProject), inConfigurations(Compile)) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
+  val aggregateFilter = ScopeFilter(
+    inAggregates(ThisProject),
+    inConfigurations(Compile)
+  ) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
 
   def coverallsTask = Def.task {
     implicit val log = streams.value.log
 
     if (!coberturaFile.value.exists) {
-      sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
+      sys.error(
+        "Could not find the cobertura.xml file. Did you call coverageAggregate?"
+      )
     }
 
-    val repoToken = userRepoToken(coverallsToken.value, coverallsTokenFile.value)
+    val repoToken =
+      userRepoToken(coverallsToken.value, coverallsTokenFile.value)
 
     if (travisJobIdent.isEmpty && repoToken.isEmpty) {
-      sys.error(
-        """
+      sys.error("""
           |Could not find coveralls repo token or determine travis job id
           | - If running from travis, make sure the TRAVIS_JOB_ID env variable is set
           | - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token
@@ -79,34 +90,51 @@ object CoverallsPlugin extends AutoPlugin {
 
     val coverallsClient = new CoverallsClient(endpoint, apiHttpClient)
 
-    val repoRootDirectory = new File(coverallsGitRepoLocation.value getOrElse ".")
+    val repoRootDirectory =
+      new File(coverallsGitRepoLocation.value getOrElse ".")
 
     val writer = new CoverallPayloadWriter(
       repoRootDirectory,
       coverallsFile.value,
       repoToken,
       coverallsService.value,
-      new GitClient(repoRootDirectory),
+      new GitClient(repoRootDirectory)
     )
 
     writer.start()
 
     // include all of the sources (from all modules)
-    val allSources = sourceDirectories.all(aggregateFilter).value.flatten.filter(_.isDirectory()).distinct
+    val allSources = sourceDirectories
+      .all(aggregateFilter)
+      .value
+      .flatten
+      .filter(_.isDirectory())
+      .distinct
 
-    val reader = new CoberturaMultiSourceReader(coberturaFile.value, allSources, sourcesEnc)
+    val reader = new CoberturaMultiSourceReader(
+      coberturaFile.value,
+      allSources,
+      sourcesEnc
+    )
 
-    log.info(s"sbt-coveralls: Generating reports for ${reader.sourceFilenames.size} files ...")
+    log.info(
+      s"sbt-coveralls: Generating reports for ${reader.sourceFilenames.size} files ..."
+    )
 
-    val fileReports = reader.sourceFilenames.par.map(reader.reportForSource(_)).seq
+    val fileReports =
+      reader.sourceFilenames.par.map(reader.reportForSource(_)).seq
 
-    log.info(s"sbt-coveralls: Adding file reports to the coveralls file (${coverallsFile.value.getName}) ...")
+    log.info(
+      s"sbt-coveralls: Adding file reports to the coveralls file (${coverallsFile.value.getName}) ..."
+    )
 
     fileReports.foreach(writer.addSourceFile(_))
 
     writer.end()
 
-    log.info(s"sbt-coveralls: Uploading the coveralls file (${coverallsFile.value.getName}) ...")
+    log.info(
+      s"sbt-coveralls: Uploading the coveralls file (${coverallsFile.value.getName}) ..."
+    )
 
     val res = coverallsClient.postFile(coverallsFile.value)
     val failBuildOnError = coverallsFailBuildOnError.value
@@ -115,18 +143,18 @@ object CoverallsPlugin extends AutoPlugin {
       val errorMessage =
         s"""
            |Uploading to $endpoint failed: ${res.message}
-           |${
-          if (res.message.contains(CoverallsClient.tokenErrorString))
+           |${if (res.message.contains(CoverallsClient.tokenErrorString))
             s"The error message '${CoverallsClient.tokenErrorString}' can mean your repo token is incorrect."
-          else ""
-        }
+          else ""}
          """.stripMargin
       if (failBuildOnError)
         sys.error(errorMessage)
       else
         log.error(errorMessage)
     } else {
-      log.info(s"sbt-coveralls: Uploading to $endpoint succeeded (results may not appear immediately): ${res.message}/${res.url}")
+      log.info(
+        s"sbt-coveralls: Uploading to $endpoint succeeded (results may not appear immediately): ${res.message}/${res.url}"
+      )
     }
   }
 
@@ -147,15 +175,19 @@ object CoverallsPlugin extends AutoPlugin {
     }
   }
 
-  def userRepoToken(coverallsToken: Option[String], coverallsTokenFile: Option[String]) =
-    sys.env.get("COVERALLS_REPO_TOKEN")
+  def userRepoToken(
+      coverallsToken: Option[String],
+      coverallsTokenFile: Option[String]
+  ) =
+    sys.env
+      .get("COVERALLS_REPO_TOKEN")
       .orElse(coverallsToken)
       .orElse(coverallsTokenFile.flatMap(repoTokenFromFile))
 
   def userEndpoint(coverallsEndpoint: Option[String]) =
-    sys.env.get("COVERALLS_ENDPOINT")
+    sys.env
+      .get("COVERALLS_ENDPOINT")
       .orElse(coverallsEndpoint)
-
 
   private def sourceEncoding(scalacOptions: Seq[String]): Option[String] = {
     val i = scalacOptions.indexOf("-encoding") + 1
