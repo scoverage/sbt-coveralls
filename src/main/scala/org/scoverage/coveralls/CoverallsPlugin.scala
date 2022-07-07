@@ -42,20 +42,22 @@ object CoverallsPlugin extends AutoPlugin {
     coverallsFailBuildOnError := false,
     coverallsToken := None,
     coverallsTokenFile := None,
-    coverallsEndpoint := Option("https://coveralls.io"),
+    coverallsEndpoint := Some("https://coveralls.io"),
     coverallsService := {
       if(travisJobIdent.isDefined) Some(TravisCI)
       else if(githubActionsRunIdent.isDefined) Some(GitHubActions)
       else None
     },
     coverallsFile := crossTarget.value / "coveralls.json",
-    coberturaFile := crossTarget.value / "coverage-report" / "cobertura.xml",
+    coberturaFile := crossTarget.value / "scoverage-data" / "coverage-report" / "cobertura.xml",
     coverallsGitRepoLocation := Some(".")
   )
 
   val aggregateFilter = ScopeFilter(inAggregates(ThisProject), inConfigurations(Compile)) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
 
   def coverallsTask = Def.task {
+    implicit val log = streams.value.log
+
     if (!coberturaFile.value.exists) {
       sys.error("Could not find the cobertura.xml file. Did you call coverageAggregate?")
     }
@@ -71,8 +73,6 @@ object CoverallsPlugin extends AutoPlugin {
         """.stripMargin)
     }
 
-    implicit val log = streams.value.log
-
     val sourcesEnc = sourceEncoding((Compile / scalacOptions).value)
 
     val endpoint = userEndpoint(coverallsEndpoint.value).get
@@ -86,7 +86,7 @@ object CoverallsPlugin extends AutoPlugin {
       coverallsFile.value,
       repoToken,
       coverallsService.value,
-      new GitClient(repoRootDirectory)(log)
+      new GitClient(repoRootDirectory),
     )
 
     writer.start()
@@ -96,17 +96,17 @@ object CoverallsPlugin extends AutoPlugin {
 
     val reader = new CoberturaMultiSourceReader(coberturaFile.value, allSources, sourcesEnc)
 
-    log.info(s"Generating reports for ${reader.sourceFilenames.size} files")
+    log.info(s"sbt-coveralls: Generating reports for ${reader.sourceFilenames.size} files ...")
 
     val fileReports = reader.sourceFilenames.par.map(reader.reportForSource(_)).seq
 
-    log.info(s"Adding file reports to the coveralls file (${coverallsFile.value.getName})")
+    log.info(s"sbt-coveralls: Adding file reports to the coveralls file (${coverallsFile.value.getName}) ...")
 
     fileReports.foreach(writer.addSourceFile(_))
 
     writer.end()
 
-    log.info(s"Uploading the coveralls file (${coverallsFile.value.getName})")
+    log.info(s"sbt-coveralls: Uploading the coveralls file (${coverallsFile.value.getName}) ...")
 
     val res = coverallsClient.postFile(coverallsFile.value)
     val failBuildOnError = coverallsFailBuildOnError.value
@@ -126,9 +126,7 @@ object CoverallsPlugin extends AutoPlugin {
       else
         log.error(errorMessage)
     } else {
-      log.info(s"Uploading to $endpoint succeeded: " + res.message)
-      log.info(res.url)
-      log.info("(results may not appear immediately)")
+      log.info(s"sbt-coveralls: Uploading to $endpoint succeeded (results may not appear immediately): ${res.message}/${res.url}")
     }
   }
 
@@ -143,7 +141,7 @@ object CoverallsPlugin extends AutoPlugin {
       val source = Source.fromFile(path)
       val repoToken = source.mkString.trim
       source.close()
-      Option(repoToken)
+      Some(repoToken)
     } catch {
       case _: Exception => None
     }

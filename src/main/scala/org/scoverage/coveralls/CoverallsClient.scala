@@ -36,7 +36,6 @@ class CoverallsClient(endpoint: String, httpClient: HttpClient) {
           mapper.readValue(body, classOf[CoverallsResponse])
         } catch {
           case t: Throwable =>
-            println("Failed to parse coveralls response: " + body)
             CoverallsResponse("Failed to parse response: " + t, error = true, "")
         }
     }

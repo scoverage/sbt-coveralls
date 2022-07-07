@@ -3,17 +3,17 @@ package org.scoverage.coveralls
 import java.io.{File, FileInputStream}
 import java.security.{DigestInputStream, MessageDigest}
 
+import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
+
 import sbt.Logger
-import com.fasterxml.jackson.core.{ JsonFactory, JsonEncoding }
 
 class CoverallPayloadWriter(
     repoRootDir: File,
     coverallsFile: File,
     repoToken: Option[String],
     service: Option[CIService],
-    gitClient: GitClient) {
-
-  val repoRootDirStr = repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
+    gitClient: GitClient
+)(implicit log: Logger) {
   import gitClient._
 
   val gen = generator(coverallsFile)
@@ -38,7 +38,7 @@ class CoverallPayloadWriter(
     // to provide an unique additional label in jobs with multiple submissions
     writeOpt("flag_name", sys.env.get("COVERALLS_FLAG_NAME"))
 
-    addGitInfo
+    addGitInfo()
 
     gen.writeFieldName("source_files")
     gen.writeStartArray()
@@ -62,7 +62,8 @@ class CoverallPayloadWriter(
 
     gen.writeEndObject()
 
-    gen.writeStringField("branch",
+    gen.writeStringField(
+      "branch",
       service.flatMap(_.currentBranch).getOrElse(gitClient.currentBranch)
     )
 
@@ -77,7 +78,7 @@ class CoverallPayloadWriter(
   }
 
   private def addGitRemotes(remotes: Seq[String]) {
-    remotes.foreach( remote => {
+    remotes.foreach(remote => {
       gen.writeStartObject()
       gen.writeStringField("name", remote)
       gen.writeStringField("url", remoteUrl(remote))
@@ -86,6 +87,8 @@ class CoverallPayloadWriter(
   }
 
   def addSourceFile(report: SourceFileReport) {
+    val repoRootDirStr =
+      repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
 
     // create a name relative to the project root (rather than the module root)
     // this is needed so that coveralls can find the file in git.
@@ -102,7 +105,7 @@ class CoverallPayloadWriter(
     gen.writeStartArray()
     report.lineCoverage.foreach {
       case Some(x) => gen.writeNumber(x)
-      case _ => gen.writeNull()
+      case _       => gen.writeNull()
     }
     gen.writeEndArray()
     gen.writeEndObject()
@@ -113,7 +116,8 @@ class CoverallPayloadWriter(
     val md5 = MessageDigest.getInstance("MD5")
 
     val dis = new DigestInputStream(new FileInputStream(new File(path)), md5)
-    try { while (dis.read(buffer) != -1) { } } finally { dis.close() }
+    try { while (dis.read(buffer) != -1) {} }
+    finally { dis.close() }
 
     md5.digest.map("%02x".format(_)).mkString.toUpperCase
   }
