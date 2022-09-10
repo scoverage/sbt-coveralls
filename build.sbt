@@ -44,7 +44,7 @@ lazy val root = Project("sbt-coveralls", file("."))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4",
       "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.1.202206130422-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
-      "org.mockito" % "mockito-core" % "4.7.0" % Test,
+      "org.mockito" % "mockito-core" % "4.8.0" % Test,
       "org.scalatest" %% "scalatest" % "3.2.10" % Test
     )
   )
