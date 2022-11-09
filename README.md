@@ -1,13 +1,16 @@
 # sbt-coveralls
 
-[![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
-[![Join the chat at https://gitter.im/scoverage/sbt-coveralls](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scoverage/sbt-coveralls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg?kill_cache=1)](https://search.maven.org/artifact/org.scoverage/sbt-coveralls/)
+[![License][licence-badge]][licence]
+[![Join the chat at https://gitter.im/scoverage/sbt-coveralls][gitter-badge]][gitter]
+[![Maven Central][maven-badge]][maven]
 
-SBT plugin that uploads scala code coverage to [https://coveralls.io](https://coveralls.io) and integrates with [Travis CI](#travis-ci-integration) and [GitHub Actions](#github-actions-integration). This plugin uses [scoverage](https://github.com/scoverage/scalac-scoverage-plugin/) to generate the code coverage metrics.
+SBT plugin that uploads scala code coverage to [coveralls][] and
+integrates with [Travis CI](#travis-ci-integration) and [GitHub
+Actions](#github-actions-integration). This plugin uses [scoverage][]
+to generate the code coverage metrics.
 
-For an example project that uses this plugin [click here](https://github.com/scoverage/sbt-scoverage-samples).
-For example output [click here](https://coveralls.io/r/scoverage/scoverage-samples)
+Please take a look at the [samples project][] to see some [sample
+output][].
 
 ## Installation
 
@@ -20,15 +23,18 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.8.2")
 addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
 ```
 
-2) Setup coveralls configuration options (such as [Specifying Your Repo Token](#specifying-your-repo-token))
+2) Setup coveralls configuration options (such as [Specifying Your
+Repo Token](#specifying-your-repo-token))
 
-3) Register on `https://coveralls.io/`
+3) Register on [coveralls][]
 
-4) Follow the instructions for either [Travis CI](#travis-ci-integration) or [Manual Usage](#manual-usage)
+4) Follow the instructions for either [Travis
+CI](#travis-ci-integration) or [Manual Usage](#manual-usage)
 
 ## Travis CI Integration
 
-`sbt-coveralls` can be run by [Travis CI](https://docs.travis-ci.com/) by following these instructions:
+`sbt-coveralls` can be run by [Travis CI][travis-docs]
+by following these instructions:
 
 1) Add the following to your `travis.yml`
 
@@ -38,7 +44,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
     ```
 
    If you have a multi-module project, perform `coverageAggregate`
-   [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+   [as a separate command][multi-project-reports].
 
     ```yaml
     script:
@@ -48,11 +54,12 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
       - sbt coveralls
     ```
 
-2) Job done! Commit these changes to `travis.yml` to kick off your Travis build and you should see coverage reports appear on https://coveralls.io/
+2) Job done! Commit these changes to `travis.yml` to kick off your
+Travis build and you should see coverage reports appear on [coveralls][].
 
 ## GitHub Actions Integration
 
-`sbt-coveralls` can be run by [GitHub Actions](https://github.com/features/actions) by following these instructions:
+`sbt-coveralls` can be run by [GitHub Actions][] by following these instructions:
 
 1) Add the following to your `.github/workflows/ci.yml`
 
@@ -68,7 +75,7 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
     ```
 
     If you have a multi-module project, perform `coverageAggregate`
-    [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
+    [as a separate command][multi-project-reports].
 
     ```yaml
     - name: Upload coverage data to Coveralls
@@ -78,30 +85,36 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
         COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
     ```
 
-2) Job done! Commit these changes to kick off your GitHub Actions build and you should see coverage reports appear on https://coveralls.io/
+2) Job done! Commit these changes to kick off your GitHub Actions
+build and you should see coverage reports appear on [coveralls][].
 
 ## Manual Usage
 
-1)  Get the repo token for your repo from http://coveralls.io
+1)  Get the repo token for your repo from [coveralls][].
 
-1) Let `sbt-coveralls` know what your coveralls repo token is. See [Specifying Your Repo Token](#specifying-your-repo-token)
+1) Let `sbt-coveralls` know what your coveralls repo token is. See
+[Specifying Your Repo Token](#specifying-your-repo-token)
 
-2) In the SBT console, run `coverage` then your tests finishing with `coveralls`. After running the command, you should see output similar to the following:
+2) In the SBT console, run `coverage` then your tests finishing with
+`coveralls`. After running the command, you should see output similar
+to the following:
 
        Uploading to coveralls.io succeeded: Job #17.1
        https://coveralls.io/jobs/12207
 
-For example output [click here](https://coveralls.io/builds/6727)
-
 ## Specifying Your Repo Token
 
-There are several ways to tell `sbt-coveralls` your repo token to support different use cases:
+There are several ways to tell `sbt-coveralls` your repo token to
+support different use cases:
 
 ### Write your repo token into a file
 
-Add the following to your `build.sbt`. The path can be absolute and point to somewhere outside the project or relative and point somewhere inside the project (such as `src/main/resources/token.txt`).
+Add the following to your `build.sbt`. The path can be absolute and
+point to somewhere outside the project or relative and point somewhere
+inside the project (such as `src/main/resources/token.txt`).
 
-Just remember: **Do not store repo tokens inside your project if it is in a public git repository!**
+Just remember: **Do not store repo tokens inside your project if it is
+in a public git repository!**
 
 ```scala
 import org.scoverage.coveralls.Imports.CoverallsKeys._
@@ -111,7 +124,8 @@ coverallsTokenFile := "/path/to/my/repo/token.txt"
 
 ### Put your repo token directly in your `build.sbt`
 
-**Do not store repo tokens inside your project if it is in a public git repository!**
+**Do not store repo tokens inside your project if it is in a public
+git repository!**
 
 ```scala
 import org.scoverage.coveralls.Imports.CoverallsKeys._
@@ -127,7 +141,9 @@ Add an environment variable `COVERALLS_REPO_TOKEN`, for example:
 
 ## Specifying Your Coveralls Endpoint
 
-If you're using https://coveralls.io as your endpoint, then you don't need to set this option. If you're using a hosted (enterprise) instance of coveralls, you will need to specify your endpoint in one of two ways.
+If you're using [coveralls][] as your endpoint, then you don't need to
+set this option. If you're using a hosted (enterprise) instance of
+coveralls, you will need to specify your endpoint in one of two ways.
 
 ### Put your endpoint directly in your `build.sbt`
 
@@ -145,15 +161,18 @@ Add an environment variable `COVERALLS_ENDPOINT`, for example:
 
 ## Overriding the current branch
 
-By default `sbt-coveralls` uses the currently checked-out branch for reporting. To override the branch name add the `CI_BRANCH` variable, for example:
+By default `sbt-coveralls` uses the currently checked-out branch for
+reporting. To override the branch name add the `CI_BRANCH` variable,
+for example:
 
     export CI_BRANCH=my-branch-name
 
 ## Specifying Source File Encoding
 
 `sbt-coveralls` finds the encoding in `scalacOptions` setting value.
-If not defined it assumes source files are encoded using platform-specific encoding.
-To specify encoding, add the following to your `build.sbt`
+If not defined it assumes source files are encoded using
+platform-specific encoding.  To specify encoding, add the following to
+your `build.sbt`
 
 ```scala
 scalacOptions += Seq("-encoding", "UTF-8")
@@ -161,7 +180,9 @@ scalacOptions += Seq("-encoding", "UTF-8")
 
 ## Using Travis-Pro
 
-It is important to set the correct `service` when using Travis-Pro.  The default is to use `travis-ci`.  To override this value, add the following to your `build.sbt`
+It is important to set the correct `service` when using Travis-Pro.
+The default is to use `travis-ci`.  To override this value, add the
+following to your `build.sbt`
 
 ```scala
 import org.scoverage.coveralls.Imports.CoverallsKeys._
@@ -172,4 +193,19 @@ coverallsService := Some(TravisPro)
 
 # License
 
-`sbt-coveralls` is open source software released under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0).
+`sbt-coveralls` is open source software released under the [Apache 2
+License][license].
+
+[Github Actions]: https://github.com/features/actions
+[coveralls]: https://coveralls.io
+[gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
+[gitter]: https://gitter.im/scoverage/sbt-coveralls
+[licence]: http://www.apache.org/licenses/LICENSE-2.0.txt
+[license-badge]: http://img.shields.io/:license-Apache%202-blue.svg
+[maven-badge]: https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg?kill_cache=1
+[maven]: https://search.maven.org/artifact/org.scoverage/sbt-coveralls
+[multi-project-reports]: https://github.com/scoverage/sbt-scoverage#multi-project-reports
+[output samples]: https://coveralls.io/r/scoverage/scoverage-samples
+[samples project]: https://github.com/scoverage/sbt-scoverage-samples
+[scoverage]: https://github.com/scoverage/scalac-scoverage-plugin
+[travis-docs]: https://docs.travis-ci.com
