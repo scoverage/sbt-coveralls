@@ -57,6 +57,20 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
 1) Add the following to your `.github/workflows/ci.yml`
 
     ```yaml
+    - name: Git checkout (merge)
+      uses: actions/checkout@v3
+      if: github.event_name != 'pull_request'
+      with:
+        fetch-depth: 0
+
+    - name: Git checkout (PR)
+      uses: actions/checkout@v3
+      if: github.event_name == 'pull_request'
+      with:
+        fetch-depth: 0
+        # see: https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout
+        ref: ${{ github.event.pull_request.head.sha }}
+
     - name: Run tests
       run: sbt clean coverage test
 
@@ -66,6 +80,11 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
     ```
+
+    Note the separate checkout step for pull requests.
+    It is needed because of
+    [the way pull_request affects actions checkout](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout),
+    so correct commit info could be sent to coveralls.io
 
     If you have a multi-module project, perform `coverageAggregate`
     [as a separate command](https://github.com/scoverage/sbt-scoverage#multi-project-reports)
