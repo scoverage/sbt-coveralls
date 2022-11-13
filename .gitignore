@@ -4,6 +4,7 @@ target/
 *.iws
 .idea/
 .bloop/
+.bsp/
 .metals/
 metals.sbt
 
