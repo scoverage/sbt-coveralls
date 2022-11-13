@@ -33,7 +33,9 @@ case object GitHubActions extends CIService {
     eventName <- sys.env.get("GITHUB_EVENT_NAME") if eventName.startsWith("pull_request")
     payloadPath <- sys.env.get("GITHUB_EVENT_PATH")
     source = Source.fromFile(payloadPath, "utf-8")
-    lines = try source.mkString finally source.close()
+    lines =
+      try source.mkString
+      finally source.close()
     payload <- JSON.parseRaw(lines)
     prNumber <- payload.asInstanceOf[JSONObject].obj.get("number")
   } yield prNumber.toString.stripSuffix(".0")

@@ -10,12 +10,13 @@ import sbt.Logger
 
 object GitClient {
   case class GitRevision(
-    id: String,
-    authorName: String,
-    authorEmail: String,
-    committerName: String,
-    committerEmail: String,
-    shortMessage: String)
+      id: String,
+      authorName: String,
+      authorEmail: String,
+      committerName: String,
+      committerEmail: String,
+      shortMessage: String
+  )
 }
 
 class GitClient(cwd: File)(implicit log: Logger) {
@@ -32,14 +33,14 @@ class GitClient(cwd: File)(implicit log: Logger) {
         .iterator()
         .asScala
         .toList match {
-          case gitDirLineRegex(dir) :: Nil ⇒
-            log.info(s"Resolved git submodule file $gitFile to $dir")
-            new File(dir)
-          case lines ⇒
-            throw new IllegalArgumentException(
-              s"Expected single 'gitdir' line in .git file, found:\n\t${lines.mkString("\n\t")}"
-            )
-        }
+        case gitDirLineRegex(dir) :: Nil ⇒
+          log.info(s"Resolved git submodule file $gitFile to $dir")
+          new File(dir)
+        case lines ⇒
+          throw new IllegalArgumentException(
+            s"Expected single 'gitdir' line in .git file, found:\n\t${lines.mkString("\n\t")}"
+          )
+      }
     else
       gitFile
 

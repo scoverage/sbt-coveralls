@@ -1,5 +1,7 @@
 name := "sbt-coveralls"
 
+import sbt.ScriptedPlugin.autoImport.scriptedLaunchOpts
+
 inThisBuild(
   List(
     organization := "org.scoverage",
@@ -46,5 +48,9 @@ lazy val root = Project("sbt-coveralls", file("."))
       "org.scalaj" %% "scalaj-http" % "2.4.2",
       "org.mockito" % "mockito-core" % "4.8.1" % Test,
       "org.scalatest" %% "scalatest" % "3.2.10" % Test
+    ),
+    scriptedLaunchOpts ++= Seq(
+      "-Xmx1024M",
+      "-Dplugin.version=" + version.value
     )
   )
