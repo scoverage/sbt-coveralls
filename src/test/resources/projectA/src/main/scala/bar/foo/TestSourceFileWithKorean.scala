@@ -1,10 +1,3 @@
-/**
- * 한글 테스트
- */
-class TestSourceFileWithKorean {
-
-
-
-
-
-}
+/** 한글 테스트
+  */
+class TestSourceFileWithKorean {}

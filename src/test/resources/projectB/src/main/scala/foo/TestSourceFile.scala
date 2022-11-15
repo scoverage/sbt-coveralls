@@ -1,10 +1,5 @@
 package foo
-/**
- * Test Scala Source File that is 10 lines
- */
-class TestSourceFile {
 
-
-
-
-}
+/** Test Scala Source File that is 10 lines
+  */
+class TestSourceFile {}

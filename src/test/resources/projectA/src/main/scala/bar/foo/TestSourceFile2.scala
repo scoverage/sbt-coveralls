@@ -1,10 +1,3 @@
-/**
- * Test Scala Source File that is 10 lines
- */
-class TestSourceFile2 {
-
-
-
-
-
-}
+/** Test Scala Source File that is 10 lines
+  */
+class TestSourceFile2 {}

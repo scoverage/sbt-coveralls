@@ -30,7 +30,8 @@ case object GitHubActions extends CIService {
 
   // https://github.com/coverallsapp/github-action/blob/master/src/run.ts#L31-L40
   val pullRequest: Option[String] = for {
-    eventName <- sys.env.get("GITHUB_EVENT_NAME") if eventName.startsWith("pull_request")
+    eventName <- sys.env.get("GITHUB_EVENT_NAME")
+    if eventName.startsWith("pull_request")
     payloadPath <- sys.env.get("GITHUB_EVENT_PATH")
     source = Source.fromFile(payloadPath, "utf-8")
     lines =
@@ -43,6 +44,6 @@ case object GitHubActions extends CIService {
   // https://docs.github.com/en/actions/learn-github-actions/environment-variables
   val currentBranch: Option[String] = pullRequest match {
     case Some(_) => sys.env.get("GITHUB_HEAD_REF")
-    case None => sys.env.get("GITHUB_REF_NAME")
+    case None    => sys.env.get("GITHUB_REF_NAME")
   }
 }
