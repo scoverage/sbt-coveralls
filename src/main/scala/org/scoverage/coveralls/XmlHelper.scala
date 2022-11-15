@@ -1,6 +1,6 @@
 package org.scoverage.coveralls
 
-import java.io.{ File, FileInputStream }
+import java.io.{File, FileInputStream}
 import javax.xml.parsers.SAXParserFactory
 
 import org.xml.sax.InputSource
@@ -8,18 +8,24 @@ import org.xml.sax.InputSource
 import scala.util.Try
 import scala.xml.XML
 
-/**
- *  A simple utility around XML.loadXml that doesn't depend on external DTD fetching and processing. This avoids
- *  random failures when coburtura.xml DTD clauses point to dead domains
- */
+/** A simple utility around XML.loadXml that doesn't depend on external DTD
+  * fetching and processing. This avoids random failures when coburtura.xml DTD
+  * clauses point to dead domains
+  */
 object XmlHelper {
 
   private[this] val factory: SAXParserFactory = locally {
     val f = SAXParserFactory.newInstance()
     f.setValidating(false)
     f.setFeature("http://xml.org/sax/features/validation", false)
-    f.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
-    f.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    f.setFeature(
+      "http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
+      false
+    )
+    f.setFeature(
+      "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+      false
+    )
     f
   }
 
