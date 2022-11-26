@@ -1,6 +1,6 @@
 # sbt-coveralls
 
-[![License][licence-badge]][licence]
+[![License][license-badge]][license]
 [![Join the chat at https://gitter.im/scoverage/sbt-coveralls][gitter-badge]][gitter]
 [![Maven Central][maven-badge]][maven]
 
@@ -219,7 +219,7 @@ License][license].
 [coveralls]: https://coveralls.io
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
 [gitter]: https://gitter.im/scoverage/sbt-coveralls
-[licence]: http://www.apache.org/licenses/LICENSE-2.0.txt
+[license]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [license-badge]: http://img.shields.io/:license-Apache%202-blue.svg
 [maven-badge]: https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg?kill_cache=1
 [maven]: https://search.maven.org/artifact/org.scoverage/sbt-coveralls
