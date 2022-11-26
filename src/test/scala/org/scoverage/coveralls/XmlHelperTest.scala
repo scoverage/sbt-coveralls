@@ -20,7 +20,7 @@ class XmlHelperTest extends AnyWordSpec with Matchers {
       "not attempt to fetch the DTD and successfully parse" in {
         XmlHelper.loadXmlFile(invalidDTD) shouldBe an[xml.Elem]
         // Verify the document actually has an unusable DTD
-        assertThrows[java.net.ConnectException](XML.loadFile(invalidDTD))
+        assertThrows[org.xml.sax.SAXParseException](XML.loadFile(invalidDTD))
       }
     }
 
