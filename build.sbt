@@ -18,6 +18,12 @@ inThisBuild(
         "Ian Forsey",
         "",
         url("https://github.com/theon")
+      ),
+      Developer(
+        "rolandtritsch",
+        "Roland Tritsch",
+        "roland@tritsch.email",
+        url("https://github.com/rolandtritsch")
       )
     ),
     licenses := Seq(
