@@ -41,8 +41,7 @@ lazy val root = Project("sbt-coveralls", file("."))
       "-unchecked",
       "-deprecation",
       "-feature",
-      "-encoding",
-      "utf8"
+      "-encoding", "utf8"
     ),
     dependencyOverrides ++= Seq(
       "com.jcraft" % "jsch" % "0.1.51"
