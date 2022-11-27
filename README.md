@@ -224,7 +224,7 @@ License][license].
 [maven-badge]: https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg?kill_cache=1
 [maven]: https://search.maven.org/artifact/org.scoverage/sbt-coveralls
 [multi-project-reports]: https://github.com/scoverage/sbt-scoverage#multi-project-reports
-[output samples]: https://coveralls.io/r/scoverage/scoverage-samples
+[sample_output]: https://coveralls.io/r/scoverage/scoverage-samples
 [samples project]: https://github.com/scoverage/sbt-scoverage-samples
 [scoverage]: https://github.com/scoverage/scalac-scoverage-plugin
 [travis-docs]: https://docs.travis-ci.com
