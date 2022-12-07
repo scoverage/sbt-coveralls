@@ -41,7 +41,8 @@ lazy val root = Project("sbt-coveralls", file("."))
       "-unchecked",
       "-deprecation",
       "-feature",
-      "-encoding", "utf8"
+      "-encoding",
+      "utf8"
     ),
     dependencyOverrides ++= Seq(
       "com.jcraft" % "jsch" % "0.1.51"
@@ -49,7 +50,7 @@ lazy val root = Project("sbt-coveralls", file("."))
     libraryDependencies ++= Seq(
       "com.fasterxml.jackson.core" % "jackson-core" % "2.13.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.1",
-      "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.1.202206130422-r",
+      "org.eclipse.jgit" % "org.eclipse.jgit" % "6.4.0.202211300538-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
       "org.mockito" % "mockito-core" % "4.9.0" % Test,
       "org.scalatest" %% "scalatest" % "3.2.14" % Test
