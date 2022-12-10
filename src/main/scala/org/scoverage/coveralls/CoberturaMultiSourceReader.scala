@@ -51,8 +51,7 @@ class CoberturaMultiSourceReader(
   private val lineCoverageMap = {
     (reportXML \\ "class").foldLeft(Map.empty[String, Map[Int, Int]]) {
       (map, n) =>
-        val absoluteFileName = (n \ "@filename").toString()
-        val (_, relativeFileName) = splitPath(new File(absoluteFileName))
+        val relativeFileName = (n \ "@filename").toString()
         val lineCoverage = (n \ "lines" \ "line").map(l =>
           (l \ "@number").toString().toInt -> (l \ "@hits").toString().toInt
         )
