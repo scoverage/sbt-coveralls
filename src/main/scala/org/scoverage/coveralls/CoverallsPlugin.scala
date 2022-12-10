@@ -55,7 +55,7 @@ object CoverallsPlugin extends AutoPlugin {
       else None
     },
     coverallsFile := crossTarget.value / "coveralls.json",
-    coberturaFile := crossTarget.value / "scoverage-data" / "coverage-report" / "cobertura.xml",
+    coberturaFile := crossTarget.value / "coverage-report" / "cobertura.xml",
     coverallsGitRepoLocation := Some(".")
   )
 
