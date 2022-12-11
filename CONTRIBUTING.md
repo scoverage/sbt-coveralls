@@ -14,4 +14,8 @@
 * Merge the PR(s)
 * When ready, tag the current commit with `git tag v<next-version>`
 * Push the tag with `git push --tags`
-* Run `sbt ci-release`
+* (For now) Go into `releases` and promote the draft release to latest
+
+Note: (Obviously) Be careful to push tags, because this will trigger
+a push to sonatype/maven and bad release/tags cannot be overwritten or
+deleted.
