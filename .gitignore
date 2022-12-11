@@ -20,3 +20,5 @@ Thumbs.db
 
 .history
 credentials.sbt
+
+src/test/resources/*.xml
