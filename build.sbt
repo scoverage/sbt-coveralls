@@ -2,6 +2,13 @@ name := "sbt-coveralls"
 
 import sbt.ScriptedPlugin.autoImport.scriptedLaunchOpts
 
+import scala.sys.process._
+lazy val generateXMLFiles = taskKey[Unit]("Generate XML files (for test)")
+generateXMLFiles := {
+  val log = streams.value.log
+  s"./src/test/resources/generate.sh" ! log
+}
+
 inThisBuild(
   List(
     organization := "org.scoverage",
