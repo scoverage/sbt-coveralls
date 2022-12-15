@@ -9,6 +9,12 @@ generateXMLFiles := {
   s"./src/test/resources/generate.sh" ! log
 }
 
+lazy val prepareScripted = taskKey[Unit]("Update .git files to make scripted work")
+prepareScripted := {
+  val log = streams.value.log
+  s"./src/sbt-test/prepare.sh" ! log
+}
+
 inThisBuild(
   List(
     organization := "org.scoverage",
@@ -63,6 +69,7 @@ lazy val root = Project("sbt-coveralls", file("."))
     ),
     scriptedLaunchOpts ++= Seq(
       "-Xmx1024M",
-      "-Dplugin.version=" + version.value
+      "-Dplugin.sbtscoverage.version=" + "2.0.6",
+      "-Dplugin.sbtcoveralls.version=" + version.value
     )
   )
