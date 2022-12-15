@@ -18,6 +18,8 @@
 * Put the coveralls token into a `.coverallsToken` file in the root of
   your repo and reference/use it from the build.sbt file (not a best
   practice, but good enough for now)
+* Update your `plugins.sbt` file to read the plugin versions from
+  the system properties
 * Run `git submodule add <repo-url> src/sbt-test/scoverage/<repo-name>`
 * Run `sbt prepareScripted scripted`
 * To update/pull the latest tests run `git submodule update --remote`
