@@ -1,0 +1,3 @@
+[submodule "src/sbt-test/scoverage/sbt-coveralls-test"]
+	path = src/sbt-test/scoverage/sbt-coveralls-test
+	url = https://github.com/rolandtritsch/sbt-coveralls-test.git
