@@ -30,3 +30,6 @@ jobs:
 
       - name: run tests
         run: sbt generateXMLFiles test
+
+      - name: run sbt-tests
+        run: sbt prepareScripted scripted

@@ -9,6 +9,12 @@ generateXMLFiles := {
   s"./src/test/resources/generate.sh" ! log
 }
 
+lazy val prepareScripted = taskKey[Unit]("Update .git files to make scripted work")
+prepareScripted := {
+  val log = streams.value.log
+  s"./src/sbt-test/prepare.sh" ! log
+}
+
 inThisBuild(
   List(
     organization := "org.scoverage",
