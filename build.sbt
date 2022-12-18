@@ -9,7 +9,8 @@ generateXMLFiles := {
   s"./src/test/resources/generate.sh" ! log
 }
 
-lazy val prepareScripted = taskKey[Unit]("Update .git files to make scripted work")
+lazy val prepareScripted =
+  taskKey[Unit]("Update .git files to make scripted work")
 prepareScripted := {
   val log = streams.value.log
   s"./src/sbt-test/prepare.sh" ! log
@@ -54,7 +55,8 @@ lazy val root = Project("sbt-coveralls", file("."))
       "-unchecked",
       "-deprecation",
       "-feature",
-      "-encoding", "utf8"
+      "-encoding",
+      "utf8"
     ),
     dependencyOverrides ++= Seq(
       "com.jcraft" % "jsch" % "0.1.51"
@@ -64,7 +66,7 @@ lazy val root = Project("sbt-coveralls", file("."))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.1",
       "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.1.202206130422-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
-      "org.mockito" % "mockito-core" % "4.9.0" % Test,
+      "org.mockito" % "mockito-core" % "4.10.0" % Test,
       "org.scalatest" %% "scalatest" % "3.2.14" % Test
     ),
     scriptedLaunchOpts ++= Seq(
