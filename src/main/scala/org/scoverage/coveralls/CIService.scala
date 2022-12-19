@@ -51,7 +51,11 @@ case object GitHubActions extends CIService {
         case _: Throwable => None
       }
 
-    lines.flatMap(getFromJson(_, "number"))
+    lines match {
+      case Some(ls) => getFromJson(ls, "number")
+      case None => None
+    }
+
   }
 
   def getFromJson(lines: String, element: String): Option[String] = {
@@ -62,7 +66,7 @@ case object GitHubActions extends CIService {
           case _ => None
         }
       }
-      case _ => None
+      case Left(_) => None
     }
   }
 }
