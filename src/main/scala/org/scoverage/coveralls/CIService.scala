@@ -1,7 +1,9 @@
 package org.scoverage.coveralls
 
 import scala.io.Source
-import scala.util.parsing.json.{JSON, JSONObject}
+import io.circe._
+import io.circe.parser
+import io.circe.generic.auto._
 
 trait CIService {
   def name: String
@@ -32,12 +34,8 @@ case object GitHubActions extends CIService {
   val pullRequest: Option[String] = for {
     eventName <- sys.env.get("GITHUB_EVENT_NAME") if eventName.startsWith("pull_request")
     payloadPath <- sys.env.get("GITHUB_EVENT_PATH")
-    source = Source.fromFile(payloadPath, "utf-8")
-    lines =
-      try source.mkString
-      finally source.close()
-    prNumber <- getFromJson(lines, "number")
-  } yield prNumber.stripSuffix(".0")
+    prNumber <- getPrNumber(payloadPath)
+  } yield prNumber
 
   // https://docs.github.com/en/actions/learn-github-actions/environment-variables
   val currentBranch: Option[String] = pullRequest match {
@@ -45,9 +43,26 @@ case object GitHubActions extends CIService {
     case None => sys.env.get("GITHUB_REF_NAME")
   }
 
+  def getPrNumber(payloadPath: String): Option[String] = {
+    val lines =
+      try {
+        Some(Source.fromFile(payloadPath, "utf-8").getLines.mkString)
+      } catch {
+        case _: Throwable => None
+      }
+
+    lines.flatMap(getFromJson(_, "number"))
+  }
+
   def getFromJson(lines: String, element: String): Option[String] = {
-    val payload = JSON.parseRaw(lines)
-    val jsonObjectMap = payload.get.asInstanceOf[JSONObject].obj
-    jsonObjectMap.get(element).asInstanceOf[Option[String]]
+    parser.parse(lines) match {
+      case Right(json) => {
+        json.findAllByKey(element) match {
+          case prNumber :: nil => Some(prNumber.toString)
+          case _ => None
+        }
+      }
+      case _ => None
+    }
   }
 }

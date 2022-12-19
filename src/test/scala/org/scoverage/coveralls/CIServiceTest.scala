@@ -9,9 +9,8 @@ import scala.Option
 
 class CIServiceTest extends AnyWordSpec with Matchers {
 
-  implicit val log = ConsoleLogger(System.out)
-
   "CIService" when {
+
     "getFromJson" should {
       "return a valid response" in {
         val lines = """
@@ -25,8 +24,15 @@ class CIServiceTest extends AnyWordSpec with Matchers {
           |}
           |""".stripMargin
 
-        GitHubActions.getFromJson(lines, "numericField") === Some("123.0")    
+        GitHubActions.getFromJson(lines, "numericField") shouldBe Some("123")       }
+    }
+
+    "getPrNumber" should {
+      "return a valid response" in {
+        val payloadPath = "src/test/resources/example-pr-response.json"
+        GitHubActions.getPrNumber(payloadPath) shouldBe Some("1347")
       }
     }
   }
+
 }
