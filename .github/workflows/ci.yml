@@ -11,10 +11,6 @@ on:
 jobs:
   scala:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ '18' ]
 
     steps:
       - name: checkout the repo
@@ -22,11 +18,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Set up JVM
-        uses: actions/setup-java@v3
+      - name: Setup Scala
+        uses: olafurpg/setup-scala@v10
         with:
-          distribution: 'adopt'
-          java-version: ${{ matrix.java }}
+          java-version: "openjdk@1.17.0"
 
       - name: run tests
         run: sbt generateXMLFiles test
