@@ -36,13 +36,18 @@ case object GitHubActions extends CIService {
     lines =
       try source.mkString
       finally source.close()
-    payload <- JSON.parseRaw(lines)
-    prNumber <- payload.asInstanceOf[JSONObject].obj.get("number")
-  } yield prNumber.toString.stripSuffix(".0")
+    prNumber <- getFromJson(lines, "number")
+  } yield prNumber.stripSuffix(".0")
 
   // https://docs.github.com/en/actions/learn-github-actions/environment-variables
   val currentBranch: Option[String] = pullRequest match {
     case Some(_) => sys.env.get("GITHUB_HEAD_REF")
     case None => sys.env.get("GITHUB_REF_NAME")
+  }
+
+  def getFromJson(lines: String, element: String): Option[String] = {
+    val payload = JSON.parseRaw(lines)
+    val jsonObjectMap = payload.get.asInstanceOf[JSONObject].obj
+    jsonObjectMap.get(element).asInstanceOf[Option[String]]
   }
 }
