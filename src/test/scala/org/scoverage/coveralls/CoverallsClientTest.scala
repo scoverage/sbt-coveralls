@@ -12,10 +12,10 @@ import scalaj.http.Http
 import scalaj.http.HttpOptions._
 
 class CoverallsClientTest
-    extends AnyWordSpec
-    with BeforeAndAfterAll
-    with Matchers {
-
+  extends AnyWordSpec
+  with BeforeAndAfterAll
+  with Matchers
+{
   val projectDir = Utils.mkFileFromPath(Seq("."))
   val resourceDir =
     Utils.mkFileFromPath(projectDir, Seq("src", "test", "resources"))
