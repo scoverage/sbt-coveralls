@@ -38,7 +38,7 @@ inThisBuild(
     licenses := Seq(
       "Apache-2.0" -> url("http://www.apache.org/license/LICENSE-2.0")
     ),
-    scalaVersion := "2.12.17"
+    scalaVersion := "2.13.10"
   )
 )
 
@@ -50,7 +50,8 @@ lazy val root = Project("sbt-coveralls", file("."))
       "-unchecked",
       "-deprecation",
       "-feature",
-      "-encoding", "utf8"
+      "-encoding",
+      "utf8"
     ),
     dependencyOverrides ++= Seq(
       "com.jcraft" % "jsch" % "0.1.55"
