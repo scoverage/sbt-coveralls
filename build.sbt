@@ -50,7 +50,8 @@ lazy val root = Project("sbt-coveralls", file("."))
       "-unchecked",
       "-deprecation",
       "-feature",
-      "-encoding", "utf8"
+      "-encoding",
+      "utf8"
     ),
     dependencyOverrides ++= Seq(
       "com.jcraft" % "jsch" % "0.1.55"
@@ -63,7 +64,7 @@ lazy val root = Project("sbt-coveralls", file("."))
       "io.circe" %% "circe-core" % "0.14.3",
       "io.circe" %% "circe-generic" % "0.14.3",
       "io.circe" %% "circe-parser" % "0.14.3",
-      "org.mockito" % "mockito-core" % "4.10.0" % Test,
+      "org.mockito" % "mockito-core" % "4.11.0" % Test,
       "org.scalatest" %% "scalatest" % "3.2.14" % Test
     ),
     scriptedLaunchOpts ++= Seq(
