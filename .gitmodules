@@ -4,3 +4,6 @@
 [submodule "src/sbt-test/scoverage/sbt-scoverage-samples"]
 	path = src/sbt-test/scoverage/sbt-scoverage-samples
 	url = https://github.com/scoverage/sbt-scoverage-samples.git
+[submodule "src/sbt-test/scoverage/nmesos"]
+	path = src/sbt-test/scoverage/nmesos
+	url = https://github.com/NinesStack/nmesos.git
