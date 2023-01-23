@@ -12,6 +12,7 @@ class CoverallPayloadWriter(
     coverallsFile: File,
     repoToken: Option[String],
     service: Option[CIService],
+    parallel: Boolean,
     gitClient: GitClient
 )(implicit log: Logger) {
   import gitClient._
@@ -37,6 +38,10 @@ class CoverallPayloadWriter(
 
     // to provide an unique additional label in jobs with multiple submissions
     writeOpt("flag_name", sys.env.get("COVERALLS_FLAG_NAME"))
+
+    if (parallel) {
+      gen.writeBooleanField("parallel", true)
+    }
 
     addGitInfo()
 
