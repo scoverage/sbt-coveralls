@@ -28,6 +28,7 @@ object Imports {
     val coverallsEndpoint = SettingKey[Option[String]]("coverallsEndpoint")
     val coverallsGitRepoLocation =
       SettingKey[Option[String]]("coveralls-git-repo")
+    val coverallsParallel = SettingKey[Boolean]("coverallsParallel")
   }
 }
 
@@ -56,7 +57,8 @@ object CoverallsPlugin extends AutoPlugin {
     },
     coverallsFile := crossTarget.value / "coveralls.json",
     coberturaFile := crossTarget.value / "coverage-report" / "cobertura.xml",
-    coverallsGitRepoLocation := Some(".")
+    coverallsGitRepoLocation := Some("."),
+    coverallsParallel := sys.env.get("COVERALLS_PARALLEL").contains("true")
   )
 
   val aggregateFilter = ScopeFilter(
@@ -98,6 +100,7 @@ object CoverallsPlugin extends AutoPlugin {
       coverallsFile.value,
       repoToken,
       coverallsService.value,
+      coverallsParallel.value,
       new GitClient(repoRootDirectory)
     )
 
