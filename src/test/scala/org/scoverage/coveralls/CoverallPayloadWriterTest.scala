@@ -76,7 +76,7 @@ class CoverallPayloadWriterTest
         payloadWriter.flush()
 
         writer.toString should equal(
-          """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob",""" +
+          """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
@@ -90,7 +90,7 @@ class CoverallPayloadWriterTest
         payloadWriter.flush()
 
         writer.toString should equal(
-          """{"repo_token":"testRepoToken",""" +
+          """{"repo_token":"testRepoToken","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
