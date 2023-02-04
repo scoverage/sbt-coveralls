@@ -32,13 +32,15 @@ class CoverallPayloadWriterTest
   def coverallsWriter(
       writer: Writer,
       tokenIn: Option[String],
-      service: Option[CIService]
+      service: Option[CIService],
+      parallel: Boolean,
   ): (CoverallPayloadWriter, Writer) = {
     val payloadWriter = new CoverallPayloadWriter(
       new File(".").getAbsoluteFile,
       new File("."),
       tokenIn,
       service,
+      parallel,
       testGitClient
     ) {
       override def generator(file: File) = {
@@ -66,14 +68,15 @@ class CoverallPayloadWriterTest
         val (payloadWriter, writer) = coverallsWriter(
           new StringWriter(),
           Some("testRepoToken"),
-          Some(testService)
+          Some(testService),
+          false
         )
 
         payloadWriter.start
         payloadWriter.flush()
 
         writer.toString should equal(
-          """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob",""" +
+          """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
@@ -81,13 +84,13 @@ class CoverallPayloadWriterTest
 
       "generate a correct starting payload without a CI service" in {
         val (payloadWriter, writer) =
-          coverallsWriter(new StringWriter(), Some("testRepoToken"), None)
+          coverallsWriter(new StringWriter(), Some("testRepoToken"), None, false)
 
         payloadWriter.start
         payloadWriter.flush()
 
         writer.toString should equal(
-          """{"repo_token":"testRepoToken",""" +
+          """{"repo_token":"testRepoToken","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
@@ -109,7 +112,8 @@ class CoverallPayloadWriterTest
         val (payloadWriter, writer) = coverallsWriter(
           new StringWriter(),
           Some("testRepoToken"),
-          Some(TravisCI)
+          Some(TravisCI),
+          false
         )
         payloadWriter.addSourceFile(
           SourceFileReport(
@@ -128,13 +132,27 @@ class CoverallPayloadWriterTest
         val (payloadWriter, writer) = coverallsWriter(
           new StringWriter(),
           Some("testRepoToken"),
-          Some(TravisCI)
+          Some(TravisCI),
+          false
         )
 
         payloadWriter.start
         payloadWriter.end()
 
         writer.toString should endWith("]}")
+      }
+
+      "include parallel correctly" in {
+        val (payloadWriter, writer) = coverallsWriter(new StringWriter(), Some("testRepoToken"), None, true)
+
+        payloadWriter.start
+        payloadWriter.flush()
+
+        writer.toString should equal(
+          """{"repo_token":"testRepoToken","parallel":true,""" +
+            expectedGit +
+            ""","source_files":["""
+        )
       }
     }
   }
