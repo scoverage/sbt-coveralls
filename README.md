@@ -210,6 +210,25 @@ import org.scoverage.coveralls.TravisPro
 coverallsService := Some(TravisPro)
 ```
 
+## Uploading coverage from parallel CI builds
+
+[Coveralls supports merging reports from multiple CI builds.](https://docs.coveralls.io/parallel-build-webhook)
+Each report must be flagged as coming from a parallel job, then a webhook must be called after all jobs have completed to merge the reports together.
+
+To mark uploaded reports as parallel, either:
+
+### Put the flag directly in `build.sbt`
+```scala
+import org.scoverage.coveralls.Imports.CoverallsKeys._
+
+coverallsParallel := true
+```
+
+### Set an environment variable
+```shell
+export COVERALLS_PARALLEL=true
+```
+
 # License
 
 `sbt-coveralls` is open source software released under the [Apache 2
