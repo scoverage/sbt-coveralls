@@ -47,6 +47,7 @@ lazy val root = Project("sbt-coveralls", file("."))
   .settings(
     Test / publishArtifact := false,
     scalacOptions := Seq(
+      "-release:8",
       "-unchecked",
       "-deprecation",
       "-feature",
