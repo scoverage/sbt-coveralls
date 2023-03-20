@@ -4,6 +4,10 @@
 
 * Create an issue (and agree what needs to get solved and how)
 * Fork the repo
+* Clone the repo ...
+  * `git clone >repo<`
+  * `cd >repo<`
+  * `git submodule update --init` 
 * Run `sbt generateXMLFiles` (once)
 * Run `sbt test`to test the current implementation
 * Run `sbt publishLocal` to create a local build that you can use in
