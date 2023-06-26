@@ -16,9 +16,11 @@ class CoberturaMultiSourceReaderTest
   val resourceDir = Utils.mkFileFromPath(Seq(".", "src", "test", "resources"))
   val sourceDirA =
     Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala"))
+  val sourceDirA212 =
+    Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala-2.12"))
   val sourceDirB =
     Utils.mkFileFromPath(resourceDir, Seq("projectB", "src", "main", "scala"))
-  val sourceDirs = Seq(sourceDirA, sourceDirB)
+  val sourceDirs = Seq(sourceDirA, sourceDirA212, sourceDirB)
 
   val reader = new CoberturaMultiSourceReader(
     Utils.mkFileFromPath(resourceDir, Seq("test_cobertura_multisource.xml")),
@@ -34,6 +36,10 @@ class CoberturaMultiSourceReaderTest
           Utils.mkFileFromPath(
             sourceDirA,
             Seq("bar", "foo", "TestSourceFile.scala")
+          ),
+          Utils.mkFileFromPath(
+            sourceDirA212,
+            Seq("bar", "foo", "TestSourceScala212.scala")
           ),
           Utils.mkFileFromPath(sourceDirB, Seq("foo", "TestSourceFile.scala"))
         )
@@ -87,6 +93,18 @@ class CoberturaMultiSourceReaderTest
             Some(1),
             Some(1)
           )
+        )
+      }
+
+      "return a valid SourceFileReport instance if files are in version-specific source dirs" in {
+        val sourceFile = Utils.mkFileFromPath(
+          sourceDirA212,
+          Seq("bar", "foo", "TestSourceScala212.scala")
+        )
+        println(sourceFile.getCanonicalPath)
+        val fileReport = reader.reportForSource(sourceFile.getCanonicalPath)
+        fileReport.file should endWith(
+          Seq("foo", "TestSourceScala212.scala").mkString(File.separator)
         )
       }
     }

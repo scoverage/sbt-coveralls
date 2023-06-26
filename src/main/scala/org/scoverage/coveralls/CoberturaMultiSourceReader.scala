@@ -41,8 +41,8 @@ class CoberturaMultiSourceReader(
     *   to the same directory
     */
   def isChild(child: File, parent: File): Boolean = {
-    val childPath = child.getCanonicalPath()
-    val parentPath = parent.getCanonicalPath()
+    val childPath = child.getCanonicalFile.toPath
+    val parentPath = parent.getCanonicalFile.toPath
     childPath != parentPath && childPath.startsWith(parentPath)
   }
 

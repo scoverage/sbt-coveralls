@@ -4,6 +4,7 @@
     <sources>
         <source>--source</source>
         <source>{{PWD}}/src/test/resources/projectA/arc/main/scala/</source>
+        <source>{{PWD}}/src/test/resources/projectA/arc/main/scala-2.12/</source>
         <source>{{PWD}}/src/test/resources/projectB/arc/main/scala</source>
     </sources>
     <packages>
@@ -23,6 +24,10 @@
                         <line number="9" hits="1"/>
                         <line number="10" hits="1"/>
                     </lines>
+                </class>
+                <class line-rate="0" name="TestSourceScala212" filename="bar/foo/TestSourceScala212.scala">
+                    <methods/>
+                    <lines/>
                 </class>
                 <class line-rate="0.87" name="TestSourceFile" filename="foo/TestSourceFile.scala">
                     <methods/>
