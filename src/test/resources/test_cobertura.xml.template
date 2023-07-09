@@ -3,8 +3,8 @@
 <coverage line-rate="0.87">
     <sources>
         <source>--source</source>
-        <source>{{PWD}}/src/test/resources/projectA/arc/main/scala/</source>
-        <source>{{PWD}}/src/test/resources/projectA/arc/main/scala-2.12/</source>
+        <source>{{PWD}}/src/test/resources/projectA/arc/main/scala</source>
+        <source>{{PWD}}/src/test/resources/projectA/arc/main/scala-2.12</source>
         <source>{{PWD}}/src/test/resources/projectB/arc/main/scala</source>
     </sources>
     <packages>
