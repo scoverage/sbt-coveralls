@@ -218,6 +218,7 @@ Each report must be flagged as coming from a parallel job, then a webhook must b
 To mark uploaded reports as parallel, either:
 
 ### Put the flag directly in `build.sbt`
+
 ```scala
 import org.scoverage.coveralls.Imports.CoverallsKeys._
 
@@ -225,6 +226,7 @@ coverallsParallel := true
 ```
 
 ### Set an environment variable
+
 ```shell
 export COVERALLS_PARALLEL=true
 ```
