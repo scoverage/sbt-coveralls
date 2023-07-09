@@ -58,8 +58,8 @@ lazy val root = Project("sbt-coveralls", file("."))
       "com.jcraft" % "jsch" % "0.1.55"
     ),
     libraryDependencies ++= Seq(
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.0",
       "com.fasterxml.jackson.core" % "jackson-core" % "2.15.0",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.2",
       "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.0.202109080827-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
       "io.circe" %% "circe-core" % "0.14.5",
