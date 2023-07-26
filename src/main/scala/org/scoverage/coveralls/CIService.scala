@@ -70,3 +70,10 @@ case object GitHubActions extends CIService {
     }
   }
 }
+
+object CircleCI extends CIService {
+  def name: String = "circleci"
+  def jobId: Option[String] = sys.env.get("CIRCLE_BUILD_NUM")
+  def pullRequest: Option[String] = sys.env.get("CIRCLE_PULL_REQUEST").map(_.split("/").last)
+  def currentBranch: Option[String] = sys.env.get("CIRCLE_BRANCH")
+}
