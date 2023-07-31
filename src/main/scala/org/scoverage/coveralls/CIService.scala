@@ -10,20 +10,28 @@ trait CIService {
   def jobId: Option[String]
   def pullRequest: Option[String]
   def currentBranch: Option[String]
+
+  // default behavior for CI services is for a repo token to be required
+  def coverallsAuth(userRepoToken: Option[String]): Option[CoverallsAuth] =
+    userRepoToken.map(CoverallsRepoToken)
 }
 
-case object TravisCI extends CIService {
+trait TravisBase extends CIService {
+  val jobId: Option[String] = sys.env.get("TRAVIS_JOB_ID")
+  val pullRequest: Option[String] = sys.env.get("CI_PULL_REQUEST")
+  val currentBranch: Option[String] = sys.env.get("CI_BRANCH")
+
+  // If a user token exists, use it; otherwise, Travis doesn't seem to need a token at all
+  override def coverallsAuth(userRepoToken: Option[String]): Option[CoverallsAuth] =
+    Some(userRepoToken.fold[CoverallsAuth](NoTokenNeeded)(CoverallsRepoToken))
+}
+
+case object TravisCI extends TravisBase {
   val name = "travis-ci"
-  val jobId: Option[String] = sys.env.get("TRAVIS_JOB_ID")
-  val pullRequest: Option[String] = sys.env.get("CI_PULL_REQUEST")
-  val currentBranch: Option[String] = sys.env.get("CI_BRANCH")
 }
 
-case object TravisPro extends CIService {
+case object TravisPro extends TravisBase {
   val name = "travis-pro"
-  val jobId: Option[String] = sys.env.get("TRAVIS_JOB_ID")
-  val pullRequest: Option[String] = sys.env.get("CI_PULL_REQUEST")
-  val currentBranch: Option[String] = sys.env.get("CI_BRANCH")
 }
 
 case object GitHubActions extends CIService {
@@ -67,6 +75,22 @@ case object GitHubActions extends CIService {
         }
       }
       case Left(_) => None
+    }
+  }
+
+  override def coverallsAuth(userRepoToken: Option[String]): Option[CoverallsAuth] = {
+    userRepoToken match {
+      case Some(token) if token.matches("gh._.+") =>
+        // The token passed in COVERALLS_REPO_TOKEN is a GitHub token (legacy behavior)
+        // (https://github.blog/2021-04-05-behind-githubs-new-authentication-token-formats/#identifiable-prefixes)
+        Some(CIServiceToken(token))
+      case Some(token) =>
+        // The token passed is a Coveralls one
+        Some(CoverallsRepoToken(token))
+      case None =>
+        // COVERALLS_REPO_TOKEN is not defined; lookup GITHUB_TOKEN (available on all GitHub
+        // Actions jobs) instead as a last resort
+        sys.env.get("GITHUB_TOKEN").map(CIServiceToken)
     }
   }
 }

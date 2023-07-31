@@ -38,7 +38,7 @@ class CoverallPayloadWriterTest
     val payloadWriter = new CoverallPayloadWriter(
       new File(".").getAbsoluteFile,
       new File("."),
-      tokenIn,
+      service.flatMap(_.coverallsAuth(tokenIn)).getOrElse(CoverallsRepoToken(tokenIn.get)),
       service,
       parallel,
       testGitClient
@@ -76,7 +76,7 @@ class CoverallPayloadWriterTest
         payloadWriter.flush()
 
         writer.toString should equal(
-          """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob","parallel":false,""" +
+          """{"repo_token":"testRepoToken","service_job_id":"testServiceJob","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
@@ -91,6 +91,34 @@ class CoverallPayloadWriterTest
 
         writer.toString should equal(
           """{"repo_token":"testRepoToken","parallel":false,""" +
+            expectedGit +
+            ""","source_files":["""
+        )
+      }
+
+      "generate a correct starting payload with a CI specific auth token" in {
+        val testService: CIService = new CIService {
+          override def name = "my-service"
+          override def jobId = Some("testServiceJob")
+          override def pullRequest = None
+          override def currentBranch = None
+
+          override def coverallsAuth(userRepoToken: Option[String]) =
+            Some(CIServiceToken("hardcodedToken"))
+        }
+
+        val (payloadWriter, writer) = coverallsWriter(
+          new StringWriter(),
+          Some("testRepoToken"),
+          Some(testService),
+          false
+        )
+
+        payloadWriter.start
+        payloadWriter.flush()
+
+        writer.toString should equal(
+          """{"repo_token":"hardcodedToken","service_name":"my-service","service_job_id":"testServiceJob","parallel":false,""" +
             expectedGit +
             ""","source_files":["""
         )
