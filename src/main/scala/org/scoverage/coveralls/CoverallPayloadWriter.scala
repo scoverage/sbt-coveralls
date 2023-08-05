@@ -10,7 +10,7 @@ import sbt.Logger
 class CoverallPayloadWriter(
     repoRootDir: File,
     coverallsFile: File,
-    repoToken: Option[String],
+    coverallsAuth: CoverallsAuth,
     service: Option[CIService],
     parallel: Boolean,
     gitClient: GitClient
@@ -31,8 +31,16 @@ class CoverallPayloadWriter(
     def writeOpt(fieldName: String, holder: Option[String]) =
       holder foreach { gen.writeStringField(fieldName, _) }
 
-    writeOpt("repo_token", repoToken)
-    writeOpt("service_name", service.map(_.name))
+    coverallsAuth match {
+      case CoverallsRepoToken(token) =>
+        gen.writeStringField("repo_token", token)
+      case CIServiceToken(token) =>
+        gen.writeStringField("repo_token", token)
+        writeOpt("service_name", service.map(_.name))
+      case NoTokenNeeded =>
+        writeOpt("service_name", service.map(_.name))
+    }
+
     writeOpt("service_job_id", service.flatMap(_.jobId))
     writeOpt("service_pull_request", service.flatMap(_.pullRequest))
     writeOpt("flag_name", sys.env.get("COVERALLS_FLAG_NAME"))
