@@ -78,10 +78,16 @@ object CoverallsPlugin extends AutoPlugin {
     val repoToken =
       userRepoToken(coverallsToken.value, coverallsTokenFile.value)
 
-    if (travisJobIdent.isEmpty && repoToken.isEmpty) {
+    val coverallsAuthOpt = coverallsService.value match {
+      case Some(ciService) => ciService.coverallsAuth(repoToken)
+      case None => repoToken.map(CoverallsRepoToken)
+    }
+
+    val coverallsAuth = coverallsAuthOpt.getOrElse {
       sys.error("""
-          |Could not find coveralls repo token or determine travis job id
-          | - If running from travis, make sure the TRAVIS_JOB_ID env variable is set
+          |Could not find any way to authenticate against Coveralls.
+          | - If running from Travis, make sure the TRAVIS_JOB_ID env variable is set
+          | - If running from GitHub CI, set the GITHUB_TOKEN env variable to ${{ secrets.GITHUB_TOKEN }}
           | - Otherwise, to set up your repo token read https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token
         """.stripMargin)
     }
@@ -98,7 +104,7 @@ object CoverallsPlugin extends AutoPlugin {
     val writer = new CoverallPayloadWriter(
       repoRootDirectory,
       coverallsFile.value,
-      repoToken,
+      coverallsAuth,
       coverallsService.value,
       coverallsParallel.value,
       new GitClient(repoRootDirectory)
