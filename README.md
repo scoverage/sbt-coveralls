@@ -107,6 +107,26 @@ Travis build and you should see coverage reports appear on [coveralls][].
 2) Job done! Commit these changes to kick off your GitHub Actions
 build and you should see coverage reports appear on [coveralls][].
 
+## CircleCI Integration
+
+Enable CircleCI support in your `build.sbt`:
+
+```scala
+import org.scoverage.coveralls.Imports.CoverallsKeys._
+import org.scoverage.coveralls.CircleCI
+
+coverallsService := Some(CircleCI)
+```
+
+Add the following step to your `config.yml` right after your test step:
+
+```yaml
+- run:
+    name: Generate and upload coverage report
+    when: always
+    command: sbt ";coverageReport ;coverageAggregate ;coveralls"
+```
+
 ## Manual Usage
 
 1)  Get the repo token for your repo from [coveralls][].
