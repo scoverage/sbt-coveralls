@@ -70,7 +70,7 @@ lazy val root = Project("sbt-coveralls", file("."))
     ),
     scriptedLaunchOpts ++= Seq(
       "-Xmx1024M",
-      "-Dplugin.sbtscoverage.version=" + "2.0.8",
+      "-Dplugin.sbtscoverage.version=" + "2.0.9",
       "-Dplugin.sbtcoveralls.version=" + version.value
     )
   )
