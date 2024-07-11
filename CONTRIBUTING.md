@@ -9,7 +9,7 @@
   * `cd >repo<`
   * `git submodule update --init` 
 * Run `sbt generateXMLFiles` (once)
-* Run `sbt test`to test the current implementation
+* Run `sbt test` to test the current implementation
 * Run `sbt publishLocal` to create a local build that you can use in
   your projects `plugins.sbt` file to test something locally
 * Run `sbt scripted` to test the plugin with the scripted test-cases
