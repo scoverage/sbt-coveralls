@@ -25,7 +25,7 @@ class CoverallPayloadWriter(
     factory.createGenerator(file, JsonEncoding.UTF8)
   }
 
-  def start() {
+  def start() = {
     gen.writeStartObject()
 
     def writeOpt(fieldName: String, holder: Option[String]) =
@@ -36,11 +36,10 @@ class CoverallPayloadWriter(
         gen.writeStringField("repo_token", token)
       case CIServiceToken(token) =>
         gen.writeStringField("repo_token", token)
-        writeOpt("service_name", service.map(_.name))
       case NoTokenNeeded =>
-        writeOpt("service_name", service.map(_.name))
     }
 
+    writeOpt("service_name", service.map(_.name))
     writeOpt("service_job_id", service.flatMap(_.jobId))
     writeOpt("service_pull_request", service.flatMap(_.pullRequest))
     writeOpt("flag_name", sys.env.get("COVERALLS_FLAG_NAME"))
@@ -53,7 +52,7 @@ class CoverallPayloadWriter(
     gen.writeStartArray()
   }
 
-  private def addGitInfo() {
+  private def addGitInfo() = {
     gen.writeFieldName("git")
     gen.writeStartObject()
 
@@ -86,7 +85,7 @@ class CoverallPayloadWriter(
     gen.writeEndObject()
   }
 
-  private def addGitRemotes(remotes: Seq[String]) {
+  private def addGitRemotes(remotes: Seq[String]) = {
     remotes.foreach(remote => {
       gen.writeStartObject()
       gen.writeStringField("name", remote)
@@ -95,7 +94,7 @@ class CoverallPayloadWriter(
     })
   }
 
-  def addSourceFile(report: SourceFileReport) {
+  def addSourceFile(report: SourceFileReport) = {
     val repoRootDirStr =
       repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
 
