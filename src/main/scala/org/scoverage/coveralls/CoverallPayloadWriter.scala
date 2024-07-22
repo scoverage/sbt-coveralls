@@ -39,7 +39,7 @@ class CoverallPayloadWriter(
       case NoTokenNeeded =>
     }
 
-    writeOpt("service_name", service.flatMap(_.name))
+    writeOpt("service_name", service.map(_.name))
     writeOpt("service_job_id", service.flatMap(_.jobId))
     writeOpt("service_pull_request", service.flatMap(_.pullRequest))
     writeOpt("flag_name", sys.env.get("COVERALLS_FLAG_NAME"))
