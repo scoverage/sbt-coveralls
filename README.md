@@ -262,7 +262,7 @@ License][license].
 [gitter]: https://gitter.im/scoverage/sbt-coveralls
 [license]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [license-badge]: http://img.shields.io/:license-Apache%202-blue.svg
-[maven-badge]: https://maven-badges.herokuapp.com/maven-central/org.scoverage/sbt-coveralls/badge.svg?kill_cache=1
+[maven-badge]: https://img.shields.io/github/v/release/scoverage/sbt-coveralls?label=maven-central
 [maven]: https://search.maven.org/artifact/org.scoverage/sbt-coveralls
 [multi-project-reports]: https://github.com/scoverage/sbt-scoverage#multi-project-reports
 [sample output]: https://coveralls.io/r/scoverage/scoverage-samples
