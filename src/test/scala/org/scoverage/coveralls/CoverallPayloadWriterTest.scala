@@ -153,8 +153,15 @@ class CoverallPayloadWriterTest
         )
         payloadWriter.flush()
 
+        val separator = if (System.getProperty("os.name").startsWith("Windows"))
+          s"""${File.separator}\\""" // Backwards slash is a special character in JSON so it needs to be escaped
+        else
+          File.separator
+
+        val name = List(".","src","test","resources","projectA","src","main","scala","bar","foo","TestSourceFile.scala")
+          .mkString(separator)
         writer.toString should equal(
-          """{"name":"./src/test/resources/projectA/src/main/scala/bar/foo/TestSourceFile.scala","source_digest":"B77361233B09D69968F8C62491A5085F","coverage":[1,null,2]}"""
+          s"""{"name":"$name","source_digest":"B77361233B09D69968F8C62491A5085F","coverage":[1,null,2]}"""
         )
       }
 
