@@ -10,12 +10,21 @@ on:
 
 jobs:
   scala:
-    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # remove when PR is finished, just to make sure we don't make regression
       matrix:
         JDK: [ 8, 17 ]
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        shell: bash
+        run: git config --global core.autocrlf false
+
       - name: checkout the repo
         uses: actions/checkout@v4
         with:

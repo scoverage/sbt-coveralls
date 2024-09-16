@@ -95,8 +95,7 @@ class CoverallPayloadWriter(
   }
 
   def addSourceFile(report: SourceFileReport) = {
-    val repoRootDirStr =
-      repoRootDir.getCanonicalPath.replace(File.separator, "/") + "/"
+    val repoRootDirStr = repoRootDir.getCanonicalPath + File.separator
 
     // create a name relative to the project root (rather than the module root)
     // this is needed so that coveralls can find the file in git.

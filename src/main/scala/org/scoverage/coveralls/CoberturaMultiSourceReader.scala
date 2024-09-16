@@ -114,7 +114,7 @@ class CoberturaMultiSourceReader(
 
   protected def lineCoverage(sourceFile: String) = {
     val filenamePath =
-      splitPath(new File(sourceFile))._2.replace(File.separator, "/")
+      splitPath(new File(sourceFile))._2
 
     lineCoverageMap(filenamePath)
   }
@@ -130,9 +130,7 @@ class CoberturaMultiSourceReader(
     val lineHitMap = lineCoverage(source)
     val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
 
-    val sourceNormalized = source.replace(File.separator, "/")
-
-    SourceFileReport(sourceNormalized, fullLineHit.toList)
+    SourceFileReport(source, fullLineHit.toList)
   }
 }
 
