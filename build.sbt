@@ -2,19 +2,48 @@ name := "sbt-coveralls"
 
 import sbt.ScriptedPlugin.autoImport.scriptedLaunchOpts
 
+import java.io.File
 import scala.sys.process._
 lazy val generateXMLFiles =
   taskKey[Unit]("Generate XML files (for test)")
 generateXMLFiles := {
-  val log = streams.value.log
-  s"./src/test/resources/generate.sh" ! log
+  val dir = (Test / resourceDirectory).value
+  val pwd = (run / baseDirectory).value
+
+  val template = if (System.getProperty("os.name").startsWith("Windows"))
+    ".xml.windows.template"
+  else
+    ".xml.template"
+
+  dir.listFiles { (_, name) => name.endsWith(template) }.foreach {
+    templateFile =>
+      val newFile = dir / templateFile.getName.replace(template, ".xml")
+      val content = IO.read(templateFile)
+      IO.write(newFile, content.replace("{{PWD}}", pwd.absolutePath))
+  }
 }
 
 lazy val prepareScripted =
   taskKey[Unit]("Update .git files to make scripted work")
 prepareScripted := {
   val log = streams.value.log
-  s"./src/sbt-test/prepare.sh" ! log
+  val pwd = (run / baseDirectory).value
+
+  val submodules = "git submodule status" !! log
+  val submodulePaths = submodules.split('\n').map{x =>
+    x.split(" ")(2)
+  }
+
+  submodulePaths.foreach{ subModulePath =>
+    val path = pwd / ".git" / "modules" / subModulePath
+    val pathFixedForWindows = if (System.getProperty("os.name").startsWith("Windows"))
+      path.absolutePath.replace(File.separator, "/") // Git under Windows uses / for path separator
+    else
+      path.absolutePath
+    val destination = file(subModulePath) / ".git"
+    IO.delete(destination)
+    IO.write(destination, s"gitdir: $pathFixedForWindows")
+  }
 }
 
 inThisBuild(

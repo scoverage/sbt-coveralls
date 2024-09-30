@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE coverage SYSTEM "http://localhost:1/xml/coverage-04.dtd">
+<coverage line-rate="0.87">
+    <sources>
+        <source>--source</source>
+        <source>{{PWD}}\src\test\resources\projectA\arc\main\scala</source>
+        <source>{{PWD}}\src\test\resources\projectA\arc\main\scala-2.12</source>
+        <source>{{PWD}}\src\test\resources\projectB\arc\main\scala</source>
+    </sources>
+    <packages>
+        <package line-rate="0.87" name="org.scoverage.coveralls">
+            <classes>
+                <class line-rate="0.87" name="TestSourceFile" filename="bar\foo\TestSourceFile.scala">
+                    <methods/>
+                    <lines>
+                        <line number="4" hits="1"/>
+                        <line number="5" hits="1"/>
+                        <line number="6" hits="2"/>
+                    </lines>
+                </class>
+                <class line-rate="0.87" name="TestSourceFile" filename="bar\foo\TestSourceFile.scala">
+                    <methods/>
+                    <lines>
+                        <line number="9" hits="1"/>
+                        <line number="10" hits="1"/>
+                    </lines>
+                </class>
+                <class line-rate="0" name="TestSourceScala212" filename="bar\foo\TestSourceScala212.scala">
+                    <methods/>
+                    <lines/>
+                </class>
+                <class line-rate="0.87" name="TestSourceFile" filename="foo\TestSourceFile.scala">
+                    <methods/>
+                    <lines>
+                        <line number="3" hits="1"/>
+                        <line number="4" hits="1"/>
+                        <line number="5" hits="1"/>
+                    </lines>
+                </class>
+            </classes>
+        </package>
+    </packages>
+</coverage>
