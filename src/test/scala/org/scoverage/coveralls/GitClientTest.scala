@@ -38,7 +38,7 @@ class GitClientTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
     storedConfig.save()
     // Add and commit a file
     val readme = new File(repoDir, "README.md")
-    readme.createNewFile();
+    readme.createNewFile()
     gitRepo
       .add()
       .addFilepattern("README.md")

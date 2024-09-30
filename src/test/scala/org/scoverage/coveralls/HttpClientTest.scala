@@ -11,7 +11,7 @@ class HttpClientTestSuccess extends HttpClient {
       data: Array[Byte]
   ) = {
     dataIn = new String(data, "UTF-8")
-    new CoverallHttpResponse(
+    CoverallHttpResponse(
       200,
       """
       {
@@ -32,7 +32,7 @@ class HttpClientTestFailure extends HttpClient {
       mime: String,
       data: Array[Byte]
   ) = {
-    new CoverallHttpResponse(
+    CoverallHttpResponse(
       200,
       """
       {
@@ -52,6 +52,6 @@ case class HttpClientTestFake(status: Int, body: String) extends HttpClient {
       mime: String,
       data: Array[Byte]
   ) = {
-    new CoverallHttpResponse(status, body)
+    CoverallHttpResponse(status, body)
   }
 }

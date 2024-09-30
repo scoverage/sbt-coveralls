@@ -17,7 +17,10 @@ class CoberturaMultiSourceReaderTest
   val sourceDirA =
     Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala"))
   val sourceDirA212 =
-    Utils.mkFileFromPath(resourceDir, Seq("projectA", "src", "main", "scala-2.12"))
+    Utils.mkFileFromPath(
+      resourceDir,
+      Seq("projectA", "src", "main", "scala-2.12")
+    )
   val sourceDirB =
     Utils.mkFileFromPath(resourceDir, Seq("projectB", "src", "main", "scala"))
   val sourceDirs = Seq(sourceDirA, sourceDirA212, sourceDirB)
@@ -180,7 +183,7 @@ class CoberturaMultiSourceReaderTest
       val sourcePath = Seq("bar", "foo", "TestSourceFile.scala")
       val sourceFile = Utils.mkFileFromPath(sourceDirA, sourcePath)
       val (source, file) = reader.splitPath(sourceFile)
-      source shouldEqual sourceDirA.getCanonicalPath()
+      source shouldEqual sourceDirA.getCanonicalPath
       file shouldEqual sourcePath.mkString(File.separator)
     }
 

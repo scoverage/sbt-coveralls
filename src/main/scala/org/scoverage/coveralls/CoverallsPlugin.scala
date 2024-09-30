@@ -80,7 +80,7 @@ object CoverallsPlugin extends AutoPlugin {
 
     val coverallsAuthOpt = coverallsService.value match {
       case Some(ciService) => ciService.coverallsAuth(repoToken)
-      case None => repoToken.map(CoverallsRepoToken)
+      case None            => repoToken.map(CoverallsRepoToken)
     }
 
     val coverallsAuth = coverallsAuthOpt.getOrElse {
@@ -131,13 +131,13 @@ object CoverallsPlugin extends AutoPlugin {
     )
 
     val fileReports =
-      reader.sourceFilenames.par.map(reader.reportForSource(_)).seq
+      reader.sourceFilenames.par.map(reader.reportForSource).seq
 
     log.info(
       s"sbt-coveralls: Adding file reports to the coveralls file (${coverallsFile.value.getName}) ..."
     )
 
-    fileReports.foreach(writer.addSourceFile(_))
+    fileReports.foreach(writer.addSourceFile)
 
     writer.end()
 
