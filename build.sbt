@@ -10,10 +10,11 @@ generateXMLFiles := {
   val dir = (Test / resourceDirectory).value
   val pwd = (run / baseDirectory).value
 
-  val template = if (System.getProperty("os.name").startsWith("Windows"))
-    ".xml.windows.template"
-  else
-    ".xml.template"
+  val template =
+    if (System.getProperty("os.name").startsWith("Windows"))
+      ".xml.windows.template"
+    else
+      ".xml.template"
 
   dir.listFiles { (_, name) => name.endsWith(template) }.foreach {
     templateFile =>
@@ -30,16 +31,20 @@ prepareScripted := {
   val pwd = (run / baseDirectory).value
 
   val submodules = "git submodule status" !! log
-  val submodulePaths = submodules.split('\n').map{x =>
+  val submodulePaths = submodules.split('\n').map { x =>
     x.split(" ")(2)
   }
 
-  submodulePaths.foreach{ subModulePath =>
+  submodulePaths.foreach { subModulePath =>
     val path = pwd / ".git" / "modules" / subModulePath
-    val pathFixedForWindows = if (System.getProperty("os.name").startsWith("Windows"))
-      path.absolutePath.replace(File.separator, "/") // Git under Windows uses / for path separator
-    else
-      path.absolutePath
+    val pathFixedForWindows =
+      if (System.getProperty("os.name").startsWith("Windows"))
+        path.absolutePath.replace(
+          File.separator,
+          "/"
+        ) // Git under Windows uses / for path separator
+      else
+        path.absolutePath
     val destination = file(subModulePath) / ".git"
     IO.delete(destination)
     IO.write(destination, s"gitdir: $pathFixedForWindows")
@@ -95,7 +100,7 @@ lazy val root = Project("sbt-coveralls", file("."))
       "io.circe" %% "circe-core" % "0.14.10",
       "io.circe" %% "circe-generic" % "0.14.10",
       "io.circe" %% "circe-parser" % "0.14.10",
-      "org.mockito" % "mockito-core" % "5.14.0" % Test,
+      "org.mockito" % "mockito-core" % "5.14.1" % Test,
       "org.scalatest" %% "scalatest" % "3.2.19" % Test
     ),
     scriptedLaunchOpts ++= Seq(
