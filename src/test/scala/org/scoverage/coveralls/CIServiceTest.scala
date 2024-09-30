@@ -24,7 +24,8 @@ class CIServiceTest extends AnyWordSpec with Matchers {
           |}
           |""".stripMargin
 
-        GitHubActions.getFromJson(lines, "numericField") shouldBe Some("123")       }
+        GitHubActions.getFromJson(lines, "numericField") shouldBe Some("123")
+      }
     }
 
     "getPrNumber" should {

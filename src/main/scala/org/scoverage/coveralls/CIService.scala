@@ -22,7 +22,9 @@ trait TravisBase extends CIService {
   val currentBranch: Option[String] = sys.env.get("CI_BRANCH")
 
   // If a user token exists, use it; otherwise, Travis doesn't seem to need a token at all
-  override def coverallsAuth(userRepoToken: Option[String]): Option[CoverallsAuth] =
+  override def coverallsAuth(
+      userRepoToken: Option[String]
+  ): Option[CoverallsAuth] =
     Some(userRepoToken.fold[CoverallsAuth](NoTokenNeeded)(CoverallsRepoToken))
 }
 
@@ -40,7 +42,8 @@ case object GitHubActions extends CIService {
 
   // https://github.com/coverallsapp/github-action/blob/master/src/run.ts#L31-L40
   val pullRequest: Option[String] = for {
-    eventName <- sys.env.get("GITHUB_EVENT_NAME") if eventName.startsWith("pull_request")
+    eventName <- sys.env.get("GITHUB_EVENT_NAME")
+    if eventName.startsWith("pull_request")
     payloadPath <- sys.env.get("GITHUB_EVENT_PATH")
     prNumber <- getPrNumber(payloadPath)
   } yield prNumber
@@ -48,7 +51,7 @@ case object GitHubActions extends CIService {
   // https://docs.github.com/en/actions/learn-github-actions/environment-variables
   val currentBranch: Option[String] = pullRequest match {
     case Some(_) => sys.env.get("GITHUB_HEAD_REF")
-    case None => sys.env.get("GITHUB_REF_NAME")
+    case None    => sys.env.get("GITHUB_REF_NAME")
   }
 
   def getPrNumber(payloadPath: String): Option[String] = {
@@ -61,24 +64,25 @@ case object GitHubActions extends CIService {
 
     lines match {
       case Some(ls) => getFromJson(ls, "number")
-      case None => None
+      case None     => None
     }
 
   }
 
   def getFromJson(lines: String, element: String): Option[String] = {
     parser.parse(lines) match {
-      case Right(json) => {
+      case Right(json) =>
         json.findAllByKey(element) match {
-          case prNumber :: nil => Some(prNumber.toString)
-          case _ => None
+          case prNumber :: _ => Some(prNumber.toString)
+          case _             => None
         }
-      }
       case Left(_) => None
     }
   }
 
-  override def coverallsAuth(userRepoToken: Option[String]): Option[CoverallsAuth] = {
+  override def coverallsAuth(
+      userRepoToken: Option[String]
+  ): Option[CoverallsAuth] = {
     userRepoToken match {
       case Some(token) if token.matches("gh._.+") =>
         // The token passed in COVERALLS_REPO_TOKEN is a GitHub token (legacy behavior)
@@ -98,6 +102,7 @@ case object GitHubActions extends CIService {
 object CircleCI extends CIService {
   def name: String = "circleci"
   def jobId: Option[String] = sys.env.get("CIRCLE_BUILD_NUM")
-  def pullRequest: Option[String] = sys.env.get("CIRCLE_PULL_REQUEST").map(_.split("/").last)
+  def pullRequest: Option[String] =
+    sys.env.get("CIRCLE_PULL_REQUEST").map(_.split("/").last)
   def currentBranch: Option[String] = sys.env.get("CIRCLE_BRANCH")
 }

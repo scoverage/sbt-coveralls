@@ -5,7 +5,7 @@ import java.io.File
 object Utils {
   def mkFileFromPath(path: Seq[String]): File = {
     require(path.nonEmpty, "path cannot be empty")
-    val (p :: ps) = path
+    val p :: ps = path
     mkFileFromPath(new File(p), ps)
   }
 

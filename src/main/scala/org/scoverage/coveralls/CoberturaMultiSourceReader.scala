@@ -11,10 +11,10 @@ class CoberturaMultiSourceReader(
     sourceEncoding: Option[String]
 )(implicit log: Logger) {
   log.debug(
-    s"sbt-coveralls: CobertaMultiSourceReader: coberturaFile: ${coberturaFile}"
+    s"sbt-coveralls: CobertaMultiSourceReader: coberturaFile: $coberturaFile"
   )
   log.debug(
-    s"sbt-coveralls: CobertaMultiSourceReader: sourceDirs: ${sourceDirs}"
+    s"sbt-coveralls: CobertaMultiSourceReader: sourceDirs: $sourceDirs"
   )
 
   require(sourceDirs.nonEmpty, "Given empty sequence of source directories")
@@ -69,10 +69,10 @@ class CoberturaMultiSourceReader(
 
   def sourceFiles: Set[File] = {
     log.debug(
-      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFilesRelative: ${sourceFilesRelative}"
+      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFilesRelative: $sourceFilesRelative"
     )
     log.debug(
-      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceDirs: ${sourceDirs}"
+      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceDirs: $sourceDirs"
     )
     val sfs = for {
       relativePath <- sourceFilesRelative
@@ -82,7 +82,7 @@ class CoberturaMultiSourceReader(
       if sourceFile.exists
     } yield sourceFile
     log.debug(
-      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFiles: ${sfs}"
+      s"sbt-coveralls: CobertaMultiSourceReader: sourceFiles: sourceFiles: $sfs"
     )
     sfs
   }

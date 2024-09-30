@@ -33,12 +33,14 @@ class CoverallPayloadWriterTest
       writer: Writer,
       tokenIn: Option[String],
       service: Option[CIService],
-      parallel: Boolean,
+      parallel: Boolean
   ): (CoverallPayloadWriter, Writer) = {
     val payloadWriter = new CoverallPayloadWriter(
       new File(".").getAbsoluteFile,
       new File("."),
-      service.flatMap(_.coverallsAuth(tokenIn)).getOrElse(CoverallsRepoToken(tokenIn.get)),
+      service
+        .flatMap(_.coverallsAuth(tokenIn))
+        .getOrElse(CoverallsRepoToken(tokenIn.get)),
       service,
       parallel,
       testGitClient
@@ -72,10 +74,10 @@ class CoverallPayloadWriterTest
           false
         )
 
-        payloadWriter.start
+        payloadWriter.start()
         payloadWriter.flush()
 
-        println(writer.toString())
+        println(writer.toString)
 
         writer.toString should equal(
           """{"repo_token":"testRepoToken","service_name":"my-service","service_job_id":"testServiceJob","parallel":false,""" +
@@ -86,9 +88,14 @@ class CoverallPayloadWriterTest
 
       "generate a correct starting payload without a CI service" in {
         val (payloadWriter, writer) =
-          coverallsWriter(new StringWriter(), Some("testRepoToken"), None, false)
+          coverallsWriter(
+            new StringWriter(),
+            Some("testRepoToken"),
+            None,
+            false
+          )
 
-        payloadWriter.start
+        payloadWriter.start()
         payloadWriter.flush()
 
         writer.toString should equal(
@@ -116,7 +123,7 @@ class CoverallPayloadWriterTest
           false
         )
 
-        payloadWriter.start
+        payloadWriter.start()
         payloadWriter.flush()
 
         writer.toString should equal(
@@ -147,18 +154,31 @@ class CoverallPayloadWriterTest
         )
         payloadWriter.addSourceFile(
           SourceFileReport(
-            sourceFile.getPath(),
+            sourceFile.getPath,
             List(Some(1), None, Some(2))
           )
         )
         payloadWriter.flush()
 
-        val separator = if (System.getProperty("os.name").startsWith("Windows"))
-          s"""${File.separator}\\""" // Backwards slash is a special character in JSON so it needs to be escaped
-        else
-          File.separator
+        val separator =
+          if (System.getProperty("os.name").startsWith("Windows"))
+            s"""${File.separator}\\""" // Backwards slash is a special character in JSON so it needs to be escaped
+          else
+            File.separator
 
-        val name = List(".","src","test","resources","projectA","src","main","scala","bar","foo","TestSourceFile.scala")
+        val name = List(
+          ".",
+          "src",
+          "test",
+          "resources",
+          "projectA",
+          "src",
+          "main",
+          "scala",
+          "bar",
+          "foo",
+          "TestSourceFile.scala"
+        )
           .mkString(separator)
         writer.toString should equal(
           s"""{"name":"$name","source_digest":"B77361233B09D69968F8C62491A5085F","coverage":[1,null,2]}"""
@@ -173,16 +193,17 @@ class CoverallPayloadWriterTest
           false
         )
 
-        payloadWriter.start
+        payloadWriter.start()
         payloadWriter.end()
 
         writer.toString should endWith("]}")
       }
 
       "include parallel correctly" in {
-        val (payloadWriter, writer) = coverallsWriter(new StringWriter(), Some("testRepoToken"), None, true)
+        val (payloadWriter, writer) =
+          coverallsWriter(new StringWriter(), Some("testRepoToken"), None, true)
 
-        payloadWriter.start
+        payloadWriter.start()
         payloadWriter.flush()
 
         writer.toString should equal(
