@@ -1,10 +1,9 @@
 package org.scoverage.coveralls
 
-import java.io.File
-
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
+import java.io.File
 import scala.xml.XML
 
 class XmlHelperTest extends AnyWordSpec with Matchers {
