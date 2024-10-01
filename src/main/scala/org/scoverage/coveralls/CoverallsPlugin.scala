@@ -1,13 +1,11 @@
 package org.scoverage.coveralls
 
-import _root_.sbt.ScopeFilter
-import _root_.sbt.ThisProject
-import com.fasterxml.jackson.core.JsonEncoding
 import sbt.Keys._
-import sbt._
+import sbt.internal.util.ManagedLogger
+import sbt.{ScopeFilter, ThisProject, _}
 
-import scala.io.Source
 import java.io.File
+import scala.io.Source
 
 object Imports {
   object CoverallsKeys {
@@ -36,8 +34,8 @@ object CoverallsPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   val autoImport = Imports
-  import autoImport._
-  import CoverallsKeys._
+  import autoImport.*
+  import CoverallsKeys.*
 
   lazy val coveralls = taskKey[Unit](
     "Uploads scala code coverage to coveralls.io"
@@ -67,7 +65,7 @@ object CoverallsPlugin extends AutoPlugin {
   ) // must be outside of the 'coverageAggregate' task (see: https://github.com/sbt/sbt/issues/1095 or https://github.com/sbt/sbt/issues/780)
 
   def coverallsTask = Def.task {
-    implicit val log = streams.value.log
+    implicit val log: ManagedLogger = streams.value.log
 
     if (!coberturaFile.value.exists) {
       sys.error(
@@ -167,13 +165,13 @@ object CoverallsPlugin extends AutoPlugin {
     }
   }
 
-  def apiHttpClient = new ScalaJHttpClient
+  def apiHttpClient: ScalaJHttpClient = new ScalaJHttpClient
 
-  def travisJobIdent = sys.env.get("TRAVIS_JOB_ID")
+  def travisJobIdent: Option[String] = sys.env.get("TRAVIS_JOB_ID")
 
-  def githubActionsRunIdent = sys.env.get("GITHUB_RUN_ID")
+  def githubActionsRunIdent: Option[String] = sys.env.get("GITHUB_RUN_ID")
 
-  def repoTokenFromFile(path: String) = {
+  def repoTokenFromFile(path: String): Option[String] = {
     try {
       val source = Source.fromFile(path)
       val repoToken = source.mkString.trim
@@ -187,13 +185,13 @@ object CoverallsPlugin extends AutoPlugin {
   def userRepoToken(
       coverallsToken: Option[String],
       coverallsTokenFile: Option[String]
-  ) =
+  ): Option[String] =
     sys.env
       .get("COVERALLS_REPO_TOKEN")
       .orElse(coverallsToken)
       .orElse(coverallsTokenFile.flatMap(repoTokenFromFile))
 
-  def userEndpoint(coverallsEndpoint: Option[String]) =
+  def userEndpoint(coverallsEndpoint: Option[String]): Option[String] =
     sys.env
       .get("COVERALLS_ENDPOINT")
       .orElse(coverallsEndpoint)
