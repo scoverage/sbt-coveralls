@@ -1,11 +1,10 @@
 package org.scoverage.coveralls
 
+import com.fasterxml.jackson.core.{JsonEncoding, JsonFactory, JsonGenerator}
+import sbt.Logger
+
 import java.io.{File, FileInputStream}
 import java.security.{DigestInputStream, MessageDigest}
-
-import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
-
-import sbt.Logger
 
 class CoverallPayloadWriter(
     repoRootDir: File,
@@ -17,18 +16,18 @@ class CoverallPayloadWriter(
 )(implicit log: Logger) {
   import gitClient._
 
-  val gen = generator(coverallsFile)
+  val gen: JsonGenerator = generator(coverallsFile)
 
-  def generator(file: File) = {
+  def generator(file: File): JsonGenerator = {
     if (!file.getParentFile.exists) file.getParentFile.mkdirs
     val factory = new JsonFactory
     factory.createGenerator(file, JsonEncoding.UTF8)
   }
 
-  def start() = {
+  def start(): Unit = {
     gen.writeStartObject()
 
-    def writeOpt(fieldName: String, holder: Option[String]) =
+    def writeOpt(fieldName: String, holder: Option[String]): Unit =
       holder foreach { gen.writeStringField(fieldName, _) }
 
     coverallsAuth match {
@@ -52,7 +51,7 @@ class CoverallPayloadWriter(
     gen.writeStartArray()
   }
 
-  private def addGitInfo() = {
+  private def addGitInfo(): Unit = {
     gen.writeFieldName("git")
     gen.writeStartObject()
 
@@ -85,7 +84,7 @@ class CoverallPayloadWriter(
     gen.writeEndObject()
   }
 
-  private def addGitRemotes(remotes: Seq[String]) = {
+  private def addGitRemotes(remotes: Seq[String]): Unit = {
     remotes.foreach(remote => {
       gen.writeStartObject()
       gen.writeStringField("name", remote)
@@ -94,7 +93,7 @@ class CoverallPayloadWriter(
     })
   }
 
-  def addSourceFile(report: SourceFileReport) = {
+  def addSourceFile(report: SourceFileReport): Unit = {
     val repoRootDirStr = repoRootDir.getCanonicalPath + File.separator
 
     // create a name relative to the project root (rather than the module root)

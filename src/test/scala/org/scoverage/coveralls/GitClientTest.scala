@@ -1,19 +1,18 @@
 package org.scoverage.coveralls
 
-import java.io.File
-
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.BeforeAndAfterAll
 import org.eclipse.jgit.api.Git
-
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import sbt.ConsoleLogger
+
+import java.io.File
 
 class GitClientTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
-  implicit val log = ConsoleLogger(System.out)
+  implicit val log: ConsoleLogger = ConsoleLogger(System.out)
 
-  var git: GitClient = null
+  var git: GitClient = _
 
   override def beforeAll(): Unit = {
     // Create local repository

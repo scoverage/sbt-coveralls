@@ -1,9 +1,9 @@
 package org.scoverage.coveralls
 
-import java.io.File
-
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
+import java.io.File
 
 class UtilsTest extends AnyWordSpec with Matchers {
   "mkFileFromPath" when {

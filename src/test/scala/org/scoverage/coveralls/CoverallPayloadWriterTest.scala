@@ -1,17 +1,17 @@
 package org.scoverage.coveralls
 
 import java.io.{File, StringWriter, Writer}
-
 import com.fasterxml.jackson.core.JsonFactory
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterAll
+import sbt.util.AbstractLogger
 
 class CoverallPayloadWriterTest
     extends AnyWordSpec
     with BeforeAndAfterAll
     with Matchers {
-  implicit val log = sbt.Logger.Null
+  implicit val log: AbstractLogger = sbt.Logger.Null
 
   val resourceDir = Utils.mkFileFromPath(Seq(".", "src", "test", "resources"))
 
@@ -71,7 +71,7 @@ class CoverallPayloadWriterTest
           new StringWriter(),
           Some("testRepoToken"),
           Some(testService),
-          false
+          parallel = false
         )
 
         payloadWriter.start()
@@ -92,7 +92,7 @@ class CoverallPayloadWriterTest
             new StringWriter(),
             Some("testRepoToken"),
             None,
-            false
+            parallel = false
           )
 
         payloadWriter.start()
@@ -120,7 +120,7 @@ class CoverallPayloadWriterTest
           new StringWriter(),
           Some("testRepoToken"),
           Some(testService),
-          false
+          parallel = false
         )
 
         payloadWriter.start()
@@ -150,7 +150,7 @@ class CoverallPayloadWriterTest
           new StringWriter(),
           Some("testRepoToken"),
           Some(TravisCI),
-          false
+          parallel = false
         )
         payloadWriter.addSourceFile(
           SourceFileReport(
@@ -190,7 +190,7 @@ class CoverallPayloadWriterTest
           new StringWriter(),
           Some("testRepoToken"),
           Some(TravisCI),
-          false
+          parallel = false
         )
 
         payloadWriter.start()
@@ -201,7 +201,12 @@ class CoverallPayloadWriterTest
 
       "include parallel correctly" in {
         val (payloadWriter, writer) =
-          coverallsWriter(new StringWriter(), Some("testRepoToken"), None, true)
+          coverallsWriter(
+            new StringWriter(),
+            Some("testRepoToken"),
+            None,
+            parallel = true
+          )
 
         payloadWriter.start()
         payloadWriter.flush()

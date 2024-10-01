@@ -1,15 +1,12 @@
 package org.scoverage.coveralls
 
-import java.io.File
-import java.net.HttpURLConnection
-
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterAll
-
-import scala.util.Try
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import scalaj.http.Http
 import scalaj.http.HttpOptions._
+
+import scala.util.Try
 
 class CoverallsClientTest
     extends AnyWordSpec

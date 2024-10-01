@@ -1,9 +1,8 @@
 package org.scoverage.coveralls
 
-// import scala.language.postfixOps
-import java.io.File
-
 import sbt.Logger
+
+import java.io.File
 
 class CoberturaMultiSourceReader(
     coberturaFile: File,
@@ -87,7 +86,7 @@ class CoberturaMultiSourceReader(
     sfs
   }
 
-  def sourceFilenames = sourceFiles.map(_.getCanonicalPath)
+  def sourceFilenames: Set[String] = sourceFiles.map(_.getCanonicalPath)
 
   /** Splits a path to a source file into two parts:
     *   1. the absolute path to source directory that contain this sourceFile 2.
@@ -112,14 +111,14 @@ class CoberturaMultiSourceReader(
     (prefix, relativePath)
   }
 
-  protected def lineCoverage(sourceFile: String) = {
+  protected def lineCoverage(sourceFile: String): Map[Int, Int] = {
     val filenamePath =
       splitPath(new File(sourceFile))._2
 
     lineCoverageMap(filenamePath)
   }
 
-  def reportForSource(source: String) = {
+  def reportForSource(source: String): SourceFileReport = {
     val fileSrc = sourceEncoding match {
       case Some(enc) => scala.io.Source.fromFile(source, enc)
       case None      => scala.io.Source.fromFile(source)

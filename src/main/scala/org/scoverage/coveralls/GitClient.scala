@@ -1,12 +1,14 @@
 package org.scoverage.coveralls
 
-import java.io.File
-import java.nio.file.Files.lines
-
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.{Repository, StoredConfig}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.scoverage.coveralls.GitClient.GitRevision
 import sbt.Logger
+
+import java.io.File
+import java.nio.file.Files.lines
+import scala.util.matching.Regex
 
 object GitClient {
   case class GitRevision(
@@ -23,11 +25,11 @@ class GitClient(cwd: File)(implicit log: Logger) {
 
   import scala.collection.JavaConverters._
 
-  val gitDirLineRegex = """^gitdir: (.*)""".r
+  val gitDirLineRegex: Regex = """^gitdir: (.*)""".r
 
   val gitFile = new File(cwd, ".git")
 
-  val resolvedGitDir =
+  val resolvedGitDir: File =
     if (gitFile.isFile)
       lines(gitFile.toPath)
         .iterator()
@@ -44,8 +46,8 @@ class GitClient(cwd: File)(implicit log: Logger) {
     else
       gitFile
 
-  val repository = FileRepositoryBuilder.create(resolvedGitDir)
-  val storedConfig = repository.getConfig
+  val repository: Repository = FileRepositoryBuilder.create(resolvedGitDir)
+  val storedConfig: StoredConfig = repository.getConfig
   log.info("Repository = " + repository.getDirectory)
 
   def remotes: Seq[String] = {

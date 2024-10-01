@@ -4,6 +4,7 @@ import sbt.ScriptedPlugin.autoImport.scriptedLaunchOpts
 
 import java.io.File
 import scala.sys.process._
+
 lazy val generateXMLFiles =
   taskKey[Unit]("Generate XML files (for test)")
 generateXMLFiles := {

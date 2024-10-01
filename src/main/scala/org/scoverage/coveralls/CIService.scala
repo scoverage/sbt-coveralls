@@ -1,9 +1,10 @@
 package org.scoverage.coveralls
 
-import scala.io.Source
 import io.circe._
 import io.circe.parser
 import io.circe.generic.auto._
+
+import scala.io.Source
 
 trait CIService {
   def name: String

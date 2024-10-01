@@ -1,11 +1,7 @@
 package org.scoverage.coveralls
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
-
-import sbt.ConsoleLogger
-
-import scala.Option
+import org.scalatest.wordspec.AnyWordSpec
 
 class CIServiceTest extends AnyWordSpec with Matchers {
 

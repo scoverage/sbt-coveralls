@@ -1,22 +1,21 @@
 package org.scoverage.coveralls
 
-import scala.io.{Codec, Source}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scalaj.http.{MultiPart, Http}
-import scalaj.http.HttpOptions._
-import java.io.File
-import javax.net.ssl.{SSLSocket, SSLSocketFactory}
-import java.net.{Socket, InetAddress}
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import scalaj.http.HttpOptions._
+import scalaj.http.{Http, MultiPart}
+
+import java.io.File
+import java.net.{InetAddress, Socket}
+import javax.net.ssl.{SSLSocket, SSLSocketFactory}
+import scala.io.{Codec, Source}
 
 class CoverallsClient(endpoint: String, httpClient: HttpClient) {
 
-  import CoverallsClient._
-
-  val mapper = newMapper
+  val mapper: ObjectMapper = newMapper
   def url: String = s"$endpoint/api/v1/jobs"
 
-  def newMapper = {
+  def newMapper: ObjectMapper = {
     val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
     mapper
@@ -97,9 +96,10 @@ class ScalaJHttpClient extends HttpClient {
 }
 
 class OpenJdkSafeSsl extends SSLSocketFactory {
-  val child = SSLSocketFactory.getDefault.asInstanceOf[SSLSocketFactory]
+  val child: SSLSocketFactory =
+    SSLSocketFactory.getDefault.asInstanceOf[SSLSocketFactory]
 
-  val safeCiphers = Array(
+  val safeCiphers: Array[String] = Array(
     "SSL_RSA_WITH_RC4_128_MD5",
     "SSL_RSA_WITH_RC4_128_SHA",
     "TLS_RSA_WITH_AES_128_CBC_SHA",
@@ -123,28 +123,32 @@ class OpenJdkSafeSsl extends SSLSocketFactory {
     .asInstanceOf[SSLSocketFactory]
     .getSupportedCipherSuites
 
-  def getDefaultCipherSuites = Array.empty
+  def getDefaultCipherSuites: Array[String] = Array.empty
 
-  def getSupportedCipherSuites = Array.empty
+  def getSupportedCipherSuites: Array[String] = Array.empty
 
-  def createSocket(p1: Socket, p2: String, p3: Int, p4: Boolean) = safeSocket(
-    child.createSocket(p1, p2, p3, p4)
-  )
+  def createSocket(p1: Socket, p2: String, p3: Int, p4: Boolean): Socket =
+    safeSocket(
+      child.createSocket(p1, p2, p3, p4)
+    )
 
-  def createSocket(p1: String, p2: Int) = safeSocket(child.createSocket(p1, p2))
-
-  def createSocket(p1: String, p2: Int, p3: InetAddress, p4: Int) = safeSocket(
-    child.createSocket(p1, p2, p3, p4)
-  )
-
-  def createSocket(p1: InetAddress, p2: Int) = safeSocket(
+  def createSocket(p1: String, p2: Int): Socket = safeSocket(
     child.createSocket(p1, p2)
   )
 
-  def createSocket(p1: InetAddress, p2: Int, p3: InetAddress, p4: Int) =
+  def createSocket(p1: String, p2: Int, p3: InetAddress, p4: Int): Socket =
+    safeSocket(
+      child.createSocket(p1, p2, p3, p4)
+    )
+
+  def createSocket(p1: InetAddress, p2: Int): Socket = safeSocket(
+    child.createSocket(p1, p2)
+  )
+
+  def createSocket(p1: InetAddress, p2: Int, p3: InetAddress, p4: Int): Socket =
     safeSocket(child.createSocket(p1, p2, p3, p4))
 
-  def safeSocket(sock: Socket) = sock match {
+  def safeSocket(sock: Socket): Socket = sock match {
     case ssl: SSLSocket =>
       ssl.setEnabledCipherSuites(safeCiphers); ssl
     case other => other

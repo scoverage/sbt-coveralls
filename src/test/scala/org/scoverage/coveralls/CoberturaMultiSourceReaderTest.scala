@@ -1,17 +1,17 @@
 package org.scoverage.coveralls
 
-import java.io.{FileNotFoundException, File}
-
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.Ignore
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import sbt.util.AbstractLogger
+
+import java.io.{File, FileNotFoundException}
 
 class CoberturaMultiSourceReaderTest
     extends AnyWordSpec
     with BeforeAndAfterAll
     with Matchers {
-  implicit val log = sbt.Logger.Null
+  implicit val log: AbstractLogger = sbt.Logger.Null
 
   val resourceDir = Utils.mkFileFromPath(Seq(".", "src", "test", "resources"))
   val sourceDirA =
