@@ -101,7 +101,7 @@ lazy val root = Project("sbt-coveralls", file("."))
       "io.circe" %% "circe-core" % "0.14.10",
       "io.circe" %% "circe-generic" % "0.14.10",
       "io.circe" %% "circe-parser" % "0.14.10",
-      "org.mockito" % "mockito-core" % "5.14.0" % Test,
+      "org.mockito" % "mockito-core" % "5.14.2" % Test,
       "org.scalatest" %% "scalatest" % "3.2.19" % Test
     ),
     scriptedLaunchOpts ++= Seq(
