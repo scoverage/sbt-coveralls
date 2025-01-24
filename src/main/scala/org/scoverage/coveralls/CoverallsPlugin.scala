@@ -5,7 +5,8 @@ import sbt.internal.util.ManagedLogger
 import sbt.{ScopeFilter, ThisProject, _}
 
 import java.io.File
-import scala.io.Source
+import scala.io.{BufferedSource, Source}
+import scala.util.control.NonFatal
 
 object Imports {
   object CoverallsKeys {
@@ -172,13 +173,17 @@ object CoverallsPlugin extends AutoPlugin {
   def githubActionsRunIdent: Option[String] = sys.env.get("GITHUB_RUN_ID")
 
   def repoTokenFromFile(path: String): Option[String] = {
+    var source: BufferedSource = null
     try {
-      val source = Source.fromFile(path)
+      source = Source.fromFile(path)
       val repoToken = source.mkString.trim
       source.close()
       Some(repoToken)
     } catch {
-      case _: Exception => None
+      case NonFatal(_) => None
+    } finally {
+      if (source != null)
+        source.close()
     }
   }
 
