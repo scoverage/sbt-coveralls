@@ -4,7 +4,8 @@ import io.circe._
 import io.circe.parser
 import io.circe.generic.auto._
 
-import scala.io.Source
+import scala.io.{BufferedSource, Source}
+import scala.util.control.NonFatal
 
 trait CIService {
   def name: String
@@ -56,11 +57,16 @@ case object GitHubActions extends CIService {
   }
 
   def getPrNumber(payloadPath: String): Option[String] = {
+    var source: BufferedSource = null
     val lines =
       try {
-        Some(Source.fromFile(payloadPath, "utf-8").getLines.mkString)
+        source = Source.fromFile(payloadPath, "utf-8")
+        Some(source.getLines.mkString)
       } catch {
-        case _: Throwable => None
+        case NonFatal(_) => None
+      } finally {
+        if (source != null)
+          source.close()
       }
 
     lines match {

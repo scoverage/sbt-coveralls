@@ -8,7 +8,8 @@ import scalaj.http.{Http, MultiPart}
 import java.io.File
 import java.net.{InetAddress, Socket}
 import javax.net.ssl.{SSLSocket, SSLSocketFactory}
-import scala.io.{Codec, Source}
+import scala.io.{BufferedSource, Codec, Source}
+import scala.util.control.NonFatal
 
 class CoverallsClient(endpoint: String, httpClient: HttpClient) {
 
@@ -23,30 +24,38 @@ class CoverallsClient(endpoint: String, httpClient: HttpClient) {
 
   def postFile(file: File): CoverallsResponse = {
     val codec: Codec = Codec.UTF8
-    val source = Source.fromFile(file)(codec)
-    // API want newlines encoded as \n, not sure about other escape chars
-    // https://coveralls.zendesk.com/hc/en-us/articles/201774865-API-Introduction
-    val bytes = source.getLines().mkString("\\n").getBytes(codec.charSet)
-    source.close()
+    var source: BufferedSource = null
+    try {
+      source = Source.fromFile(file)(codec)
+      // API want newlines encoded as \n, not sure about other escape chars
+      // https://coveralls.zendesk.com/hc/en-us/articles/201774865-API-Introduction
+      val bytes = source.getLines().mkString("\\n").getBytes(codec.charSet)
 
-    httpClient.multipart(
-      url,
-      "json_file",
-      "json_file.json",
-      "application/json; charset=utf-8",
-      bytes
-    ) match {
-      case CoverallHttpResponse(_, body) =>
-        try {
-          mapper.readValue(body, classOf[CoverallsResponse])
-        } catch {
-          case t: Throwable =>
-            CoverallsResponse(
-              "Failed to parse response: " + t,
-              error = true,
-              ""
-            )
-        }
+      httpClient.multipart(
+        url,
+        "json_file",
+        "json_file.json",
+        "application/json; charset=utf-8",
+        bytes
+      ) match {
+        case CoverallHttpResponse(_, body) =>
+          try {
+            mapper.readValue(body, classOf[CoverallsResponse])
+          } catch {
+            case NonFatal(e) =>
+              CoverallsResponse(
+                "Failed to parse response: " + e,
+                error = true,
+                ""
+              )
+          }
+      }
+    } catch {
+      case NonFatal(e) =>
+        throw e
+    } finally {
+      if (source != null)
+        source.close()
     }
   }
 }

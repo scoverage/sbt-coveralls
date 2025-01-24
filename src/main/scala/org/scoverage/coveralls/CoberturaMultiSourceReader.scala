@@ -3,6 +3,8 @@ package org.scoverage.coveralls
 import sbt.Logger
 
 import java.io.File
+import scala.io.{BufferedSource, Source}
+import scala.util.control.NonFatal
 
 class CoberturaMultiSourceReader(
     coberturaFile: File,
@@ -119,17 +121,26 @@ class CoberturaMultiSourceReader(
   }
 
   def reportForSource(source: String): SourceFileReport = {
-    val fileSrc = sourceEncoding match {
-      case Some(enc) => scala.io.Source.fromFile(source, enc)
-      case None      => scala.io.Source.fromFile(source)
+    var fileSrc: BufferedSource = null
+    try {
+      fileSrc = sourceEncoding match {
+        case Some(enc) => Source.fromFile(source, enc)
+        case None      => Source.fromFile(source)
+      }
+
+      val lineCount = fileSrc.getLines().size
+
+      val lineHitMap = lineCoverage(source)
+      val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
+
+      SourceFileReport(source, fullLineHit.toList)
+    } catch {
+      case NonFatal(e) =>
+        throw e
+    } finally {
+      if (fileSrc != null)
+        fileSrc.close()
     }
-    val lineCount = fileSrc.getLines().size
-    fileSrc.close()
-
-    val lineHitMap = lineCoverage(source)
-    val fullLineHit = (0 until lineCount).map(i => lineHitMap.get(i + 1))
-
-    SourceFileReport(source, fullLineHit.toList)
   }
 }
 
