@@ -35,6 +35,7 @@ jobs:
         with:
           java-version: ${{ matrix.JDK }}
           distribution: temurin
+          cache: sbt
 
       - name: run tests
         run: sbt generateXMLFiles test
