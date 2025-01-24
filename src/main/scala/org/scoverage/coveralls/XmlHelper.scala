@@ -1,10 +1,9 @@
 package org.scoverage.coveralls
 
-import java.io.{File, FileInputStream}
-import javax.xml.parsers.SAXParserFactory
-
 import org.xml.sax.InputSource
 
+import java.io.{File, FileInputStream}
+import javax.xml.parsers.SAXParserFactory
 import scala.util.Try
 import scala.xml.XML
 

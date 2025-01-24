@@ -1,8 +1,10 @@
 target/
+
 *.iml
 *.ipr
 *.iws
 .idea/
+.vscode/
 .bloop/
 .bsp/
 .metals/
@@ -12,6 +14,7 @@ metals.sbt
 .cache
 .classpath
 .project
+.tool-versions
 
 # OS X
 Icon
