@@ -98,9 +98,9 @@ lazy val root = Project("sbt-coveralls", file("."))
       "com.fasterxml.jackson.core" % "jackson-core" % "2.18.2",
       "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.0.202109080827-r",
       "org.scalaj" %% "scalaj-http" % "2.4.2",
-      "io.circe" %% "circe-core" % "0.14.10",
-      "io.circe" %% "circe-generic" % "0.14.10",
-      "io.circe" %% "circe-parser" % "0.14.10",
+      "io.circe" %% "circe-core" % "0.14.14",
+      "io.circe" %% "circe-generic" % "0.14.14",
+      "io.circe" %% "circe-parser" % "0.14.14",
       "org.mockito" % "mockito-core" % "5.14.2" % Test,
       "org.scalatest" %% "scalatest" % "3.2.19" % Test
     ),
